@@ -3,7 +3,7 @@ import type { Direction, OrderStatus, OrderType, Side } from '../../models';
 export interface OrderBookLevelUpdateDto {
   price: string;
   size: string;
-  lastTouched: string;
+  lastTouched: number;
 }
 
 export interface OrderbookUpdateDto {
@@ -28,7 +28,7 @@ export interface OrderUpdateDto {
   origSize: string;
   claimed: string;
   createdAt: number;
-  lastTouched: string;
+  lastTouched: number;
   txnHash: string;
   status: OrderStatus;
   isPostOnly: boolean;
@@ -76,13 +76,13 @@ export interface CandleUpdateDto {
     id: string;
   };
   resolution: string;
-  time: string;
+  time: number;
   open: string;
   high: string;
   low: string;
   close: string;
   volume: string;
-  lastTouched: string;
+  lastTouched: number;
 }
 
 export interface TradeUpdateDto {
@@ -115,7 +115,7 @@ export interface MarketUpdateDto {
   price24h: string | null;
   coinMarketCapId: string;
   totalSupply: string;
-  lastTouched: string;
+  lastTouched: number;
   baseToken: TokenUpdateDto;
   quoteToken: TokenUpdateDto;
   supportsNativeToken: boolean;

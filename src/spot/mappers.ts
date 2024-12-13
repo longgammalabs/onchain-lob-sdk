@@ -11,9 +11,7 @@ import type {
   OrderUpdate,
   FillUpdate,
   Fill,
-  OrderHistoryUpdate,
-  Candle,
-  CandleUpdate
+  OrderHistoryUpdate
 } from '../models';
 import type {
   TokenDto,
@@ -24,7 +22,6 @@ import type {
   FillDto
 } from '../services/onchainLobSpotService';
 import type {
-  CandleUpdateDto,
   FillUpdateDto,
   MarketUpdateDto,
   OrderHistoryUpdateDto,
@@ -33,7 +30,6 @@ import type {
   TradeUpdateDto
 } from '../services/onchainLobSpotWebSocketService/dtos';
 import { tokenUtils } from '../utils';
-import { CandleDto } from '../services/onchainLobSpotService/dtos';
 
 export const mapTokenDtoToToken = (dto: TokenDto): Token => {
   return dto;
@@ -57,7 +53,7 @@ export const mapMarketDtoToMarket = (dto: MarketDto, priceFactor: number, sizeFa
     rawTradingVolume24h: dto.tradingVolume24h ? BigInt(dto.tradingVolume24h) : null,
     tradingVolume24h: dto.tradingVolume24h ? tokenUtils.convertTokensRawAmountToAmount(dto.tradingVolume24h, sizeFactor) : null,
     totalSupply: dto.totalSupply ? BigNumber(dto.totalSupply) : null,
-    lastTouched: Number(dto.lastTouched),
+    lastTouched: dto.lastTouched,
     aggressiveFee: Number(dto.aggressiveFee),
     passiveFee: Number(dto.passiveFee),
     passiveOrderPayout: Number(dto.passiveOrderPayout),
@@ -101,7 +97,7 @@ export const mapTradeDtoToTrade = (dto: TradeDto, priceFactor: number, sizeFacto
 export const mapOrderDtoToOrder = (dto: OrderUpdateDto, priceFactor: number, sizeFactor: number): OrderUpdate => {
   return {
     ...dto,
-    lastTouched: Number(dto.lastTouched),
+    lastTouched: dto.lastTouched,
     rawPrice: BigInt(dto.price),
     price: tokenUtils.convertTokensRawAmountToAmount(dto.price, priceFactor),
     rawSize: BigInt(dto.size),
@@ -138,14 +134,6 @@ export const mapFillDtoToFill = (dto: FillDto, priceFactor: number, tokenXFactor
     size: tokenUtils.convertTokensRawAmountToAmount(dto.size, tokenXFactor),
     rawFee: BigInt(dto.fee),
     fee: tokenUtils.convertTokensRawAmountToAmount(dto.fee, tokenYFactor),
-  };
-};
-
-export const mapCandleDtoToCandle = (dto: CandleDto): Candle => {
-  return {
-    ...dto,
-    time: Number(dto.time),
-    lastTouched: Number(dto.lastTouched),
   };
 };
 
@@ -192,5 +180,3 @@ export const mapFillUpdateDtoToFillUpdate = (
   tokenXFactor: number,
   tokenYFactor: number
 ): FillUpdate => mapFillDtoToFill(dto, priceFactor, tokenXFactor, tokenYFactor);
-
-export const mapCandleUpdateDtotoCandleUpdate = (dto: CandleUpdateDto): CandleUpdate => mapCandleDtoToCandle(dto);

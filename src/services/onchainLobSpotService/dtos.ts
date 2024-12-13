@@ -3,7 +3,7 @@ import type { Direction, OrderStatus, OrderType, Side } from '../../models';
 export interface OrderbookLevelDto {
   price: string;
   size: string;
-  lastTouched: string;
+  lastTouched: number;
 }
 
 export interface OrderbookDto {
@@ -28,7 +28,7 @@ export interface OrderDto {
   origSize: string;
   claimed: string;
   createdAt: number;
-  lastTouched: string;
+  lastTouched: number;
   txnHash: string;
   status: OrderStatus;
   isPostOnly: boolean;
@@ -115,7 +115,7 @@ export interface MarketDto {
   price24h: string | null;
   coinMarketCapId: string;
   totalSupply: string;
-  lastTouched: string;
+  lastTouched: number;
   supportsNativeToken: boolean;
   isNativeTokenX: boolean;
   aggressiveFee: string;
@@ -124,13 +124,13 @@ export interface MarketDto {
 }
 
 export interface CandleDto {
-  time: string;
+  time: number;
   open: string;
   high: string;
   low: string;
   close: string;
   volume: string;
-  lastTouched: string;
+  lastTouched: number;
 }
 
 export interface MarketDetailsDto {

@@ -594,7 +594,7 @@ export class OnchainLobSpot implements Disposable {
    * @returns {Promise<Candle[]>} A Promise that resolves to an array of candles.
    */
   async getCandles(params: GetCandlesParams): Promise<Candle[]> {
-    const candles = (await this.onchainLobService.getCandles(params)).map(candleDto => this.mappers.mapCandleDtoToCandle(candleDto));
+    const candles = await this.onchainLobService.getCandles(params);
 
     return candles;
   }
@@ -973,7 +973,7 @@ export class OnchainLobSpot implements Disposable {
   };
 
   protected onCandlesUpdated: Parameters<typeof this.onchainLobWebSocketService.events.candlesUpdated['addListener']>[0] = (marketId, isSnapshot, data) => {
-    (this.events.candlesUpdated as ToEventEmitter<typeof this.events.candlesUpdated>).emit(marketId, isSnapshot, this.mappers.mapCandleUpdateDtotoCandleUpdate(data));
+    (this.events.candlesUpdated as ToEventEmitter<typeof this.events.candlesUpdated>).emit(marketId, isSnapshot, data);
   };
 
   protected onSubscriptionError: Parameters<typeof this.onchainLobWebSocketService.events.subscriptionError['addListener']>[0] = error => {

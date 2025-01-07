@@ -501,7 +501,7 @@ import { OnchainLobClient } from 'onchain-lob-sdk';
 
 const onchainLobClient = new OnchainLobClient({
   apiBaseUrl: 'https://api-dev.xpressprotocol.com',
-  webSocketApiBaseUrl: 'https://rpc.testnet.soniclabs.com',
+  webSocketApiBaseUrl: 'wss://sockets-dev.xpressprotocol.com',
   signerOrProvider: wallet,
 });
 
@@ -546,7 +546,7 @@ import { OnchainLobClient } from 'onchain-lob-sdk';
 
 const onchainLobClient = new OnchainLobClient({
   apiBaseUrl: 'https://api-dev.xpressprotocol.com',
-  webSocketApiBaseUrl: 'https://rpc.testnet.soniclabs.com',
+  webSocketApiBaseUrl: 'wss://sockets-dev.xpressprotocol.com',
   signer: wallet,
 });
 

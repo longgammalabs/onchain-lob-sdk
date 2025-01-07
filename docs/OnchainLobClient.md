@@ -45,8 +45,8 @@ Sets or unsets the signer for the `OnchainLobClient`.
 import { OnchainLobClient, OnchainLobClientOptions } from 'onchain-lob-sdk';
 
 const options: OnchainLobClientOptions = {
-  apiBaseUrl: 'https://api.hanji.io',
-  webSocketApiBaseUrl: 'wss://ws.hanji.io',
+  apiBaseUrl: 'https://api-dev.xpressprotocol.com',
+  webSocketApiBaseUrl: 'wss://sockets-dev.xpressprotocol.com',
   signer: null,
   webSocketConnectImmediately: false,
 };

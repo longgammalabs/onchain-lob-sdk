@@ -181,11 +181,10 @@ export interface LimitDetailsDto {
 
 export interface UserBalancesDto {
   balances: {
-    token: string;
+    tokenSymbol: string;
     tokenAddress: string;
     hold: number;
-    total: number;
-    depositedTokenX: number;
-    depositedTokenY: number;
+    available: number;
+    deposited: number;
   }[];
 }

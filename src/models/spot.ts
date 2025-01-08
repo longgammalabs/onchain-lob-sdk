@@ -731,7 +731,7 @@ export interface UserBalances {
      *
      * @type {string}
      */
-    token: string;
+    tokenSymbol: string;
 
     /**
      * The address of the token.
@@ -748,25 +748,18 @@ export interface UserBalances {
     hold: number;
 
     /**
-     * The total user amount of the token.
+     * The amount of the token that is currently available for user.
      *
      * @type {number}
      */
-    total: number;
+    available: number;
 
     /**
-     * The user deposits amount of the tokenX.
+     * The amount of the token that is currently deposited.
      *
      * @type {number}
      */
-    depositedTokenX: number;
-
-    /**
-     * The user deposits amount of the tokenY.
-     *
-     * @type {number}
-     */
-    depositedTokenY: number;
+    deposited: number;
   }[];
 }
 

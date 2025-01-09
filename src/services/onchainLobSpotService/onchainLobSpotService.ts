@@ -1,5 +1,5 @@
-import type { CandleDto, FillDto, LimitDetailsDto, MarketDetailsDto, MarketDto, OrderDto, OrderHistoryDto, OrderbookDto, TokenDto, TradeDto, UserBalancesDto } from './dtos';
-import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams } from './params';
+import type { CandleDto, FillDto, LimitDetailsDto, MarketDetailsDto, MarketDto, OrderDto, OrderHistoryDto, OrderbookDto, TokenDto, TradeDto, UserBalancesDto, UserDepositsDto } from './dtos';
+import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams, GetUserDepositsParams } from './params';
 import { guards } from '../../utils';
 import { RemoteService } from '../remoteService';
 import { ALL_MARKETS_ID } from '../constants';
@@ -215,6 +215,17 @@ export class OnchainLobSpotService extends RemoteService {
 
     const queryParamsString = decodeURIComponent(queryParams.toString());
     const response = await this.fetch<UserBalancesDto>(`user-balances?${queryParamsString}`, 'json');
+
+    return response;
+  }
+
+  async getUserDeposits(params: GetUserDepositsParams): Promise<UserDepositsDto> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('user', params.user);
+    if (params.market) queryParams.append('market', params.market);
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<UserDepositsDto>(`user-deposits?${queryParamsString}`, 'json');
 
     return response;
   }

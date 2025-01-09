@@ -764,6 +764,48 @@ export interface UserBalances {
 }
 
 /**
+ * Represents the user deposits for every market.
+ */
+export interface UserDeposits {
+  deposits: {
+    /**
+     * The address of the market.
+     *
+     * @type {string}
+     */
+    market: string;
+
+    /**
+     * The address of the tokenX.
+     *
+     * @type {string}
+     */
+    tokenXAddress: string;
+
+    /**
+     * The address of the tokenY.
+     *
+     * @type {string}
+     */
+    tokenYAddress: string;
+
+    /**
+     * The amount of the tokenX that is currently deposited in the market.
+     *
+     * @type {number}
+     */
+    depositedTokenX: number;
+
+    /**
+     * The amount of the tokenY that is currently deposited in the market.
+     *
+     * @type {number}
+     */
+    depositedTokenY: number;
+  }[];
+}
+
+/**
  * Represents an order history log in the Onchain LOB Spot market.
  */
 export interface OrderHistory {

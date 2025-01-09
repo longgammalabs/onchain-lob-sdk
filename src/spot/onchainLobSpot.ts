@@ -48,11 +48,12 @@ import type {
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
-import type { Market, FillUpdate, MarketUpdate, OrderUpdate, OrderbookUpdate, TradeUpdate, Orderbook, Order, Trade, Fill, Token, Candle, CandleUpdate, MarketOrderDetails, LimitOrderDetails, UserBalances, OrderHistoryUpdate, OrderHistory } from '../models';
+import type { Market, FillUpdate, MarketUpdate, OrderUpdate, OrderbookUpdate, TradeUpdate, Orderbook, Order, Trade, Fill, Token, Candle, CandleUpdate, MarketOrderDetails, LimitOrderDetails, UserBalances, OrderHistoryUpdate, OrderHistory, UserDeposits } from '../models';
 import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../services';
 import { ALL_MARKETS_ID } from '../services/constants';
 import { getLimitDetails } from './limitDetails';
 import { getMarketDetails } from './marketDetails';
+import { GetUserDepositsParams } from '../services/onchainLobSpotService/params';
 
 /**
  * Options for configuring the OnchainLobSpot instance.
@@ -647,6 +648,16 @@ export class OnchainLobSpot implements Disposable {
    */
   async getUserBalances(params: GetUserBalancesParams): Promise<UserBalances> {
     return this.onchainLobService.getUserBalances(params);
+  }
+
+  /**
+   * Retrieves the deposits for the specified user.
+   *
+   * @param {GetUserDepositsParams} params - The parameters for retrieving the user deposits.
+   * @returns {Promise<UserDeposits>} A Promise that resolves to the user balances data.
+   */
+  async getUserDeposits(params: GetUserDepositsParams): Promise<UserDeposits> {
+    return this.onchainLobService.getUserDeposits(params);
   }
 
   /**

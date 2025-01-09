@@ -188,3 +188,13 @@ export interface UserBalancesDto {
     deposited: number;
   }[];
 }
+
+export interface UserDepositsDto {
+  deposits: {
+    market: string;
+    tokenXAddress: string;
+    tokenYAddress: string;
+    depositedTokenX: number;
+    depositedTokenY: number;
+  }[];
+}

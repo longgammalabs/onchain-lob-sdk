@@ -7,5 +7,7 @@ export type {
   TradeDto,
   FillDto,
   TokenDto,
-  MarketDto
+  MarketDto,
+  UserBalancesDto,
+  UserDepositsDto
 } from './dtos';

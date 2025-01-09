@@ -72,3 +72,8 @@ export interface CalculateLimitDetailsParams {
 export interface GetUserBalancesParams {
   user: string;
 }
+
+export interface GetUserDepositsParams {
+  user: string;
+  market?: string;
+}

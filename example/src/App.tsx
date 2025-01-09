@@ -17,6 +17,7 @@ import ClaimOrder from './ClaimOrder';
 import TradeUpdates from './TradeUpdates';
 import Timetx from './Timetx';
 import UserDeposits from './UserDeposits';
+import WrapUnwrapNativeToken from './WrapNativeToken';
 
 function App() {
   const [address, setAddress] = useState<string>('');
@@ -36,6 +37,8 @@ function App() {
                     <Timetx />
                     <Divider />
                     <ApproveToken />
+                    <Divider />
+                    <WrapUnwrapNativeToken />
                     <Divider />
                     <PlaceOrder />
                     <Divider />

@@ -79,6 +79,52 @@ export interface ApproveSpotParams extends TransactionParams {
 }
 
 /**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface WrapNativeTokenSpotParams
+ * @extends TransactionParams
+ */
+export interface WrapNativeTokenSpotParams extends TransactionParams {
+  /**
+   * The market identifier.
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * The amount of tokens to wrap.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   */
+  amount: BigNumber | bigint;
+}
+
+/**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface UnwrapNativeTokenSpotParams
+ * @extends TransactionParams
+ */
+export interface UnwrapNativeTokenSpotParams extends TransactionParams {
+  /**
+   * The market identifier.
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * The amount of tokens to wrap.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   */
+  amount: BigNumber | bigint;
+}
+
+/**
  * Parameters for depositing tokens into the spot market.
  *
  * @interface DepositSpotParams

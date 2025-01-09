@@ -45,7 +45,9 @@ import type {
   SubscribeToUserOrderHistoryParams,
   CalculateLimitDetailsSyncParams,
   CalculateMarketDetailsSyncParams,
-  GetUserDepositsParams
+  GetUserDepositsParams,
+  WrapNativeTokenSpotParams,
+  UnwrapNativeTokenSpotParams
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
@@ -286,6 +288,32 @@ export class OnchainLobSpot implements Disposable {
     const marketContract = await this.getSpotMarketContract(params);
 
     return marketContract.approveTokens(params);
+  }
+
+  /**
+  * Wraps the specified amount of native tokens.
+  * You need to wrap the tokens before you can deposit.
+  *
+  * @param {WrapNativeTokenSpotParams} params - The parameters for wrapping tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async wrapNativeTokens(params: WrapNativeTokenSpotParams): Promise<ContractTransactionResponse> {
+    const marketContract = await this.getSpotMarketContract(params);
+
+    return marketContract.wrapNativeToken(params);
+  }
+
+  /**
+  * Unwraps the specified amount of native tokens.
+  * You need to unwrap the tokens after withdrawal to get native tokens.
+  *
+  * @param {UnwrapNativeTokenSpotParams} params - The parameters for unwrapping tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async unwrapNativeTokens(params: UnwrapNativeTokenSpotParams): Promise<ContractTransactionResponse> {
+    const marketContract = await this.getSpotMarketContract(params);
+
+    return marketContract.unwrapNativeToken(params);
   }
 
   /**

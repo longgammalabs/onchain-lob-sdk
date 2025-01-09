@@ -25,6 +25,28 @@ Approves the specified amount of tokens for the corresponding market contract.
 - `token`: The token to be approved.
 - `amount`: The amount of tokens to approve. If `bigint` is provided, then the token's contract unit is used. If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
 
+## wrapNativeTokens
+
+```typescript
+async wrapNativeTokens({ market, amount }: WrapNativeTokenSpotParams): Promise<ContractTransactionResponse>
+```
+
+Wraps the specified amount of native tokens.
+
+- `market`: The market identifier.
+- `amount`: The amount of tokens to wrap. If `bigint` is provided, then the token's contract unit is used. If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+
+## unwrapNativeTokens
+
+```typescript
+async unwrapNativeTokens({ market, amount }: UnwrapNativeTokenSpotParams): Promise<ContractTransactionResponse>
+```
+
+Wraps the specified amount of native tokens.
+
+- `market`: The market identifier.
+- `amount`: The amount of tokens to unwrap. If `bigint` is provided, then the token's contract unit is used. If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+
 ## depositTokens
 
 ```typescript
@@ -185,9 +207,9 @@ Places multiple orders in the corresponding market contract.
 - `market`: The market identifier.
 - `type`: The type of the orders (limit, limit_post_only).
 - `orderParams`: Orders to place:
-    - `side`: the side of the order (ask or bid).
-    - `size`: the size of the order.
-    - `price`: the price of the order.
+  - `side`: the side of the order (ask or bid).
+  - `size`: the size of the order.
+  - `price`: the price of the order.
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
 
 This method does not support sending native token. Approve the wrapped token that is specified in the market object.
@@ -202,8 +224,8 @@ Claims or cancels specified orders.
 
 - `market`: The market identifier.
 - `orderParams`: Orders to place:
-    - `orderId`: the id of the order to claim or cancel.
-    - `address`: the owner of the order.
+  - `orderId`: the id of the order to claim or cancel.
+  - `address`: the owner of the order.
 - `onlyClaim`: Whether to claim or cancel orders (`true` to claim).
 
 ## batchChangeOrder
@@ -217,9 +239,9 @@ Changes multiple orders in the corresponding market contract.
 - `market`: The market identifier.
 - `type`: The type of the orders (limit, limit_post_only).
 - `orderParams`: Orders to change:
-    - `orderId`: the id of the order.
-    - `newSize`: the new size of the order.
-    - `newPrice`: the new price of the order.
+  - `orderId`: the id of the order.
+  - `newSize`: the new size of the order.
+  - `newPrice`: the new price of the order.
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
 
 This method cancels existing orders and places new ones. The new orders will each have new order ids.

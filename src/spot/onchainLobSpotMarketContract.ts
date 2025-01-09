@@ -15,9 +15,11 @@ import type {
   PlaceOrderSpotParams,
   PlaceOrderWithPermitSpotParams,
   SetClaimableStatusParams,
-  WithdrawSpotParams
+  UnwrapNativeTokenSpotParams,
+  WithdrawSpotParams,
+  WrapNativeTokenSpotParams
 } from './params';
-import { erc20Abi, lobAbi, erc20PermitAbi } from '../abi';
+import { erc20Abi, lobAbi, erc20PermitAbi, erc20WethAbi } from '../abi';
 import type { Market, Token } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -80,12 +82,12 @@ export class OnchainLobSpotMarketContract {
     this.marketContract = new Contract(this.market.orderbookAddress, lobAbi, options.signer);
     this.baseTokenContract = new Contract(
       this.market.baseToken.contractAddress,
-      this.market.baseToken.supportsPermit ? erc20PermitAbi : erc20Abi,
+      this.market.supportsNativeToken && this.market.isNativeTokenX ? erc20WethAbi : this.market.baseToken.supportsPermit ? erc20PermitAbi : erc20Abi,
       options.signer
     );
     this.quoteTokenContract = new Contract(
       this.market.quoteToken.contractAddress,
-      this.market.quoteToken.supportsPermit ? erc20PermitAbi : erc20Abi,
+      this.market.supportsNativeToken && !this.market.isNativeTokenX ? erc20WethAbi : this.market.quoteToken.supportsPermit ? erc20PermitAbi : erc20Abi,
       options.signer
     );
   }
@@ -541,6 +543,72 @@ export class OnchainLobSpotMarketContract {
         }
       )
     );
+
+    return tx;
+  }
+
+  async wrapNativeToken(params: WrapNativeTokenSpotParams): Promise<ContractTransactionResponse> {
+    let token: Token;
+    let tokenContract: Contract;
+
+    if (!this.market.supportsNativeToken) {
+      throw Error('Market doesn\'t support native token');
+    }
+
+    if (this.market.isNativeTokenX) {
+      token = this.market.baseToken;
+      tokenContract = this.baseTokenContract;
+    }
+    else {
+      token = this.market.quoteToken;
+      tokenContract = this.quoteTokenContract;
+    }
+
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.deposit!(
+        {
+          value: amount,
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
+
+    return tx;
+  }
+
+  async unwrapNativeToken(params: UnwrapNativeTokenSpotParams): Promise<ContractTransactionResponse> {
+    let token: Token;
+    let tokenContract: Contract;
+
+    if (!this.market.supportsNativeToken) {
+      throw Error('Market doesn\'t support native token');
+    }
+
+    if (this.market.isNativeTokenX) {
+      token = this.market.baseToken;
+      tokenContract = this.baseTokenContract;
+    }
+    else {
+      token = this.market.quoteToken;
+      tokenContract = this.quoteTokenContract;
+    }
+
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.withdraw!(
+        amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
 
     return tx;
   }

@@ -16,6 +16,7 @@ import UserOrderHistoryUpdates from './UserOrderHistoryUpdates';
 import ClaimOrder from './ClaimOrder';
 import TradeUpdates from './TradeUpdates';
 import Timetx from './Timetx';
+import UserDeposits from './UserDeposits';
 
 function App() {
   const [address, setAddress] = useState<string>('');
@@ -52,6 +53,8 @@ function App() {
             <Orderbook />
             <Divider />
             <UserBalances />
+            <Divider />
+            <UserDeposits />
             <Divider />
             <CalculateOrderDetails />
           </Box>

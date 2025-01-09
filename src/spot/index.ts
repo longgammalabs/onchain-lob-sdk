@@ -23,5 +23,6 @@ export type {
   GetCandlesParams,
   CalculateLimitDetailsParams,
   CalculateMarketDetailsParams,
-  GetUserBalancesParams
+  GetUserBalancesParams,
+  GetUserDepositsParams
 } from './params';

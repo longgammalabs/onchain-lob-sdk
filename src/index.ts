@@ -36,7 +36,8 @@ export {
 
   type CalculateLimitDetailsParams,
   type CalculateMarketDetailsParams,
-  type GetUserBalancesParams
+  type GetUserBalancesParams,
+  type GetUserDepositsParams
 } from './spot';
 
 export type {
@@ -67,7 +68,8 @@ export type {
 
   MarketOrderDetails,
   LimitOrderDetails,
-  UserBalances
+  UserBalances,
+  UserDeposits
 } from './models';
 
 export {

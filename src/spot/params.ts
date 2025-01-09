@@ -758,6 +758,11 @@ export interface GetUserBalancesParams {
   user: string;
 }
 
+export interface GetUserDepositsParams {
+  user: string;
+  market?: string;
+}
+
 export interface SubscribeToMarketParams {
   market: string;
 }

@@ -44,7 +44,8 @@ import type {
   UnsubscribeFromUserOrderHistoryParams,
   SubscribeToUserOrderHistoryParams,
   CalculateLimitDetailsSyncParams,
-  CalculateMarketDetailsSyncParams
+  CalculateMarketDetailsSyncParams,
+  GetUserDepositsParams
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
@@ -53,7 +54,6 @@ import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../servic
 import { ALL_MARKETS_ID } from '../services/constants';
 import { getLimitDetails } from './limitDetails';
 import { getMarketDetails } from './marketDetails';
-import { GetUserDepositsParams } from '../services/onchainLobSpotService/params';
 
 /**
  * Options for configuring the OnchainLobSpot instance.

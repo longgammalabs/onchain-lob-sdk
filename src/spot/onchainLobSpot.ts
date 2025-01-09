@@ -654,7 +654,7 @@ export class OnchainLobSpot implements Disposable {
    * Retrieves the deposits for the specified user.
    *
    * @param {GetUserDepositsParams} params - The parameters for retrieving the user deposits.
-   * @returns {Promise<UserDeposits>} A Promise that resolves to the user balances data.
+   * @returns {Promise<UserDeposits>} A Promise that resolves to the user deposits data.
    */
   async getUserDeposits(params: GetUserDepositsParams): Promise<UserDeposits> {
     return this.onchainLobService.getUserDeposits(params);

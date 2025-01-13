@@ -40,6 +40,8 @@ export {
   type GetUserDepositsParams
 } from './spot';
 
+export { OnchainLobVault } from './vault';
+
 export type {
   Side,
   Direction,
@@ -69,7 +71,14 @@ export type {
   MarketOrderDetails,
   LimitOrderDetails,
   UserBalances,
-  UserDeposits
+  UserDeposits,
+
+  Vault,
+  VaultUpdate,
+  VaultInfo,
+  VaultValueHistory,
+  VaultValueHistoryUpdate,
+  VaultValueHistoryResolution
 } from './models';
 
 export {

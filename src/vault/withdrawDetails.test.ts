@@ -1,11 +1,9 @@
 import { expect } from '@jest/globals';
 import { DepositDetails } from './params';
 import BigNumber from 'bignumber.js';
-import { getDepositDetails } from './depositDetails';
+import { getWithdrawDetails } from './withdrawDetails';
 
 /**
-  Weights:
-
   USD - 60
   BTC - 30
   ETH - 15
@@ -21,9 +19,9 @@ const fee = {
   taxBps: BigNumber(0.0015),
 };
 
-describe('Calculate deposit details', () => {
-  test('Token input low precision', () => {
-    const result = getDepositDetails({
+describe('Calculate withdraw details', () => {
+  test('Lp input low precision', () => {
+    const result = getWithdrawDetails({
       isLpTokenInput: false,
       tokenPriceUSD: BigNumber(0.8),
       totalSupply: BigNumber(9_999_000),
@@ -33,15 +31,15 @@ describe('Calculate deposit details', () => {
       totalWeight: BigNumber(120),
       fee,
       inputs: {
-        tokenInput: '10000',
-        lpInput: '0',
+        tokenInput: '0',
+        lpInput: '10000',
       },
     });
-    expect(result).toEqual({ minLpReceive: BigNumber(7962.40368), tokenSpend: BigNumber(10000), fee: BigNumber(46) } as DepositDetails);
+    expect(result).toEqual({ minLpReceive: BigNumber(7962.40368), tokenSpend: BigNumber(10000), fee: BigNumber(36.8) } as DepositDetails);
   });
 
-  test('Lp input low precision', () => {
-    const result = getDepositDetails({
+  test('Token input low precision', () => {
+    const result = getWithdrawDetails({
       isLpTokenInput: true,
       tokenPriceUSD: BigNumber(0.8),
       totalSupply: BigNumber(9_999_000),
@@ -55,6 +53,6 @@ describe('Calculate deposit details', () => {
         lpInput: '7962.40368',
       },
     });
-    expect(result).toEqual({ minLpReceive: BigNumber(7962.40368), tokenSpend: BigNumber(10000), fee: BigNumber(46) } as DepositDetails);
+    expect(result).toEqual({ minLpReceive: BigNumber(7962.40368), tokenSpend: BigNumber(10000), fee: BigNumber(36.8) } as DepositDetails);
   });
 });

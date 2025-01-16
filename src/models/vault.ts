@@ -147,6 +147,7 @@ export type VaultValueHistoryUpdate = VaultValueHistory;
  */
 export type VaultConfig = {
   vaultAddress: string;
+  lpToken: Token;
   tokens: Token[];
   fees: {
     dynamicFeesEnabled: boolean;

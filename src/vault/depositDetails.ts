@@ -16,7 +16,7 @@ export const getDepositDetails = ({
 }: CalculateDepositDetailsSyncParams): DepositDetails => {
   const { tokenInput, lpInput } = inputs;
 
-  const calculateFeeAmount = (amountUSD: BigNumber) => {
+  const calculateFeeAmountUSD = (amountUSD: BigNumber) => {
     const dinamicFeeBps = getFeeBasisPoints({
       totalValue,
       initialTokenValue: tokenValue,
@@ -28,8 +28,8 @@ export const getDepositDetails = ({
       dynamicFeesEnabled: fee.dynamicFeesEnabled,
     });
     const feeBps = dinamicFeeBps.plus(fee.adminMintLPFeeBps);
-    const feeAmount = amountUSD.times(feeBps);
-    return feeAmount;
+    const feeAmountUSD = amountUSD.times(feeBps);
+    return feeAmountUSD;
   };
 
   if (isLpTokenInput) {
@@ -38,8 +38,8 @@ export const getDepositDetails = ({
     const tokenAmountUSD = binarySearch(
       (x: number) => {
         const amountUSD = BigNumber(x);
-        const feeAmount = calculateFeeAmount(amountUSD);
-        return amountUSD.minus(feeAmount).minus(tokenAmountUSDWithoutFee).toNumber();
+        const feeAmountUSD = calculateFeeAmountUSD(amountUSD);
+        return amountUSD.minus(feeAmountUSD).minus(tokenAmountUSDWithoutFee).toNumber();
       },
       0,
       Number(tokenAmountUSDWithoutFee),
@@ -47,15 +47,17 @@ export const getDepositDetails = ({
     );
 
     const tokenSpend = BigNumber(tokenAmountUSD).div(tokenPriceUSD);
-    const fee = BigNumber(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
+    const feeAmountUSD = BigNumber(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
+    const feeAmount = feeAmountUSD.div(tokenPriceUSD);
 
-    return { tokenSpend, minLpReceive: lpAmount, fee };
+    return { tokenSpend, minLpReceive: lpAmount, fee: feeAmount };
   }
   else {
     const amount = BigNumber(tokenInput);
     const amountUSD = amount.times(tokenPriceUSD);
-    const feeAmount = calculateFeeAmount(amountUSD);
-    const lpAmount = amountUSD.minus(feeAmount).times(totalSupply).div(totalValue);
+    const feeAmountUSD = calculateFeeAmountUSD(amountUSD);
+    const feeAmount = feeAmountUSD.div(tokenPriceUSD);
+    const lpAmount = amountUSD.minus(feeAmountUSD).times(totalSupply).div(totalValue);
 
     return { tokenSpend: amount, minLpReceive: lpAmount, fee: feeAmount };
   }

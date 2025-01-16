@@ -1,7 +1,6 @@
-import BigNumber from 'bignumber.js';
 import { VaultConfig } from '../models';
 import { EventEmitter } from '../common';
-import { CalculateWithdrawDetailsSyncParams, DepositParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawDetails, WithdrawParams } from './params';
+import { DepositParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawParams } from './params';
 import { VaultValuesUpdate, VaultValueHistoryUpdate } from '../models';
 
 export class MockVault {
@@ -103,13 +102,6 @@ export class MockVault {
     this.subscribeParams = undefined;
   }
 
-  calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
-    return {
-      estTokenReceive: new BigNumber(Math.random() * 1000),
-      estFee: new BigNumber(Math.random() * 10),
-    } as WithdrawDetails;
-  }
-
   deposit(params: DepositParams): void {
     setTimeout(() => {
       this.emitRandomVault();
@@ -133,6 +125,17 @@ export class MockVault {
         adminBurnLPFeeBps: 0.002,
         feeBps: 0.0025,
         taxBps: 0.0015,
+      },
+      lpToken: {
+        id: '',
+        name: 'XLP',
+        symbol: 'XLP',
+        contractAddress: '',
+        decimals: 18,
+        roundingDecimals: 6,
+        supportsPermit: false,
+        iconUrl: null,
+        fromOg: false,
       },
       tokens: [
         {

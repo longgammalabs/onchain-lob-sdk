@@ -1643,6 +1643,1797 @@ var erc20WethAbi = [
   }
 ];
 
+// src/abi/lpManager.ts
+var lpManagerAbi = [
+  {
+    type: "constructor",
+    inputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "DOMAIN_SEPARATOR",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "UPGRADE_INTERFACE_VERSION",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "acceptOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "addLiquidity",
+    inputs: [
+      {
+        name: "tokenId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "minUsdValue",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "minLPMinted",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "approve",
+    inputs: [
+      {
+        name: "lob",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "token",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "batchChangeOrder",
+    inputs: [
+      {
+        name: "lobId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "orderIds",
+        type: "uint64[]",
+        internalType: "uint64[]"
+      },
+      {
+        name: "quantities",
+        type: "uint128[]",
+        internalType: "uint128[]"
+      },
+      {
+        name: "prices",
+        type: "uint72[]",
+        internalType: "uint72[]"
+      },
+      {
+        name: "maxCommissionPerOrder",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "postOnly",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "newOrderIds",
+        type: "uint64[]",
+        internalType: "uint64[]"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeLob",
+    inputs: [
+      {
+        name: "lobAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "tokenIdX",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "tokenIdY",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "maxOrderDistanceBps",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeMarketMaker",
+    inputs: [
+      {
+        name: "marketMaker",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeOrder",
+    inputs: [
+      {
+        name: "lobId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "oldOrderId",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "newQuantity",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "newPrice",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "maxCommission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "postOnly",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "orderId",
+        type: "uint64",
+        internalType: "uint64"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changePrimaryMarketMaker",
+    inputs: [
+      {
+        name: "_primaryMarketMaker",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeRfqOrderSigner",
+    inputs: [
+      {
+        name: "_rfqOrderSigner",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeToken",
+    inputs: [
+      {
+        name: "_tokenAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_isActive",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_targetWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_decimals",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "_oracleConfRel",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "_oraclePriceId",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "checkCooldown",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "claimOrder",
+    inputs: [
+      {
+        name: "lobId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "orderId",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "onlyClaim",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "collectFees",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "eip712Domain",
+    inputs: [],
+    outputs: [
+      {
+        name: "fields",
+        type: "bytes1",
+        internalType: "bytes1"
+      },
+      {
+        name: "name",
+        type: "string",
+        internalType: "string"
+      },
+      {
+        name: "version",
+        type: "string",
+        internalType: "string"
+      },
+      {
+        name: "chainId",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "verifyingContract",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "salt",
+        type: "bytes32",
+        internalType: "bytes32"
+      },
+      {
+        name: "extensions",
+        type: "uint256[]",
+        internalType: "uint256[]"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getConfig",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getFeeBasisPoints",
+    inputs: [
+      {
+        name: "totalValue",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "initialTokenValue",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "nextTokenValue",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "targetTokenWeight",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getPriceOf",
+    inputs: [
+      {
+        name: "tokenId",
+        type: "uint8",
+        internalType: "uint8"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "",
+        type: "int32",
+        internalType: "int32"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getTokenSharesAndValues",
+    inputs: [],
+    outputs: [
+      {
+        name: "shares",
+        type: "uint256[]",
+        internalType: "uint256[]"
+      },
+      {
+        name: "usdValues",
+        type: "uint256[]",
+        internalType: "uint256[]"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getTotalSharesOf",
+    inputs: [
+      {
+        name: "tokenId",
+        type: "uint8",
+        internalType: "uint8"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getTotalValue",
+    inputs: [],
+    outputs: [
+      {
+        name: "totalUSDValue",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "initialize",
+    inputs: [
+      {
+        name: "_owner",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_domainName",
+        type: "string",
+        internalType: "string"
+      },
+      {
+        name: "_oracle",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_liquidityToken",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_rfqOrderSigner",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "lastAddedAt",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "liquidityToken",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract LPToken"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "lobReservesByTokenId",
+    inputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "lobs",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "lobAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "tokenIdX",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "tokenIdY",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "maxOrderDistanceBps",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "marketMakers",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "oracle",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IOracle"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "owner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "pendingOwner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "placeOrder",
+    inputs: [
+      {
+        name: "lobId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "maxCommission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "marketOnly",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "postOnly",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "orderId",
+        type: "uint64",
+        internalType: "uint64"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "placeRfqOrder",
+    inputs: [
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "maxCommission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "rfqOrder",
+        type: "tuple",
+        internalType: "struct RfqOrder",
+        components: [
+          {
+            name: "lobId",
+            type: "uint8",
+            internalType: "uint8"
+          },
+          {
+            name: "qty",
+            type: "uint128",
+            internalType: "uint128"
+          },
+          {
+            name: "price",
+            type: "uint72",
+            internalType: "uint72"
+          },
+          {
+            name: "isAsk",
+            type: "bool",
+            internalType: "bool"
+          },
+          {
+            name: "postOnly",
+            type: "bool",
+            internalType: "bool"
+          },
+          {
+            name: "expires",
+            type: "uint256",
+            internalType: "uint256"
+          },
+          {
+            name: "userAddress",
+            type: "address",
+            internalType: "address"
+          },
+          {
+            name: "nonce",
+            type: "uint128",
+            internalType: "uint128"
+          }
+        ]
+      },
+      {
+        name: "v",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "r",
+        type: "bytes32",
+        internalType: "bytes32"
+      },
+      {
+        name: "s",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    outputs: [
+      {
+        name: "orderId",
+        type: "uint64",
+        internalType: "uint64"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "primaryMarketMaker",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "proxiableUUID",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "removeLiquidity",
+    inputs: [
+      {
+        name: "tokenId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "burnLP",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "minUsdValue",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "minTokenGet",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "renounceOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "rfqOrderSigner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "setConfig",
+    inputs: [
+      {
+        name: "_dynamicFeesEnabled",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_adminMintLPFeeBps",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_adminBurnLPFeeBps",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_feeBasisBps",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_taxBasisBps",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_cooldownDuration",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_maxOracleAge",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "_minLiquidityValueUsd",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "_marketMakerLPShareEnabled",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_marketMakerLPShareBps",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "tokens",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "tokenAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "targetWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "decimals",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "oracleConfRel",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "oraclePriceId",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "totalWeight",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint24",
+        internalType: "uint24"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "transferOwnership",
+    inputs: [
+      {
+        name: "newOwner",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "upgradeToAndCall",
+    inputs: [
+      {
+        name: "newImplementation",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes"
+      }
+    ],
+    outputs: [],
+    stateMutability: "payable"
+  },
+  {
+    type: "event",
+    name: "ConfigSet",
+    inputs: [
+      {
+        name: "adminMintLPFeeBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "adminBurnLPFeeBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "feeBasisBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "taxBasisPoints",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "cooldownDuration",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "maxOracleAge",
+        type: "uint24",
+        indexed: false,
+        internalType: "uint24"
+      },
+      {
+        name: "minLiquidityValueUsd",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "marketMakerLPShareEnabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "marketMakerLPShareBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "EIP712DomainChanged",
+    inputs: [],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Initialized",
+    inputs: [
+      {
+        name: "version",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "LiquidityAdded",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "tokenUSDValue",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalUSDValue",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "lpTotalSupply",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "mintedLP",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "LiquidityRemoved",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "lpUSDValue",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalUSDValue",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "lpTotalSupply",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "burnedLP",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "LobChanged",
+    inputs: [
+      {
+        name: "lobId",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "lobAddress",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "tokenIdX",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "tokenIdY",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "maxOrderDistanceBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "MarketMakerChanged",
+    inputs: [
+      {
+        name: "marketMaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OwnershipTransferStarted",
+    inputs: [
+      {
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OwnershipTransferred",
+    inputs: [
+      {
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "PrimaryMarketMakerChanged",
+    inputs: [
+      {
+        name: "oldMarketMaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "newMarketMaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "RfqOrderPlaced",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "isAsk",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        indexed: false,
+        internalType: "uint72"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "RfqOrderSignerChanged",
+    inputs: [
+      {
+        name: "oldSigner",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "newSigner",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "TokenChanged",
+    inputs: [
+      {
+        name: "tokenId",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "tokenAddress",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "isActive",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "targetWeight",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "decimals",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "oracleConfRel",
+        type: "uint24",
+        indexed: false,
+        internalType: "uint24"
+      },
+      {
+        name: "oraclePriceId",
+        type: "bytes32",
+        indexed: false,
+        internalType: "bytes32"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Upgraded",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "error",
+    name: "AddressEmptyCode",
+    inputs: [
+      {
+        name: "target",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "CooldownDurationNotYetPassed",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ERC1967InvalidImplementation",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "ERC1967NonPayable",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "Expired",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "FailedCall",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "FeeBpsExceedsMaximum",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientBalance",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientLiquidityValue",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientMarketMakerLPShare",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientMintedLP",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientTokenAmount",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientUSDValue",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidAmountToWithdraw",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidFloatingPointRepresentation",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidInitialization",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidRfqOrderSide",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidRfqOrderSigner",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidTrader",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidTransfer",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidUserAddress",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "LobDisabled",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "MarketMakerLPShareExceedsMaximum",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NonPositivePrice",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NotInitializing",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "OracleConfTooHigh",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "OwnableInvalidOwner",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "OwnableUnauthorizedAccount",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "PriceTooBig",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "PriceTooSmall",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ReentrancyGuardReentrantCall",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "RfqOrderAlreadyUsed",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "SafeERC20FailedOperation",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "TokenDisabled",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "UUPSUnauthorizedCallContext",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "UUPSUnsupportedProxiableUUID",
+    inputs: [
+      {
+        name: "slot",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "UnknownLob",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "WrongNumber",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "WrongTokenId",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ZeroAddress",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ZeroAmount",
+    inputs: []
+  }
+];
+
 // src/spot/onchainLobSpotMarketContract.ts
 var DEFAULT_MAX_COMMISSION = 340282366920938463463374607431768211455n;
 var DEFAULT_ASK_MARKET_PRICE = 1n;
@@ -4027,7 +5818,6 @@ var OnchainLobSpot = class {
 };
 
 // src/vault/mock.ts
-var import_bignumber6 = __toESM(require("bignumber.js"));
 var MockVault = class {
   constructor() {
     __publicField(this, "subscribeParams");
@@ -4061,7 +5851,28 @@ var MockVault = class {
         maxDrowdownPercentage: Math.random() * 100,
         volume: Math.random() * 1e6,
         profitShare: Math.random() * 100
-      }
+      },
+      totalSupply: Math.random() * 1e7,
+      totalWeight: 120,
+      tokens: [{
+        address: "0x50c42deacd8fc9773493ed674b675be577f2634b",
+        symbol: "ETH",
+        tokenPriceUSD: 3238,
+        tokenValue: Math.random() * 1e4,
+        tokenWeight: 30
+      }, {
+        address: "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+        symbol: "USDC",
+        tokenPriceUSD: 1,
+        tokenValue: Math.random() * 1e4,
+        tokenWeight: 60
+      }, {
+        address: "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+        symbol: "S",
+        tokenPriceUSD: 0.8,
+        tokenValue: Math.random() * 1e4,
+        tokenWeight: 30
+      }]
     }]);
   }
   emitRandomHistory() {
@@ -4096,33 +5907,27 @@ var MockVault = class {
   unsubscribeFromVaultValueHistory() {
     this.subscribeParams = void 0;
   }
-  calculateDepositDetailsSync(params) {
-    return {
-      estTokenReceive: new import_bignumber6.default(Math.random() * 1e3),
-      estFee: new import_bignumber6.default(Math.random() * 10)
-    };
-  }
-  calculateWithdrawDetailsSync(params) {
-    return {
-      estTokenReceive: new import_bignumber6.default(Math.random() * 1e3),
-      estFee: new import_bignumber6.default(Math.random() * 10)
-    };
-  }
-  deposit(params) {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1e3);
-  }
-  withdraw(params) {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1e3);
-  }
   async vaultInfo() {
     return {
       vaultAddress: "0x123123123123123123123123",
+      fees: {
+        dynamicFeesEnabled: true,
+        adminMintLPFeeBps: 3e-3,
+        adminBurnLPFeeBps: 2e-3,
+        feeBps: 25e-4,
+        taxBps: 15e-4
+      },
+      lpToken: {
+        id: "",
+        name: "XLP",
+        symbol: "XLP",
+        contractAddress: "",
+        decimals: 18,
+        roundingDecimals: 6,
+        supportsPermit: false,
+        iconUrl: null,
+        fromOg: false
+      },
       tokens: [
         {
           id: "0x50c42deacd8fc9773493ed674b675be577f2634b",
@@ -4162,6 +5967,388 @@ var MockVault = class {
   }
 };
 
+// src/vault/depositDetails.ts
+var import_bignumber8 = __toESM(require("bignumber.js"));
+
+// src/vault/feeCalculation.ts
+var import_bignumber6 = __toESM(require("bignumber.js"));
+function getFeeBasisPoints({
+  totalValue,
+  initialTokenValue,
+  nextTokenValue,
+  targetTokenWeight,
+  totalWeight,
+  feeBasisPoints,
+  taxBasisPoints,
+  dynamicFeesEnabled
+}) {
+  if (!dynamicFeesEnabled) {
+    return feeBasisPoints;
+  }
+  const targetTokenValue = totalValue.times(targetTokenWeight).div(totalWeight);
+  if (targetTokenValue.isZero()) {
+    return feeBasisPoints;
+  }
+  const initialDiff = initialTokenValue.minus(targetTokenValue).abs();
+  const nextDiff = nextTokenValue.minus(targetTokenValue).abs();
+  if (nextDiff.lt(initialDiff)) {
+    const rebateBps = initialDiff.times(taxBasisPoints).div(targetTokenValue);
+    return safeSubtract(feeBasisPoints, rebateBps);
+  }
+  let averageDiff = initialDiff.plus(nextDiff).div(2);
+  if (averageDiff.gt(targetTokenValue)) {
+    averageDiff = targetTokenValue;
+  }
+  const taxBps = averageDiff.times(taxBasisPoints).div(targetTokenValue);
+  return feeBasisPoints.plus(taxBps);
+}
+function safeSubtract(a, b) {
+  return a.gt(b) ? a.minus(b) : (0, import_bignumber6.default)(0);
+}
+
+// src/utils/binarySearch.ts
+var import_bignumber7 = __toESM(require("bignumber.js"));
+var binarySearch = (f, target, left, right, precision = 18) => {
+  const step = (0, import_bignumber7.default)(10).pow(-precision);
+  while (left.isLessThanOrEqualTo(right)) {
+    const mid = left.plus(right).div(2).dp(precision, import_bignumber7.default.ROUND_FLOOR);
+    const res = f(mid);
+    if (res.isEqualTo(target)) {
+      return mid;
+    }
+    if (res.isLessThan(target)) {
+      left = mid.plus(step);
+    } else {
+      right = mid.minus(step);
+    }
+  }
+  return null;
+};
+
+// src/vault/depositDetails.ts
+var import_ethers3 = require("ethers");
+
+// src/vault/constants.ts
+var USD_DECIMALS = 18;
+
+// src/vault/depositDetails.ts
+var getDepositDetails = ({
+  fee,
+  inputs,
+  isLpTokenInput,
+  tokenPriceUSD,
+  totalSupply,
+  totalValue,
+  targetTokenWeight,
+  totalWeight,
+  tokenValue,
+  tokenDecimals,
+  lpTokenDecimals
+}) => {
+  const { tokenInput, lpInput } = inputs;
+  const maxFeeBps = fee.feeBps.plus(fee.taxBps).plus(fee.adminBurnLPFeeBps).plus(fee.adminMintLPFeeBps);
+  let details = { tokenSpend: (0, import_bignumber8.default)(0), lpReceive: (0, import_bignumber8.default)(0), fee: (0, import_bignumber8.default)(0), params: { amount: 0n, amountUsd: 0n, minLpMinted: 0n } };
+  const calculateFeeAmountUSD = (amountUSD) => {
+    const dinamicFeeBps = getFeeBasisPoints({
+      totalValue,
+      initialTokenValue: tokenValue,
+      nextTokenValue: tokenValue.plus(amountUSD),
+      targetTokenWeight,
+      totalWeight,
+      feeBasisPoints: fee.feeBps,
+      taxBasisPoints: fee.taxBps,
+      dynamicFeesEnabled: fee.dynamicFeesEnabled
+    });
+    const feeBps = dinamicFeeBps.plus(fee.adminMintLPFeeBps);
+    const feeAmountUSD = amountUSD.times(feeBps);
+    return feeAmountUSD;
+  };
+  if (isLpTokenInput) {
+    const lpAmount = (0, import_bignumber8.default)(lpInput).dp(lpTokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    const tokenAmountUSDWithoutFee = lpAmount.times(totalValue).div(totalSupply).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR);
+    const tokenAmountUSD = binarySearch(
+      (x) => {
+        const amountUSD = (0, import_bignumber8.default)(x);
+        const feeAmountUSD2 = calculateFeeAmountUSD(amountUSD).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR);
+        return amountUSD.minus(feeAmountUSD2).minus(tokenAmountUSDWithoutFee);
+      },
+      (0, import_bignumber8.default)(0),
+      tokenAmountUSDWithoutFee,
+      tokenAmountUSDWithoutFee.times((0, import_bignumber8.default)(1).plus(maxFeeBps))
+    );
+    if (tokenAmountUSD === null) return details;
+    const tokenSpend = tokenAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    const feeAmountUSD = (0, import_bignumber8.default)(tokenAmountUSD).minus(tokenAmountUSDWithoutFee).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR);
+    const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    details = { ...details, tokenSpend, lpReceive: lpAmount, fee: feeAmount };
+  } else {
+    const amount = (0, import_bignumber8.default)(tokenInput).dp(tokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    const amountUSD = amount.times(tokenPriceUSD).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR);
+    const feeAmountUSD = calculateFeeAmountUSD(amountUSD).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR);
+    const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    const lpAmount = amountUSD.minus(feeAmountUSD).times(totalSupply).div(totalValue).dp(lpTokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+    details = { ...details, tokenSpend: amount, lpReceive: lpAmount, fee: feeAmount };
+  }
+  details.params = getParams(
+    details.tokenSpend,
+    details.tokenSpend.times(tokenPriceUSD).dp(USD_DECIMALS, import_bignumber8.default.ROUND_FLOOR),
+    details.lpReceive,
+    inputs.slippageBps,
+    tokenDecimals,
+    lpTokenDecimals
+  );
+  return details;
+};
+var getParams = (amount, amountUSD, lpAmount, slippage, tokenDecimals, lpTokenDecimals) => {
+  const minLpMintedWithSlippage = lpAmount.times((0, import_bignumber8.default)(1).minus(slippage)).dp(lpTokenDecimals, import_bignumber8.default.ROUND_FLOOR);
+  return {
+    amount: (0, import_ethers3.parseUnits)(amount.toString(), tokenDecimals),
+    amountUsd: (0, import_ethers3.parseUnits)(amountUSD.toString(), USD_DECIMALS),
+    minLpMinted: (0, import_ethers3.parseUnits)(minLpMintedWithSlippage.toString(), lpTokenDecimals)
+  };
+};
+
+// src/vault/withdrawDetails.ts
+var import_bignumber9 = __toESM(require("bignumber.js"));
+var import_ethers4 = require("ethers");
+var getWithdrawDetails = ({
+  fee,
+  inputs,
+  isLpTokenInput,
+  tokenPriceUSD,
+  totalSupply,
+  totalValue,
+  targetTokenWeight,
+  totalWeight,
+  tokenValue,
+  tokenDecimals,
+  lpTokenDecimals
+}) => {
+  const { tokenInput, lpInput } = inputs;
+  const maxFeeBps = fee.feeBps.plus(fee.taxBps).plus(fee.adminBurnLPFeeBps).plus(fee.adminMintLPFeeBps);
+  let details = { lpSpend: (0, import_bignumber9.default)(0), tokenReceive: (0, import_bignumber9.default)(0), fee: (0, import_bignumber9.default)(0), params: { minTokenGet: 0n, minUsdValue: 0n, burnLP: 0n } };
+  const calculateFeeAmountUSD = (amountUSD) => {
+    const dinamicFeeBps = getFeeBasisPoints({
+      totalValue,
+      initialTokenValue: tokenValue,
+      nextTokenValue: tokenValue.minus(amountUSD),
+      targetTokenWeight,
+      totalWeight,
+      feeBasisPoints: fee.feeBps,
+      taxBasisPoints: fee.taxBps,
+      dynamicFeesEnabled: fee.dynamicFeesEnabled
+    });
+    const feeBps = dinamicFeeBps.plus(fee.adminBurnLPFeeBps);
+    const feeAmount = amountUSD.times(feeBps);
+    return feeAmount;
+  };
+  if (isLpTokenInput) {
+    const lpAmount = (0, import_bignumber9.default)(lpInput).dp(lpTokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+    const tokenAmountUSDWithoutFee = lpAmount.times(totalValue).div(totalSupply).dp(tokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+    const tokenAmountUSD = binarySearch(
+      (x) => {
+        const amountUSD = (0, import_bignumber9.default)(x);
+        const feeAmount2 = calculateFeeAmountUSD(amountUSD).dp(USD_DECIMALS, import_bignumber9.default.ROUND_FLOOR);
+        return amountUSD.minus(feeAmount2).minus(tokenAmountUSDWithoutFee);
+      },
+      (0, import_bignumber9.default)(0),
+      tokenAmountUSDWithoutFee,
+      tokenAmountUSDWithoutFee.times((0, import_bignumber9.default)(1).plus(maxFeeBps))
+    );
+    if (tokenAmountUSD === null) return details;
+    const feeAmount = (0, import_bignumber9.default)(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
+    const tokenReceive = tokenAmountUSDWithoutFee.div(tokenPriceUSD).dp(tokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+    details = { ...details, lpSpend: lpAmount, tokenReceive, fee: feeAmount };
+  } else {
+    const amount = (0, import_bignumber9.default)(tokenInput);
+    const tokenAmountUSDWithoutFee = amount.times(tokenPriceUSD).dp(USD_DECIMALS, import_bignumber9.default.ROUND_FLOOR);
+    const tokenAmountUSD = binarySearch(
+      (x) => {
+        const amountUSD = (0, import_bignumber9.default)(x);
+        const feeAmount2 = calculateFeeAmountUSD(amountUSD).dp(tokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+        ;
+        return amountUSD.minus(feeAmount2).minus(tokenAmountUSDWithoutFee);
+      },
+      (0, import_bignumber9.default)(0),
+      tokenAmountUSDWithoutFee,
+      tokenAmountUSDWithoutFee.times((0, import_bignumber9.default)(1).plus(maxFeeBps))
+    );
+    if (tokenAmountUSD === null) return details;
+    const feeAmount = calculateFeeAmountUSD((0, import_bignumber9.default)(tokenAmountUSD));
+    const lpAmount = tokenAmountUSDWithoutFee.times(totalSupply).div(totalValue).dp(lpTokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+    details = { ...details, lpSpend: lpAmount, tokenReceive: amount, fee: feeAmount };
+  }
+  details.params = getParams2(
+    details.tokenReceive.plus(details.fee),
+    details.tokenReceive.plus(details.fee).times(tokenPriceUSD).dp(USD_DECIMALS, import_bignumber9.default.ROUND_FLOOR),
+    details.lpSpend,
+    inputs.slippageBps,
+    tokenDecimals,
+    lpTokenDecimals
+  );
+  return details;
+};
+var getParams2 = (amount, amountUSD, lpAmount, slippage, tokenDecimals, lpTokenDecimals) => {
+  const minTokenGetWithSlippage = amount.times((0, import_bignumber9.default)(1).minus(slippage)).dp(tokenDecimals, import_bignumber9.default.ROUND_FLOOR);
+  const minUsdValueWithSlippage = amountUSD.times((0, import_bignumber9.default)(1).minus(slippage)).dp(USD_DECIMALS, import_bignumber9.default.ROUND_FLOOR);
+  return {
+    burnLP: (0, import_ethers4.parseUnits)(lpAmount.toString(), lpTokenDecimals),
+    minTokenGet: (0, import_ethers4.parseUnits)(minTokenGetWithSlippage.toString(), tokenDecimals),
+    minUsdValue: (0, import_ethers4.parseUnits)(minUsdValueWithSlippage.toString(), USD_DECIMALS)
+  };
+};
+
+// src/vault/onchainLobVaultContract.ts
+var import_ethers5 = require("ethers");
+var getExpires2 = () => BigInt(Math.floor(Date.now() / 1e3) + 5 * 60);
+var _OnchainLobVaultContract = class _OnchainLobVaultContract {
+  constructor(options) {
+    __publicField(this, "vault");
+    __publicField(this, "autoWaitTransaction");
+    __publicField(this, "fastWaitTransaction");
+    __publicField(this, "fastWaitTransactionInterval");
+    __publicField(this, "fastWaitTransactionTimeout");
+    __publicField(this, "signer");
+    __publicField(this, "vaultContract");
+    __publicField(this, "_chainId");
+    this.vault = options.vault;
+    this.signer = options.signer;
+    this.autoWaitTransaction = options.autoWaitTransaction ?? _OnchainLobVaultContract.defaultAutoWaitTransaction;
+    this.fastWaitTransaction = options.fastWaitTransaction ?? _OnchainLobVaultContract.defaultFastWaitTransaction;
+    this.fastWaitTransactionInterval = options.fastWaitTransactionInterval ?? _OnchainLobVaultContract.defaultFastWaitTransactionInterval;
+    this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
+    this.vaultContract = new import_ethers5.Contract(options.vault.vaultAddress, lpManagerAbi, options.signer);
+  }
+  get chainId() {
+    if (this._chainId === void 0) {
+      return this.signer.provider.getNetwork().then((network) => {
+        this._chainId = network.chainId;
+        return this._chainId;
+      });
+    }
+    return Promise.resolve(this._chainId);
+  }
+  async approveTokens(params) {
+    const token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
+    if (!token) {
+      throw Error("Token is not in the pool.");
+    }
+    const tokenContract = new import_ethers5.Contract(
+      token.contractAddress,
+      erc20Abi,
+      this.signer
+    );
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.approve(
+        params.vault,
+        amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+    return tx;
+  }
+  async addLiquidity(params) {
+    const token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
+    if (!token) {
+      throw Error("Token is not in the pool.");
+    }
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
+    const amountUsd = this.convertTokensAmountToRawAmountIfNeeded(params.amountUsd, 18);
+    const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
+    const expires = getExpires2();
+    const tx = await this.processContractMethodCall(
+      this.vaultContract,
+      this.vaultContract.addLiquidity(
+        token.contractAddress,
+        amount,
+        amountUsd,
+        minLpMinted,
+        expires,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+    return tx;
+  }
+  async removeLiquidity(params) {
+    const token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
+    if (!token) {
+      throw Error("Token is not in the pool.");
+    }
+    const burnLP = this.convertTokensAmountToRawAmountIfNeeded(params.burnLP, this.vault.lpToken.decimals);
+    const minUsdValue = this.convertTokensAmountToRawAmountIfNeeded(params.minUsdValue, 18);
+    const minTokenGet = this.convertTokensAmountToRawAmountIfNeeded(params.minTokenGet, token.decimals);
+    const expires = getExpires2();
+    const tx = await this.processContractMethodCall(
+      this.vaultContract,
+      this.vaultContract.addLiquidity(
+        token.contractAddress,
+        burnLP,
+        minUsdValue,
+        minTokenGet,
+        expires,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+    return tx;
+  }
+  async processContractMethodCall(contract, methodCall) {
+    try {
+      const tx = await methodCall;
+      if (this.autoWaitTransaction) {
+        if (this.fastWaitTransaction) {
+          const startingTime = Date.now();
+          let receipt = await tx.provider.getTransactionReceipt(tx.hash);
+          while (receipt == null) {
+            if (this.fastWaitTransactionTimeout && Date.now() - startingTime >= this.fastWaitTransactionTimeout) {
+              break;
+            }
+            await wait(this.fastWaitTransactionInterval);
+            receipt = await tx.provider.getTransactionReceipt(tx.hash);
+          }
+        } else {
+          await tx.wait();
+        }
+      }
+      return tx;
+    } catch (error) {
+      if (error.data) {
+        try {
+          const decodedError = contract.interface.parseError(error.data);
+          throw new Error(`${decodedError ? `${decodedError.name} [${decodedError.selector}]` : `Unknown error: [${error.data}]`}`);
+        } catch (parseError) {
+          console.error("Failed to parse contract error:", parseError);
+          throw error;
+        }
+      }
+      throw error;
+    }
+  }
+  convertTokensAmountToRawAmountIfNeeded(amount, decimals) {
+    return typeof amount === "bigint" ? amount : tokenUtils_exports.convertTokensAmountToRawAmount(amount, decimals);
+  }
+};
+__publicField(_OnchainLobVaultContract, "defaultAutoWaitTransaction", true);
+__publicField(_OnchainLobVaultContract, "defaultFastWaitTransaction", false);
+__publicField(_OnchainLobVaultContract, "defaultFastWaitTransactionInterval", 100);
+var OnchainLobVaultContract = _OnchainLobVaultContract;
+
 // src/vault/onchainLobVault.ts
 var OnchainLobVault = class {
   constructor(options) {
@@ -4177,9 +6364,21 @@ var OnchainLobVault = class {
       // depositorsUpdated: new EventEmitter(),
       subscriptionError: new EventEmitter()
     });
+    /**
+     * Indicates whether transactions should be automatically waited for by the client.
+     * When true, transactions will be automatically waited for by the client until confirmation is received.
+     * When false, transactions will not be waited for by the client.
+     * If not set, the default value will be used.
+     * This flag is used by the Onchain LOB Vault contract.
+     *
+     * Note: "Wait" means that the client will wait until the transaction confirmation is received.
+     */
+    __publicField(this, "autoWaitTransaction");
+    __publicField(this, "signer");
     __publicField(this, "onchainLobVaultService");
     __publicField(this, "onchainLobVaultWebSocketService");
     __publicField(this, "mockVault");
+    __publicField(this, "vaultContract");
     __publicField(this, "onVaultUpdated", (data) => {
       this.events.vaultUpdated.emit(data);
     });
@@ -4189,12 +6388,23 @@ var OnchainLobVault = class {
     __publicField(this, "onSubscriptionError", (error) => {
       this.events.subscriptionError.emit(error);
     });
+    this.signer = options.signer;
+    this.autoWaitTransaction = options.autoWaitTransaction;
     this.onchainLobVaultService = new OnchainLobSpotService(options.apiBaseUrl);
     this.onchainLobVaultWebSocketService = new OnchainLobSpotWebSocketService(options.webSocketApiBaseUrl);
     this.mockVault = new MockVault();
+    this.vaultContract = null;
     this.attachEvents();
   }
+  /**
+   * Sets a new signer for the OnchainLobVault instance.
+   *
+   * @param {Signer | null} signer - The new signer to be set. For only http/ws operations, you can set this to null.
+   * @returns {OnchainLobVault} Returns the OnchainLobVault instance for method chaining.
+   */
   setSigner(signer) {
+    this.signer = signer;
+    return this;
   }
   /**
    * Subscribes to the vault updates.
@@ -4221,20 +6431,60 @@ var OnchainLobVault = class {
     this.mockVault.events.vaultValueHistoryUpdated.addListener(this.onVaultValueHistoryUpdated);
     this.mockVault.events.subscriptionError.addListener(this.onSubscriptionError);
   }
+  /**
+   * Calculates the deposit LP details for a given token inputs without API request.
+   *
+   * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
+   * @returns {DepositDetails} Deposit LP details data.
+   */
   calculateDepositDetailsSync(params) {
-    return this.mockVault.calculateDepositDetailsSync(params);
+    return getDepositDetails(params);
   }
+  /**
+   * Calculates the withdraw LP details for a given token inputs without API request.
+   *
+   * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
+   * @returns {WithdrawDetails} Withdraw LP details data.
+   */
   calculateWithdrawDetailsSync(params) {
-    return this.mockVault.calculateWithdrawDetailsSync(params);
+    return getWithdrawDetails(params);
   }
-  async deposit(params) {
-    this.mockVault.deposit(params);
+  /**
+   * Deposit tokens amount into the vault
+   *
+   * @param {AddLiquidityVaultParams} params - The parameters for deposit.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   */
+  async addLiquidity(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.addLiquidity(params);
   }
-  async withdraw(params) {
-    this.mockVault.withdraw(params);
+  /**
+   * Withdraw LP amount from the vault
+   *
+   * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   */
+  async removeLiquidity(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.removeLiquidity(params);
   }
-  async getVaultInfo() {
+  async getVaultConfig() {
     return this.mockVault.vaultInfo();
+  }
+  async getVaultContract() {
+    if (this.signer === null) {
+      throw new Error("Signer is not set");
+    }
+    if (!this.vaultContract) {
+      const vault = await this.getVaultConfig();
+      this.vaultContract = new OnchainLobVaultContract({
+        vault,
+        signer: this.signer,
+        autoWaitTransaction: this.autoWaitTransaction
+      });
+    }
+    return this.vaultContract;
   }
 };
 

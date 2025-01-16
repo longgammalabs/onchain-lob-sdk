@@ -30,7 +30,7 @@ const VaultValueHistoryUpdates: React.FC = () => {
       {vaultValueHistoryUpdates.map((update, index) => (
         <Box key={index}>
           <Typography variant="body2">
-            {JSON.stringify(update, (key, value) =>
+            {JSON.stringify(update, (_key, value) =>
               typeof value === 'bigint' ? value.toString() : value, 2
             )}
           </Typography>

@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { ClientAddressContext, OnchainLobClientContext } from './clientContext';
-import { VaultUpdate } from 'onchain-lob-sdk';
+import { VaultValuesUpdate } from 'onchain-lob-sdk';
 import { Box, Typography } from '@mui/material';
 
 const VaultDisplayUpdates: React.FC = () => {
-  const [vaultUpdates, setVaultUpdates] = useState<VaultUpdate[]>([]);
+  const [vaultUpdates, setVaultUpdates] = useState<VaultValuesUpdate[]>([]);
   const onchainLobClient = useContext(OnchainLobClientContext);
   const address = useContext(ClientAddressContext);
 
@@ -13,7 +13,7 @@ const VaultDisplayUpdates: React.FC = () => {
   }, [address]);
 
   useEffect(() => {
-    const handleVaultUpdates = (data: VaultUpdate[]) => {
+    const handleVaultUpdates = (data: VaultValuesUpdate[]) => {
       setVaultUpdates(data);
     };
 
@@ -31,7 +31,7 @@ const VaultDisplayUpdates: React.FC = () => {
       {vaultUpdates.map((update, index) => (
         <Box key={index}>
           <Typography variant="body2">
-            {JSON.stringify(update, (key, value) =>
+            {JSON.stringify(update, (_key, value) =>
               typeof value === 'bigint' ? value.toString() : value
             )}
           </Typography>

@@ -1,6 +1,6 @@
 import { VaultConfig } from '../models';
 import { EventEmitter } from '../common';
-import { DepositParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawParams } from './params';
+import { SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams } from './params';
 import { VaultValuesUpdate, VaultValueHistoryUpdate } from '../models';
 
 export class MockVault {
@@ -100,20 +100,6 @@ export class MockVault {
 
   unsubscribeFromVaultValueHistory(): void {
     this.subscribeParams = undefined;
-  }
-
-  deposit(params: DepositParams): void {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1000);
-  }
-
-  withdraw(params: WithdrawParams): void {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1000);
   }
 
   async vaultInfo(): Promise<VaultConfig> {

@@ -15,7 +15,7 @@ const WithdrawVault = () => {
       tokenSymbol: tokenSymbol,
     };
 
-    onchainLobClient.vault.withdraw(withdrawParams)
+    onchainLobClient.vault.removeLiquidity(withdrawParams)
       .then((response: any) => {
         console.log('Withdraw successful:', response);
       })

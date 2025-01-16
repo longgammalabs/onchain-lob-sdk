@@ -191,6 +191,8 @@ export type CalculateDepositDetailsSyncParams = {
   tokenValue: BigNumber;
   targetTokenWeight: BigNumber;
   totalWeight: BigNumber;
+  tokenDecimals: number;
+  lpTokenDecimals: number;
   fee: {
     dynamicFeesEnabled: boolean;
     adminMintLPFeeBps: BigNumber;
@@ -201,13 +203,19 @@ export type CalculateDepositDetailsSyncParams = {
   inputs: {
     tokenInput: string;
     lpInput: string;
+    slippageBps: number;
   };
 };
 
 export type DepositDetails = {
   tokenSpend: BigNumber;
-  minLpReceive: BigNumber;
+  lpReceive: BigNumber;
   fee: BigNumber;
+  params: {
+    amount: bigint;
+    amountUsd: bigint;
+    minLpMinted: bigint;
+  };
 };
 
 export type CalculateWithdrawDetailsSyncParams = {
@@ -218,6 +226,8 @@ export type CalculateWithdrawDetailsSyncParams = {
   tokenValue: BigNumber;
   targetTokenWeight: BigNumber;
   totalWeight: BigNumber;
+  tokenDecimals: number;
+  lpTokenDecimals: number;
   fee: {
     dynamicFeesEnabled: boolean;
     adminMintLPFeeBps: BigNumber;
@@ -228,11 +238,17 @@ export type CalculateWithdrawDetailsSyncParams = {
   inputs: {
     tokenInput: string;
     lpInput: string;
+    slippageBps: number;
   };
 };
 
 export type WithdrawDetails = {
   lpSpend: BigNumber;
-  minTokenReceive: BigNumber;
+  tokenReceive: BigNumber;
   fee: BigNumber;
+  params: {
+    burnLP: bigint;
+    minUsdValue: bigint;
+    minTokenGet: bigint;
+  };
 };

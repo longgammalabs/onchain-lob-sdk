@@ -73,9 +73,9 @@ export type {
   UserBalances,
   UserDeposits,
 
-  Vault,
-  VaultUpdate,
-  VaultInfo,
+  VaultValues,
+  VaultValuesUpdate,
+  VaultConfig,
   VaultValueHistory,
   VaultValueHistoryUpdate,
   VaultValueHistoryResolution

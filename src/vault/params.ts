@@ -10,13 +10,30 @@ export type SubscribeToVaultValueHistoryParams = {
 };
 
 export type CalculateDepositDetailsSyncParams = {
-  tokenSymbol: string;
-  amount: BigNumber | bigint;
+  isLpTokenInput: boolean;
+  tokenPriceUSD: BigNumber;
+  totalSupply: BigNumber;
+  totalValue: BigNumber;
+  tokenValue: BigNumber;
+  targetTokenWeight: BigNumber;
+  totalWeight: BigNumber;
+  fee: {
+    dynamicFeesEnabled: boolean;
+    adminMintLPFeeBps: BigNumber;
+    adminBurnLPFeeBps: BigNumber;
+    feeBps: BigNumber;
+    taxBps: BigNumber;
+  };
+  inputs: {
+    tokenInput: string;
+    lpInput: string;
+  };
 };
 
 export type DepositDetails = {
-  estTokenReceive: BigNumber | bigint;
-  estFee: BigNumber | bigint;
+  tokenSpend: BigNumber;
+  minLpReceive: BigNumber;
+  fee: BigNumber;
 };
 
 export type CalculateWithdrawDetailsSyncParams = {

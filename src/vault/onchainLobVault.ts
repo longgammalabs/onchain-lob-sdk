@@ -1,9 +1,10 @@
 import { Signer } from 'ethers/providers';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
-import type { VaultInfo, VaultUpdate, VaultValueHistoryUpdate } from '../models';
+import type { VaultConfig, VaultValuesUpdate, VaultValueHistoryUpdate } from '../models';
 import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../services';
 import { MockVault } from './mock';
 import { CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, DepositParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawDetails, WithdrawParams } from './params';
+import { getDepositDetails } from './depositDetails';
 
 /**
  * Options for configuring the OnchainLobVault instance.
@@ -35,7 +36,7 @@ interface OnchainLobVaultEvents {
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultUpdate[]]>}
    */
-  vaultUpdated: PublicEventEmitter<readonly [data: VaultUpdate[]]>;
+  vaultUpdated: PublicEventEmitter<readonly [data: VaultValuesUpdate[]]>;
 
   /**
    * Emitted when a vault history value changes.
@@ -130,8 +131,14 @@ export class OnchainLobVault {
     (this.events.subscriptionError as ToEventEmitter<typeof this.events.subscriptionError>).emit(error);
   };
 
+  /**
+   * Calculates the deposit LP details for a given token inputs without API request.
+   *
+   * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
+   * @returns {DepositDetails} Deposit LP details data.
+   */
   calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails {
-    return this.mockVault.calculateDepositDetailsSync(params);
+    return getDepositDetails(params);
   }
 
   calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
@@ -146,7 +153,7 @@ export class OnchainLobVault {
     this.mockVault.withdraw(params);
   }
 
-  async getVaultInfo(): Promise<VaultInfo> {
+  async getVaultConfig(): Promise<VaultConfig> {
     return this.mockVault.vaultInfo();
   }
 }

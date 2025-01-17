@@ -131,7 +131,7 @@ export class OnchainLobVaultContract {
 
     const tx = await this.processContractMethodCall(
       this.vaultContract,
-      this.vaultContract.addLiquidity!(
+      this.vaultContract.removeLiquidity!(
         token.contractAddress,
         burnLP,
         minUsdValue,

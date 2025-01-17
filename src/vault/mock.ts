@@ -1,8 +1,7 @@
-import BigNumber from 'bignumber.js';
-import { VaultInfo } from '../models';
+import { VaultConfig } from '../models';
 import { EventEmitter } from '../common';
-import { CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, DepositParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawDetails, WithdrawParams } from './params';
-import { VaultUpdate, VaultValueHistoryUpdate } from '../models';
+import { SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams } from './params';
+import { VaultValuesUpdate, VaultValueHistoryUpdate } from '../models';
 
 export class MockVault {
   subscribeParams: SubscribeToVaultUpdatesParams | undefined;
@@ -23,7 +22,6 @@ export class MockVault {
 
   private emitRandomVault(): void {
     this.events.vaultUpdated.emit([{
-      totalAmount: BigInt(Math.floor(Math.random() * 100000)),
       totalUSDValue: Math.random() * 100000,
       pastWeekReturn: Math.random() * 100,
       userUSDValue: this.subscribeParams?.user ? Math.random() * 10000 : undefined,
@@ -35,6 +33,27 @@ export class MockVault {
         volume: Math.random() * 1000000,
         profitShare: Math.random() * 100,
       },
+      totalSupply: Math.random() * 10000000,
+      totalWeight: 120,
+      tokens: [{
+        address: '0x50c42deacd8fc9773493ed674b675be577f2634b',
+        symbol: 'ETH',
+        tokenPriceUSD: 3238,
+        tokenValue: Math.random() * 10000,
+        tokenWeight: 30,
+      }, {
+        address: '0x29219dd400f2bf60e5a23d13be72b486d4038894',
+        symbol: 'USDC',
+        tokenPriceUSD: 1,
+        tokenValue: Math.random() * 10000,
+        tokenWeight: 60,
+      }, {
+        address: '0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38',
+        symbol: 'S',
+        tokenPriceUSD: 0.8,
+        tokenValue: Math.random() * 10000,
+        tokenWeight: 30,
+      }],
     }]);
   }
 
@@ -59,7 +78,7 @@ export class MockVault {
   }
 
   events = {
-    vaultUpdated: new EventEmitter<[data: VaultUpdate[]]>(),
+    vaultUpdated: new EventEmitter<[data: VaultValuesUpdate[]]>(),
     vaultValueHistoryUpdated: new EventEmitter<[data: VaultValueHistoryUpdate[]]>(),
     subscriptionError: new EventEmitter<[error: string]>(),
   };
@@ -82,37 +101,27 @@ export class MockVault {
     this.subscribeParams = undefined;
   }
 
-  calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails {
-    return {
-      estTokenReceive: new BigNumber(Math.random() * 1000),
-      estFee: new BigNumber(Math.random() * 10),
-    } as DepositDetails;
-  }
-
-  calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
-    return {
-      estTokenReceive: new BigNumber(Math.random() * 1000),
-      estFee: new BigNumber(Math.random() * 10),
-    } as WithdrawDetails;
-  }
-
-  deposit(params: DepositParams): void {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1000);
-  }
-
-  withdraw(params: WithdrawParams): void {
-    setTimeout(() => {
-      this.emitRandomVault();
-      this.emitRandomHistory();
-    }, 1000);
-  }
-
-  async vaultInfo(): Promise<VaultInfo> {
+  async vaultInfo(): Promise<VaultConfig> {
     return {
       vaultAddress: '0x123123123123123123123123',
+      fees: {
+        dynamicFeesEnabled: true,
+        adminMintLPFeeBps: 0.003,
+        adminBurnLPFeeBps: 0.002,
+        feeBps: 0.0025,
+        taxBps: 0.0015,
+      },
+      lpToken: {
+        id: '',
+        name: 'XLP',
+        symbol: 'XLP',
+        contractAddress: '',
+        decimals: 18,
+        roundingDecimals: 6,
+        supportsPermit: false,
+        iconUrl: null,
+        fromOg: false,
+      },
       tokens: [
         {
           id: '0x50c42deacd8fc9773493ed674b675be577f2634b',
@@ -148,6 +157,6 @@ export class MockVault {
           fromOg: false,
         },
       ],
-    } as VaultInfo;
+    } as VaultConfig;
   }
 }

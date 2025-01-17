@@ -15,7 +15,7 @@ const DepositVault = () => {
       tokenSymbol: tokenSymbol,
     };
 
-    onchainLobClient.vault.deposit(depositParams)
+    onchainLobClient.vault.addLiquidity(depositParams)
       .then((response: any) => {
         console.log('Deposit successful:', response);
       })

@@ -1,9 +1,8 @@
 import { Token } from './common';
-export interface Vault {
-    /**
-     * The total amount of LP tokens in the vault.
-     */
-    totalAmount: bigint;
+/**
+ * Represents the dynamic vault values.
+ */
+export interface VaultValues {
     /**
      * The total USD value of the vault.
      */
@@ -45,8 +44,41 @@ export interface Vault {
          */
         profitShare: number;
     };
+    /**
+       * The lp tokens total amount.
+       */
+    totalSupply: number;
+    /**
+       * The total weight of the assets in the vault
+       */
+    totalWeight: number;
+    /**
+       * The vault's tokens info.
+       */
+    tokens: {
+        /**
+           * The token's address.
+           */
+        address: string;
+        /**
+           * The token's symbol.
+           */
+        symbol: string;
+        /**
+           * The token's price in USD.
+           */
+        tokenPriceUSD: number;
+        /**
+           * The token's value in the pool.
+           */
+        tokenValue: number;
+        /**
+           * The token's weight in the pool.
+           */
+        tokenWeight: number;
+    }[];
 }
-export type VaultUpdate = Vault;
+export type VaultValuesUpdate = VaultValues;
 /**
  * Represents the resolution of a vault value history.
  * '1h' indicates a 1-hour resolution,
@@ -82,9 +114,17 @@ export type VaultValueHistory = {
  */
 export type VaultValueHistoryUpdate = VaultValueHistory;
 /**
- * Represents the vault info.
+ * Represents the static vault config.
  */
-export type VaultInfo = {
+export type VaultConfig = {
     vaultAddress: string;
+    lpToken: Token;
     tokens: Token[];
+    fees: {
+        dynamicFeesEnabled: boolean;
+        adminMintLPFeeBps: number;
+        adminBurnLPFeeBps: number;
+        feeBps: number;
+        taxBps: number;
+    };
 };

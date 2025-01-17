@@ -6262,7 +6262,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     const expires = getExpires2();
     const tx = await this.processContractMethodCall(
       this.vaultContract,
-      this.vaultContract.addLiquidity(
+      this.vaultContract.removeLiquidity(
         token.contractAddress,
         burnLP,
         minUsdValue,

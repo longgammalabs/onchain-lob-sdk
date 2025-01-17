@@ -5840,7 +5840,6 @@ var MockVault = class {
   }
   emitRandomVault() {
     this.events.vaultUpdated.emit([{
-      totalAmount: BigInt(Math.floor(Math.random() * 1e5)),
       totalUSDValue: Math.random() * 1e5,
       pastWeekReturn: Math.random() * 100,
       userUSDValue: this.subscribeParams?.user ? Math.random() * 1e4 : void 0,

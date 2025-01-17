@@ -5,11 +5,6 @@ import { Token } from './common';
  */
 export interface VaultValues {
   /**
-   * The total amount of LP tokens in the vault.
-   */
-  totalAmount: bigint;
-
-  /**
    * The total USD value of the vault.
    */
   totalUSDValue: number;

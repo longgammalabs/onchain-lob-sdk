@@ -178,6 +178,14 @@ export type VaultConfig = {
   tokens: Token[];
 
   /**
+   * The vault's tokens ids
+   */
+  tokenIds: {
+    tokenAddress: string;
+    id: number;
+  }[];
+
+  /**
    * Represents the fee configuration for vault.
    */
   fees: {

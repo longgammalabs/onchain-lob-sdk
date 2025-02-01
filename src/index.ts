@@ -73,15 +73,21 @@ export type {
   UserBalances,
   UserDeposits,
 
-  VaultValues,
-  VaultValuesUpdate,
   VaultConfig,
-  VaultValueHistory,
-  VaultValueHistoryUpdate,
-  VaultValueHistoryResolution
+  VaultTotalValues,
+  VaultTotalValuesUpdate,
+  VaultHistory,
+  VaultHistoryUpdate,
+  VaultDepositor,
+  VaultDepositorUpdate,
+  VaultDepositAction,
+  VaultDepositActionUpdate,
+  VaultHistoryPeriod
 } from './models';
 
 export {
   OnchainLobSpotService,
-  OnchainLobSpotWebSocketService
+  OnchainLobSpotWebSocketService,
+  OnchainLobVaultService,
+  OnchainLobVaultWebSocketService
 } from './services';

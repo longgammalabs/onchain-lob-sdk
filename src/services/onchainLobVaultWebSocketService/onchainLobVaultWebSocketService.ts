@@ -19,13 +19,12 @@ import {
   type OnchainLobWebSocketResponseDto, type PublicEventEmitter, type ToEventEmitter
 } from '../../common';
 import { getErrorLogMessage } from '../../logging';
-import { VaultDepositActionDto, VaultDepositorDto, VaultHistoryDto, VaultTotalValuesDto } from '../onchainLobVaultService';
 
 interface OnchainLobVaultWebSocketServiceEvents {
-  vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesDto]>;
-  vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionDto[]]>;
-  vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorDto[]]>;
-  vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryDto[]]>;
+  vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesUpdateDto]>;
+  vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionUpdateDto[]]>;
+  vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorUpdateDto[]]>;
+  vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryUpdateDto[]]>;
   subscriptionError: PublicEventEmitter<readonly [error: string]>;
 }
 

@@ -121,7 +121,7 @@ export interface VaultTotalValues {
   }[];
 }
 
-export type VaultValuesUpdate = VaultTotalValues;
+export type VaultTotalValuesUpdate = VaultTotalValues;
 
 /**
  * Represents the period of a vault history.
@@ -249,6 +249,8 @@ export type VaultDepositAction = {
   commissionUsd: number;
 };
 
+export type VaultDepositActionUpdate = VaultDepositAction;
+
 /**
  * Represents the vault depositor.
  */
@@ -273,3 +275,5 @@ export type VaultDepositor = {
    */
   lastTouched: number;
 };
+
+export type VaultDepositorUpdate = VaultDepositor;

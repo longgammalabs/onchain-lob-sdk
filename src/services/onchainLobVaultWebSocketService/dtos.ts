@@ -29,7 +29,7 @@ export interface VaultTotalValuesUpdateDto {
   totalUSDCostBasis: number;
   pastWeekReturn: number;
   leaderAddress: string;
-  leaderUSDValue: string;
+  leaderUSDValue: number;
   vaultPerfomance: {
     pnlPerfomance: number;
     maxDrowdownPercentage: number;

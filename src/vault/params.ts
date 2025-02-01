@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { VaultValueHistoryResolution } from '../models';
+import { VaultHistoryPeriod } from '../models';
 
 /**
  * Transaction parameters.
@@ -175,13 +175,19 @@ export interface RemoveLiquidityVaultParams extends TransactionParams {
   minTokenGet: BigNumber | bigint;
 }
 
-export type SubscribeToVaultUpdatesParams = {
-  user?: string;
-};
+export interface SubscribeToVaultTotalValuesParams {}
+export type UnsubscribeFromVaultTotalValuesParams = SubscribeToVaultTotalValuesParams;
 
-export type SubscribeToVaultValueHistoryParams = {
-  resolution?: VaultValueHistoryResolution;
-};
+export interface SubscribeToVaultDepositorsParams {}
+export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsParams;
+
+export interface SubscribeToVaultDepositActionsParams {}
+export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
+
+export interface SubscribeToVaultHistoryParams {
+  period: VaultHistoryPeriod;
+}
+export type UnsubscribeFromVaultHistoryParams = SubscribeToVaultHistoryParams;
 
 export type CalculateDepositDetailsSyncParams = {
   isLpTokenInput: boolean;

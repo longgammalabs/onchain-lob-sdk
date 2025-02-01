@@ -11,6 +11,7 @@ import type { VaultConfig, VaultTotalValuesUpdate,
 } from '../models';
 import { OnchainLobVaultService, OnchainLobVaultWebSocketService } from '../services';
 import { AddLiquidityVaultParams,
+  ApproveVaultParams,
   CalculateDepositDetailsSyncParams,
   CalculateWithdrawDetailsSyncParams,
   DepositDetails,
@@ -23,7 +24,9 @@ import { AddLiquidityVaultParams,
   UnsubscribeFromVaultDepositorsParams,
   UnsubscribeFromVaultHistoryParams,
   UnsubscribeFromVaultTotalValuesParams,
-  WithdrawDetails
+  UnwrapNativeTokenVaultParams,
+  WithdrawDetails,
+  WrapNativeTokenVaultParams
 } from './params';
 import { getDepositDetails } from './depositDetails';
 import { getWithdrawDetails } from './withdrawDetails';
@@ -208,6 +211,69 @@ export class OnchainLobVault {
   }
 
   /**
+  * Approves the specified amount of tokens for the corresponding vault contract.
+  * You need to approve the tokens before you can deposit or withdraw.
+  *
+  * @param {ApproveVaultParams} params - The parameters for approving tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract();
+
+    return vaultContract.approveTokens(params);
+  }
+
+  /**
+   * Deposit tokens amount into the vault
+   *
+   * @param {AddLiquidityVaultParams} params - The parameters for deposit.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   */
+  async addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract();
+
+    return vaultContract.addLiquidity(params);
+  }
+
+  /**
+  * Wraps the specified amount of native tokens.
+  * You need to wrap the tokens before you can deposit.
+  *
+  * @param {WrapNativeTokenVaultParams} params - The parameters for wrapping tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async wrapNativeTokens(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract();
+
+    return vaultContract.wrapNativeToken(params);
+  }
+
+  /**
+    * Unwraps the specified amount of native tokens.
+    * You need to unwrap the tokens after withdrawal to get native tokens.
+    *
+    * @param {UnwrapNativeTokenVaultParams} params - The parameters for unwrapping tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+  async unwrapNativeTokens(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract();
+
+    return vaultContract.unwrapNativeToken(params);
+  }
+
+  /**
+   * Withdraw LP amount from the vault
+   *
+   * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   */
+  async removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract();
+
+    return vaultContract.removeLiquidity(params);
+  }
+
+  /**
    * Retrieves the vault config information from cache.
    *
    * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
@@ -309,6 +375,26 @@ export class OnchainLobVault {
   async getVaultHistory(params: GetVaultHistoryParams): Promise<VaultHistory[]> {
     const vaultHistoryDtos = await this.onchainLobService.getVaultHistory(params);
     return vaultHistoryDtos;
+  }
+
+  /**
+   * Calculates the deposit LP details for a given token inputs without API request.
+   *
+   * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
+   * @returns {DepositDetails} Deposit LP details data.
+   */
+  calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails {
+    return getDepositDetails(params);
+  }
+
+  /**
+   * Calculates the withdraw LP details for a given token inputs without API request.
+   *
+   * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
+   * @returns {WithdrawDetails} Withdraw LP details data.
+   */
+  calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
+    return getWithdrawDetails(params);
   }
 
   /**
@@ -478,48 +564,4 @@ export class OnchainLobVault {
   protected onSubscriptionError: Parameters<typeof this.onchainLobWebSocketService.events.subscriptionError['addListener']>[0] = error => {
     (this.events.subscriptionError as ToEventEmitter<typeof this.events.subscriptionError>).emit(error);
   };
-
-  /**
-   * Calculates the deposit LP details for a given token inputs without API request.
-   *
-   * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
-   * @returns {DepositDetails} Deposit LP details data.
-   */
-  calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails {
-    return getDepositDetails(params);
-  }
-
-  /**
-   * Calculates the withdraw LP details for a given token inputs without API request.
-   *
-   * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
-   * @returns {WithdrawDetails} Withdraw LP details data.
-   */
-  calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
-    return getWithdrawDetails(params);
-  }
-
-  /**
-   * Deposit tokens amount into the vault
-   *
-   * @param {AddLiquidityVaultParams} params - The parameters for deposit.
-   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
-   */
-  async addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
-
-    return vaultContract.addLiquidity(params);
-  }
-
-  /**
-   * Withdraw LP amount from the vault
-   *
-   * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
-   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
-   */
-  async removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
-
-    return vaultContract.removeLiquidity(params);
-  }
 }

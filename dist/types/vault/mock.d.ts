@@ -8,8 +8,8 @@ export declare class MockVault {
     private emitRandomHistory;
     private emitHistory;
     events: {
-        vaultUpdated: EventEmitter<[data: import("../models").VaultValues[]]>;
-        vaultValueHistoryUpdated: EventEmitter<[data: import("../models").VaultValueHistory[]]>;
+        vaultUpdated: EventEmitter<[data: VaultValuesUpdate[]]>;
+        vaultValueHistoryUpdated: EventEmitter<[data: VaultValueHistoryUpdate[]]>;
         subscriptionError: EventEmitter<[error: string]>;
     };
     subscribeToVaultUpdates(params: SubscribeToVaultUpdatesParams): void;

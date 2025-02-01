@@ -1,13 +1,24 @@
+import BigNumber from 'bignumber.js';
 import { Token } from './common';
+
+/**
+ * Represents the direction of the deposit action in the vault.
+ */
+export type DepositActionDirection = 'deposit' | 'withdraw';
 
 /**
  * Represents the dynamic vault values.
  */
-export interface VaultValues {
+export interface VaultTotalValues {
   /**
    * The total USD value of the vault.
    */
   totalUSDValue: number;
+
+  /**
+   * The total USD basis for calculating pnl.
+   */
+  totalUSDCostBasis: number;
 
   /**
    * The past week return of the vault in percentage.
@@ -15,19 +26,14 @@ export interface VaultValues {
   pastWeekReturn: number;
 
   /**
-   * The user's deposit total USD value in the vault.
-   */
-  userUSDValue?: number;
-
-  /**
-   * The user's all time earned USD value in the vault.
-   */
-  userAllTimeEarnedUSDValue?: number;
-
-  /**
    * The deposit leader address.
    */
-  leader: string;
+  leaderAddress: string;
+
+  /**
+   * The deposit leader account value in USD.
+   */
+  leaderUSDValue: number;
 
   /**
    * The vault's performance.
@@ -55,9 +61,14 @@ export interface VaultValues {
   };
 
   /**
-     * The lp tokens total amount.
-     */
-  totalSupply: number;
+   * The raw total supply as a bigint.
+   */
+  rawTotalSupply: bigint;
+
+  /**
+   * The formatted total supply as a BigNumber.
+   */
+  totalSupply: BigNumber;
 
   /**
      * The total weight of the assets in the vault
@@ -84,9 +95,24 @@ export interface VaultValues {
     tokenPriceUSD: number;
 
     /**
-       * The token's value in the pool.
+       * The raw vault's token balance in bigint.
        */
-    tokenValue: number;
+    rawTokenBalance: bigint;
+
+    /**
+       * The formatted vault's token balance in BigNumber.
+       */
+    tokenBalance: BigNumber;
+
+    /**
+       * The raw token's reserve in the pool in bigint.
+       */
+    rawTokenReserved: bigint;
+
+    /**
+       * The formatted token's reserve in the pool in BigNumber.
+       */
+    tokenReserved: BigNumber;
 
     /**
        * The token's weight in the pool.
@@ -95,22 +121,22 @@ export interface VaultValues {
   }[];
 }
 
-export type VaultValuesUpdate = VaultValues;
+export type VaultValuesUpdate = VaultTotalValues;
 
 /**
- * Represents the resolution of a vault value history.
- * '1h' indicates a 1-hour resolution,
- * '1D' indicates a 1-day resolution,
- * '1W' indicates a 1-week resolution,
- * '1M' indicates a 1-month resolution,
- * '1Y' indicates a 1-year resolution.
+ * Represents the period of a vault history.
+ * '1h' indicates a 1-hour period,
+ * '1D' indicates a 1-day period,
+ * '1W' indicates a 1-week period,
+ * '1M' indicates a 1-month period,
+ * '1Y' indicates a 1-year period.
  */
-export type VaultValueHistoryResolution = '1h' | '1D' | '1W' | '1M' | '1Y';
+export type VaultHistoryPeriod = '1h' | '1D' | '1W' | '1M' | '1Y';
 
 /**
- * Represents the vault value history.
+ * Represents the vault history.
  */
-export type VaultValueHistory = {
+export type VaultHistory = {
   /**
    * The vault's pnl performance in USD.
    */
@@ -122,28 +148,38 @@ export type VaultValueHistory = {
   totalUSDValue: number;
 
   /**
-   * The timestamp of the vault value history.
+   * The timestamp of the vault history.
    */
   time: number;
-
-  /**
-   * The timestamp of the last touch of the vault value history entry.
-   */
-  lastTouched: number;
 };
 
 /**
- * Represents the vault value history update.
+ * Represents the vault history update.
  */
-export type VaultValueHistoryUpdate = VaultValueHistory;
+export type VaultHistoryUpdate = VaultHistory;
 
 /**
  * Represents the static vault config.
  */
 export type VaultConfig = {
+  /**
+   * The vault's contract address
+   */
   vaultAddress: string;
+
+  /**
+   * The vault's lp token
+   */
   lpToken: Token;
+
+  /**
+   * The vault's tokens
+   */
   tokens: Token[];
+
+  /**
+   * Represents the fee configuration for vault.
+   */
   fees: {
     dynamicFeesEnabled: boolean;
     adminMintLPFeeBps: number;
@@ -151,4 +187,89 @@ export type VaultConfig = {
     feeBps: number;
     taxBps: number;
   };
+};
+
+/**
+ * Represents the deposit/withdraw action in the vault.
+ */
+export type VaultDepositAction = {
+  /**
+   * The action initiator's account address
+   */
+  userAddress: string;
+
+  /**
+   * The timestamp of the deposit action.
+   */
+  timestamp: number;
+
+  /**
+   * The transaction hash associated with the deposit action.
+   */
+  txnHash: string;
+
+  /**
+   * The direction of the deposit action.
+   */
+  direction: DepositActionDirection;
+
+  /**
+   * The symbol of the token in the deposit action.
+   */
+  tokenSymbol: string;
+
+  /**
+   * The raw amount of the token in the deposit action in bigint.
+   */
+  rawTokenAmount: bigint;
+
+  /**
+   * The formatted amount of the token in the deposit action in BigNumber.
+   */
+  tokenAmount: BigNumber;
+
+  /**
+   * The USD amount in the deposit action.
+   */
+  usdValue: number;
+
+  /**
+   * The raw amount of the LP token in the deposit action in bigint.
+   */
+  rawLpAmount: bigint;
+
+  /**
+   * The formatted amount of the LP token in the deposit action in BigNumber.
+   */
+  lpAmount: BigNumber;
+
+  /**
+   * The commision user paid fpr the deposit action in USD.
+   */
+  commissionUsd: number;
+};
+
+/**
+ * Represents the vault depositor.
+ */
+export type VaultDepositor = {
+  /**
+   * The depositor's account address
+   */
+  userAddress: string;
+
+  /**
+   * The raw amount of the depositor's LP tokens in bigint
+   */
+  rawLpAmount: bigint;
+
+  /**
+   * The formatted amount of the depositor's LP tokens in BigNumber
+   */
+  lpAmount: BigNumber;
+
+  /**
+   * The timestamp of the last depositor's interaction with the vault.
+   */
+  lastTouched: number;
 };

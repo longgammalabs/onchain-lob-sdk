@@ -18,10 +18,8 @@ import TradeUpdates from './TradeUpdates';
 import Timetx from './Timetx';
 import UserDeposits from './UserDeposits';
 import WrapUnwrapNativeToken from './WrapNativeToken';
-import VaultInfoDisplay from './VaultInfoDisplay';
-import DepositVault from './DepositVault';
-import VaultDisplayUpdates from './VaultDisplayUpdates';
-import WithdrawVault from './WithdrawVault';
+import VaultConfigDisplay from './VaultConfigDisplay';
+import VaultTotalValuesDisplayUpdates from './VaultTotalValuesDisplayUpdates';
 import VaultValueHistoryUpdates from './VaultValueHistoryUpdates';
 
 function App() {
@@ -116,7 +114,7 @@ function App() {
             <Box>
               <Divider />
               <Box>
-                <Button onClick={() => setSelectedPage('ContractAPI')}>ContractAPI</Button>
+                <Button onClick={() => setSelectedPage('ContractAPI')}>Contract API</Button>
                 <Button onClick={() => setSelectedPage('HTTP API')}>HTTP API</Button>
                 <Button onClick={() => setSelectedPage('Sockets API')}>Sockets API</Button>
               </Box>
@@ -128,11 +126,10 @@ function App() {
                     This section provides access to the ContractAPI, allowing you to interact with smart contracts directly.
                   </Typography>
                   <Divider />
-                  <VaultDisplayUpdates />
                   <Divider />
-                  <DepositVault />
+                  {/* <DepositVault /> */}
                   <Divider />
-                  <WithdrawVault />
+                  {/* <WithdrawVault /> */}
                 </Box>
               )}
               {selectedPage === 'HTTP API' && (
@@ -142,7 +139,7 @@ function App() {
                     This section provides access to the HTTP API, enabling you to perform RESTful operations.
                   </Typography>
                   <Divider />
-                  <VaultInfoDisplay />
+                  <VaultConfigDisplay />
                   <Divider />
                 </Box>
               )}
@@ -153,7 +150,7 @@ function App() {
                     This section provides access to the Sockets API, allowing real-time data streaming and updates.
                   </Typography>
                   <Divider />
-                  <VaultDisplayUpdates />
+                  <VaultTotalValuesDisplayUpdates />
                   <Divider />
                   <VaultValueHistoryUpdates />
                 </Box>

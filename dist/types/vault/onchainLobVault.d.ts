@@ -2,7 +2,7 @@ import { Signer } from 'ethers/providers';
 import { type PublicEventEmitter } from '../common';
 import type { VaultConfig, VaultTotalValuesUpdate, VaultHistoryUpdate, VaultDepositActionUpdate, VaultDepositorUpdate, VaultTotalValues, VaultDepositAction, VaultDepositor, VaultHistory } from '../models';
 import { OnchainLobVaultService, OnchainLobVaultWebSocketService } from '../services';
-import { AddLiquidityVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, RemoveLiquidityVaultParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, SubscribeToVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, WithdrawDetails } from './params';
+import { AddLiquidityVaultParams, ApproveVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, RemoveLiquidityVaultParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, SubscribeToVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, UnwrapNativeTokenVaultParams, WithdrawDetails, WrapNativeTokenVaultParams } from './params';
 import { OnchainLobVaultContract } from './onchainLobVaultContract';
 import { ContractTransactionResponse } from 'ethers';
 import * as mappers from './mappers';
@@ -142,6 +142,44 @@ export declare class OnchainLobVault {
      */
     setSigner(signer: Signer | null): OnchainLobVault;
     /**
+    * Approves the specified amount of tokens for the corresponding vault contract.
+    * You need to approve the tokens before you can deposit or withdraw.
+    *
+    * @param {ApproveVaultParams} params - The parameters for approving tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+    approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse>;
+    /**
+     * Deposit tokens amount into the vault
+     *
+     * @param {AddLiquidityVaultParams} params - The parameters for deposit.
+     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+     */
+    addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse>;
+    /**
+    * Wraps the specified amount of native tokens.
+    * You need to wrap the tokens before you can deposit.
+    *
+    * @param {WrapNativeTokenVaultParams} params - The parameters for wrapping tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+    wrapNativeTokens(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
+    /**
+      * Unwraps the specified amount of native tokens.
+      * You need to unwrap the tokens after withdrawal to get native tokens.
+      *
+      * @param {UnwrapNativeTokenVaultParams} params - The parameters for unwrapping tokens.
+      * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+      */
+    unwrapNativeTokens(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
+    /**
+     * Withdraw LP amount from the vault
+     *
+     * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
+     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+     */
+    removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
+    /**
      * Retrieves the vault config information from cache.
      *
      * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
@@ -182,6 +220,20 @@ export declare class OnchainLobVault {
      * @returns {Promise<VaultDepositor[]>} A Promise that resolves to vault history.
      */
     getVaultHistory(params: GetVaultHistoryParams): Promise<VaultHistory[]>;
+    /**
+     * Calculates the deposit LP details for a given token inputs without API request.
+     *
+     * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
+     * @returns {DepositDetails} Deposit LP details data.
+     */
+    calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails;
+    /**
+     * Calculates the withdraw LP details for a given token inputs without API request.
+     *
+     * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
+     * @returns {WithdrawDetails} Withdraw LP details data.
+     */
+    calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails;
     /**
      * Subscribes to the vault total values updates.
      *
@@ -234,33 +286,5 @@ export declare class OnchainLobVault {
     protected onVaultDepositorsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositorsUpdated['addListener']>[0];
     protected onVaultHistoryUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultHistoryUpdated['addListener']>[0];
     protected onSubscriptionError: Parameters<typeof this.onchainLobWebSocketService.events.subscriptionError['addListener']>[0];
-    /**
-     * Calculates the deposit LP details for a given token inputs without API request.
-     *
-     * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
-     * @returns {DepositDetails} Deposit LP details data.
-     */
-    calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails;
-    /**
-     * Calculates the withdraw LP details for a given token inputs without API request.
-     *
-     * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
-     * @returns {WithdrawDetails} Withdraw LP details data.
-     */
-    calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails;
-    /**
-     * Deposit tokens amount into the vault
-     *
-     * @param {AddLiquidityVaultParams} params - The parameters for deposit.
-     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
-     */
-    addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse>;
-    /**
-     * Withdraw LP amount from the vault
-     *
-     * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
-     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
-     */
-    removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
 }
 export {};

@@ -1,32 +1,32 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { OnchainLobClientContext } from './clientContext';
-import { VaultValueHistoryUpdate } from 'onchain-lob-sdk';
+import { VaultHistoryUpdate } from 'onchain-lob-sdk';
 import { Box, Typography } from '@mui/material';
 
-const VaultValueHistoryUpdates: React.FC = () => {
-  const [vaultValueHistoryUpdates, setVaultValueHistoryUpdates] = useState<VaultValueHistoryUpdate[]>([]);
+const VaultHistoryUpdates: React.FC = () => {
+  const [vaultValueHistoryUpdates, setVaultValueHistoryUpdates] = useState<VaultHistoryUpdate[]>([]);
   const onchainLobClient = useContext(OnchainLobClientContext);
 
   useEffect(() => {
-    onchainLobClient.vault.subscribeToVaultValueHistory({ resolution: '1h' });
+    onchainLobClient.vault.subscribeToVaultHistory({ period: '1h' });
   }, []);
 
   useEffect(() => {
-    const handleVaultValueHistoryUpdates = (data: VaultValueHistoryUpdate[]) => {
+    const handleVaultValueHistoryUpdates = (_isSnapshot: boolean, data: VaultHistoryUpdate[]) => {
       setVaultValueHistoryUpdates(prevUpdates => [...prevUpdates, ...data]);
     };
 
-    onchainLobClient.vault.events.vaultValueHistoryUpdated.addListener(handleVaultValueHistoryUpdates);
+    onchainLobClient.vault.events.vaultHistoryUpdated.addListener(handleVaultValueHistoryUpdates);
 
     return () => {
-      onchainLobClient.vault.unsubscribeFromVaultValueHistory();
-      onchainLobClient.vault.events.vaultValueHistoryUpdated.removeListener(handleVaultValueHistoryUpdates);
+      onchainLobClient.vault.unsubscribeFromVaultHistory({ period: '1h' });
+      onchainLobClient.vault.events.vaultHistoryUpdated.removeListener(handleVaultValueHistoryUpdates);
     };
   }, [onchainLobClient]);
 
   return (
     <Box>
-      <Typography variant="h6">Vault Value History Updates</Typography>
+      <Typography variant="h6">Vault History Updates</Typography>
       {vaultValueHistoryUpdates.map((update, index) => (
         <Box key={index}>
           <Typography variant="body2">
@@ -40,4 +40,4 @@ const VaultValueHistoryUpdates: React.FC = () => {
   );
 };
 
-export default VaultValueHistoryUpdates;
+export default VaultHistoryUpdates;

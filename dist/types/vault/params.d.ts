@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { VaultHistoryPeriod } from '../models';
+import { Token, VaultHistoryPeriod } from '../models';
 /**
  * Transaction parameters.
  *
@@ -64,6 +64,50 @@ export interface ApproveVaultParams extends TransactionParams {
     token: string;
     /**
      * The amount of tokens to approve.
+     * If `bigint` is provided, then the token's contract unit is used.
+     * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+     *
+     * @type {BigNumber | bigint}
+     */
+    amount: BigNumber | bigint;
+}
+/**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface WrapNativeTokenVaultParams
+ * @extends TransactionParams
+ */
+export interface WrapNativeTokenVaultParams extends TransactionParams {
+    /**
+     * The Wrapped native token.
+     *
+     * @type {string}
+     */
+    token: Token;
+    /**
+     * The amount of tokens to wrap.
+     * If `bigint` is provided, then the token's contract unit is used.
+     * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+     *
+     * @type {BigNumber | bigint}
+     */
+    amount: BigNumber | bigint;
+}
+/**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface UnwrapNativeTokenVaultParams
+ * @extends TransactionParams
+ */
+export interface UnwrapNativeTokenVaultParams extends TransactionParams {
+    /**
+     * The Wrapped native token.
+     *
+     * @type {string}
+     */
+    token: Token;
+    /**
+     * The amount of tokens to unwrap.
      * If `bigint` is provided, then the token's contract unit is used.
      * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
      *

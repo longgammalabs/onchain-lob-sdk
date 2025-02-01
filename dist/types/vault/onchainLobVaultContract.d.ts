@@ -1,5 +1,5 @@
 import { Contract, type Signer, ContractTransactionResponse } from 'ethers';
-import type { AddLiquidityVaultParams, ApproveVaultParams, RemoveLiquidityVaultParams } from './params';
+import type { AddLiquidityVaultParams, ApproveVaultParams, RemoveLiquidityVaultParams, UnwrapNativeTokenVaultParams, WrapNativeTokenVaultParams } from './params';
 import type { VaultConfig } from '../models';
 export interface OnchainLobVaultContractOptions {
     vault: VaultConfig;
@@ -24,6 +24,8 @@ export declare class OnchainLobVaultContract {
     protected get chainId(): Promise<bigint>;
     constructor(options: Readonly<OnchainLobVaultContractOptions>);
     approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse>;
+    wrapNativeToken(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
+    unwrapNativeToken(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
     addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse>;
     removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
     protected processContractMethodCall(contract: Contract, methodCall: Promise<ContractTransactionResponse>): Promise<ContractTransactionResponse>;

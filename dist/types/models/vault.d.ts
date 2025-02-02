@@ -139,6 +139,10 @@ export type VaultConfig = {
      */
     vaultAddress: string;
     /**
+     * The vault's pyth address
+     */
+    pythAddress: string;
+    /**
      * The vault's lp token
      */
     lpToken: Token;
@@ -146,6 +150,13 @@ export type VaultConfig = {
      * The vault's tokens
      */
     tokens: Token[];
+    /**
+     * The vault's tokens ids
+     */
+    tokenIds: {
+        tokenAddress: string;
+        id: number;
+    }[];
     /**
      * Represents the fee configuration for vault.
      */

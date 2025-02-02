@@ -3,8 +3,10 @@ import { TokenDto } from '../onchainLobSpotService';
 
 export interface VaultConfigDto {
   vaultAddress: string;
+  pythAddress: string;
   lpToken: TokenDto;
   tokens: TokenDto[];
+  tokenIds: { tokenAddress: string; id: number }[];
   fees: {
     dynamicFeesEnabled: boolean;
     adminMintLPFeeBps: number;

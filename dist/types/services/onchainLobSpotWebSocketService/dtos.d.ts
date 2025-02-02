@@ -126,4 +126,7 @@ export interface TokenUpdateDto {
     supportsPermit: boolean;
     iconUrl: string | null;
     fromOg: boolean;
+    isNative: boolean;
+    priceFeed: string | null;
+    priceFeedDecimals: number | null;
 }

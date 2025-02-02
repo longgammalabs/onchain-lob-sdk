@@ -86,6 +86,9 @@ export interface TokenDto {
     supportsPermit: boolean;
     iconUrl: string | null;
     fromOg: boolean;
+    isNative: boolean;
+    priceFeed: string | null;
+    priceFeedDecimals: number | null;
 }
 export interface MarketDto {
     id: string;

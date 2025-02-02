@@ -1,6 +1,7 @@
 import { Contract, type Signer, ContractTransactionResponse } from 'ethers';
 import type { AddLiquidityVaultParams, ApproveVaultParams, RemoveLiquidityVaultParams, UnwrapNativeTokenVaultParams, WrapNativeTokenVaultParams } from './params';
 import type { VaultConfig } from '../models';
+import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js';
 export interface OnchainLobVaultContractOptions {
     vault: VaultConfig;
     signer: Signer;
@@ -22,6 +23,7 @@ export declare class OnchainLobVaultContract {
     protected readonly vaultContract: Contract;
     private _chainId;
     protected get chainId(): Promise<bigint>;
+    protected pythConnection: EvmPriceServiceConnection;
     constructor(options: Readonly<OnchainLobVaultContractOptions>);
     approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse>;
     wrapNativeToken(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
@@ -30,4 +32,5 @@ export declare class OnchainLobVaultContract {
     removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
     protected processContractMethodCall(contract: Contract, methodCall: Promise<ContractTransactionResponse>): Promise<ContractTransactionResponse>;
     private convertTokensAmountToRawAmountIfNeeded;
+    protected getPriceUpdateData(feedPriceIds: string[]): Promise<string[]>;
 }

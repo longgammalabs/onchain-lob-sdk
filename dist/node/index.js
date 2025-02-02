@@ -6408,6 +6408,7 @@ var getParams2 = (amount, amountUSD, lpAmount, slippage, tokenDecimals, lpTokenD
 
 // src/vault/onchainLobVaultContract.ts
 var import_ethers5 = require("ethers");
+var import_pyth_evm_js = require("@pythnetwork/pyth-evm-js");
 var getExpires2 = () => BigInt(Math.floor(Date.now() / 1e3) + 5 * 60);
 var _OnchainLobVaultContract = class _OnchainLobVaultContract {
   constructor(options) {
@@ -6419,6 +6420,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     __publicField(this, "signer");
     __publicField(this, "vaultContract");
     __publicField(this, "_chainId");
+    __publicField(this, "pythConnection");
     this.vault = options.vault;
     this.signer = options.signer;
     this.autoWaitTransaction = options.autoWaitTransaction ?? _OnchainLobVaultContract.defaultAutoWaitTransaction;
@@ -6426,6 +6428,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     this.fastWaitTransactionInterval = options.fastWaitTransactionInterval ?? _OnchainLobVaultContract.defaultFastWaitTransactionInterval;
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
     this.vaultContract = new import_ethers5.Contract(options.vault.vaultAddress, lpManagerAbi, options.signer);
+    this.pythConnection = new import_pyth_evm_js.EvmPriceServiceConnection("https://hermes.pyth.network");
   }
   get chainId() {
     if (this._chainId === void 0) {
@@ -6509,6 +6512,11 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     if (!token) {
       throw Error("Token is not in the pool.");
     }
+    const tokenId = this.vault.tokenIds.find((tokenId2) => tokenId2.tokenAddress === token.contractAddress);
+    if (!tokenId) {
+      throw Error("Token Id not found.");
+    }
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map((ti) => ti.id.toString()));
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const amountUsd = this.convertTokensAmountToRawAmountIfNeeded(params.amountUsd, 18);
     const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
@@ -6516,11 +6524,12 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.addLiquidity(
-        token.contractAddress,
+        tokenId,
         amount,
         amountUsd,
         minLpMinted,
         expires,
+        priceUpdateData,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -6536,6 +6545,11 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     if (!token) {
       throw Error("Token is not in the pool.");
     }
+    const tokenId = this.vault.tokenIds.find((tokenId2) => tokenId2.tokenAddress === token.contractAddress);
+    if (!tokenId) {
+      throw Error("Token Id not found.");
+    }
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map((ti) => ti.id.toString()));
     const burnLP = this.convertTokensAmountToRawAmountIfNeeded(params.burnLP, this.vault.lpToken.decimals);
     const minUsdValue = this.convertTokensAmountToRawAmountIfNeeded(params.minUsdValue, 18);
     const minTokenGet = this.convertTokensAmountToRawAmountIfNeeded(params.minTokenGet, token.decimals);
@@ -6543,11 +6557,12 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.removeLiquidity(
-        token.contractAddress,
+        tokenId,
         burnLP,
         minUsdValue,
         minTokenGet,
         expires,
+        priceUpdateData,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -6592,6 +6607,15 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
   }
   convertTokensAmountToRawAmountIfNeeded(amount, decimals) {
     return typeof amount === "bigint" ? amount : tokenUtils_exports.convertTokensAmountToRawAmount(amount, decimals);
+  }
+  async getPriceUpdateData(feedPriceIds) {
+    try {
+      const updateData = await this.pythConnection.getPriceFeedsUpdateData(feedPriceIds);
+      return updateData;
+    } catch (error) {
+      console.error("Failed to get price update data from pyth:", error);
+      throw error;
+    }
   }
 };
 __publicField(_OnchainLobVaultContract, "defaultAutoWaitTransaction", true);

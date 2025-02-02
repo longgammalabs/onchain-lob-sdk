@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import type {
   Token,
   VaultTotalValues,
@@ -17,11 +16,11 @@ export const mapTokenDtoToToken = (dto: TokenDto): Token => {
   return dto;
 };
 
-export const mapVaultTotalValuesDtoToVaultTotalValues = (dto: VaultTotalValuesDto, tokens: Token[]): VaultTotalValues => {
+export const mapVaultTotalValuesDtoToVaultTotalValues = (dto: VaultTotalValuesDto, tokens: Token[], lpToken: Token): VaultTotalValues => {
   return {
     ...dto,
     rawTotalSupply: BigInt(dto.totalSupply),
-    totalSupply: BigNumber(dto.totalSupply),
+    totalSupply: tokenUtils.convertTokensRawAmountToAmount(dto.totalSupply, lpToken.decimals),
     tokens: dto.tokens.map(dtoToken => ({
       ...dtoToken,
       rawTokenBalance: BigInt(dtoToken.tokenBalance),
@@ -65,8 +64,9 @@ export const mapVaultDepositorDtoToVaultDepositor = (
 
 export const mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate = (
   dto: VaultTotalValuesUpdateDto,
-  tokens: Token[]
-): VaultTotalValuesUpdate => mapVaultTotalValuesDtoToVaultTotalValues(dto, tokens);
+  tokens: Token[],
+  lpToken: Token
+): VaultTotalValuesUpdate => mapVaultTotalValuesDtoToVaultTotalValues(dto, tokens, lpToken);
 
 export const mapVaultDepositActionUpdateDtoToVaultDepositActionUpdate = (
   dto: VaultDepositActionUpdateDto,

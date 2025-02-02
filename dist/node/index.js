@@ -6634,15 +6634,14 @@ __export(mappers_exports2, {
   mapVaultTotalValuesDtoToVaultTotalValues: () => mapVaultTotalValuesDtoToVaultTotalValues,
   mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate: () => mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate
 });
-var import_bignumber10 = __toESM(require("bignumber.js"));
 var mapTokenDtoToToken2 = (dto) => {
   return dto;
 };
-var mapVaultTotalValuesDtoToVaultTotalValues = (dto, tokens) => {
+var mapVaultTotalValuesDtoToVaultTotalValues = (dto, tokens, lpToken) => {
   return {
     ...dto,
     rawTotalSupply: BigInt(dto.totalSupply),
-    totalSupply: (0, import_bignumber10.default)(dto.totalSupply),
+    totalSupply: tokenUtils_exports.convertTokensRawAmountToAmount(dto.totalSupply, lpToken.decimals),
     tokens: dto.tokens.map((dtoToken) => ({
       ...dtoToken,
       rawTokenBalance: BigInt(dtoToken.tokenBalance),
@@ -6674,7 +6673,7 @@ var mapVaultDepositorDtoToVaultDepositor = (dto, lpDecimals) => {
     lpAmount: tokenUtils_exports.convertTokensRawAmountToAmount(dto.lpAmount, lpDecimals)
   };
 };
-var mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate = (dto, tokens) => mapVaultTotalValuesDtoToVaultTotalValues(dto, tokens);
+var mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate = (dto, tokens, lpToken) => mapVaultTotalValuesDtoToVaultTotalValues(dto, tokens, lpToken);
 var mapVaultDepositActionUpdateDtoToVaultDepositActionUpdate = (dto, tokenDecimals, lpDecimals) => mapVaultDepositActionDtoToVaultDepositAction(dto, tokenDecimals, lpDecimals);
 var mapVaultDepositorUpdateDtoToVaultDepositorUpdate = (dto, lpDecimals) => mapVaultDepositorDtoToVaultDepositor(dto, lpDecimals);
 
@@ -6715,7 +6714,7 @@ var OnchainLobVault = class {
         const vaultConfig = await this.getCachedVaultConfig();
         if (!vaultConfig)
           return;
-        const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens);
+        const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens, vaultConfig.lpToken);
         this.events.vaultTotalValuesUpdated.emit(isSnapshot, totalValuesUpdates);
       } catch (error) {
         console.error(getErrorLogMessage(error));
@@ -6875,7 +6874,7 @@ var OnchainLobVault = class {
       this.ensureVaultConfig(),
       this.onchainLobService.getVaultTotalValues(params)
     ]);
-    const vaultTotalValues = mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens);
+    const vaultTotalValues = mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens, vaultConfig.lpToken);
     return vaultTotalValues;
   }
   /**

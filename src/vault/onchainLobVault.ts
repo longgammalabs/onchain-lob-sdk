@@ -325,7 +325,7 @@ export class OnchainLobVault {
       this.ensureVaultConfig(),
       this.onchainLobService.getVaultTotalValues(params),
     ]);
-    const vaultTotalValues = mappers.mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens);
+    const vaultTotalValues = mappers.mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens, vaultConfig.lpToken);
     return vaultTotalValues;
   }
 
@@ -511,7 +511,7 @@ export class OnchainLobVault {
       const vaultConfig = await this.getCachedVaultConfig();
       if (!vaultConfig)
         return;
-      const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens);
+      const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens, vaultConfig.lpToken);
       (this.events.vaultTotalValuesUpdated as ToEventEmitter<typeof this.events.vaultTotalValuesUpdated>).emit(isSnapshot, totalValuesUpdates);
     }
     catch (error) {

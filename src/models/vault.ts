@@ -168,6 +168,11 @@ export type VaultConfig = {
   vaultAddress: string;
 
   /**
+   * The vault's pyth address
+   */
+  pythAddress: string;
+
+  /**
    * The vault's lp token
    */
   lpToken: Token;

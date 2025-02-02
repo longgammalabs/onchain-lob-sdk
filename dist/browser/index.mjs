@@ -6491,7 +6491,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.addLiquidity(
-        tokenId,
+        BigInt(tokenId.id),
         amount,
         amountUsd,
         minLpMinted,
@@ -6525,7 +6525,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.removeLiquidity(
-        tokenId,
+        BigInt(tokenId.id),
         burnLP,
         minUsdValue,
         minTokenGet,

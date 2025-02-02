@@ -6529,6 +6529,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
+          value: priceUpdateData.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,
@@ -6562,6 +6563,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
+          value: priceUpdateData.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,

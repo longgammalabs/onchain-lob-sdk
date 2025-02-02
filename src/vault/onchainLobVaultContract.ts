@@ -168,6 +168,7 @@ export class OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
+          value: priceUpdateData.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,
@@ -208,6 +209,7 @@ export class OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
+          value: priceUpdateData.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,

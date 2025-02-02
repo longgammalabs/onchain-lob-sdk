@@ -6400,9 +6400,12 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     return Promise.resolve(this._chainId);
   }
   async approveTokens(params) {
-    const token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
+    let token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
+    if (params.token === this.vault.lpToken.contractAddress) {
+      token = this.vault.lpToken;
+    }
     if (!token) {
-      throw Error("Token is not in the pool.");
+      throw Error("Token is not in the pool and not a LP token.");
     }
     const tokenContract = new Contract2(
       token.contractAddress,

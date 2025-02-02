@@ -12,6 +12,7 @@ import { erc20Abi, erc20WethAbi, lpManagerAbi } from '../abi';
 import type { VaultConfig } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
+import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js';
 
 export interface OnchainLobVaultContractOptions {
   vault: VaultConfig;
@@ -48,6 +49,8 @@ export class OnchainLobVaultContract {
     return Promise.resolve(this._chainId);
   }
 
+  protected pythConnection: EvmPriceServiceConnection;
+
   constructor(options: Readonly<OnchainLobVaultContractOptions>) {
     this.vault = options.vault;
     this.signer = options.signer;
@@ -57,6 +60,7 @@ export class OnchainLobVaultContract {
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
     this.vaultContract = new Contract(options.vault.vaultAddress, lpManagerAbi, options.signer);
+    this.pythConnection = new EvmPriceServiceConnection('https://hermes.pyth.network');
   }
 
   async approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse> {
@@ -141,6 +145,14 @@ export class OnchainLobVaultContract {
       throw Error('Token is not in the pool.');
     }
 
+    const tokenId = this.vault.tokenIds.find(tokenId => tokenId.tokenAddress === token.contractAddress);
+
+    if (!tokenId) {
+      throw Error('Token Id not found.');
+    }
+
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map(ti => ti.id.toString()));
+
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const amountUsd = this.convertTokensAmountToRawAmountIfNeeded(params.amountUsd, 18);
     const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
@@ -149,11 +161,12 @@ export class OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.addLiquidity!(
-        token.contractAddress,
+        tokenId,
         amount,
         amountUsd,
         minLpMinted,
         expires,
+        priceUpdateData,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -172,6 +185,14 @@ export class OnchainLobVaultContract {
       throw Error('Token is not in the pool.');
     }
 
+    const tokenId = this.vault.tokenIds.find(tokenId => tokenId.tokenAddress === token.contractAddress);
+
+    if (!tokenId) {
+      throw Error('Token Id not found.');
+    }
+
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map(ti => ti.id.toString()));
+
     const burnLP = this.convertTokensAmountToRawAmountIfNeeded(params.burnLP, this.vault.lpToken.decimals);
     const minUsdValue = this.convertTokensAmountToRawAmountIfNeeded(params.minUsdValue, 18);
     const minTokenGet = this.convertTokensAmountToRawAmountIfNeeded(params.minTokenGet, token.decimals);
@@ -180,11 +201,12 @@ export class OnchainLobVaultContract {
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.removeLiquidity!(
-        token.contractAddress,
+        tokenId,
         burnLP,
         minUsdValue,
         minTokenGet,
         expires,
+        priceUpdateData,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -242,5 +264,16 @@ export class OnchainLobVaultContract {
     return typeof amount === 'bigint'
       ? amount
       : tokenUtils.convertTokensAmountToRawAmount(amount, decimals);
+  }
+
+  protected async getPriceUpdateData(feedPriceIds: string[]): Promise<string[]> {
+    try {
+      const updateData = await this.pythConnection.getPriceFeedsUpdateData(feedPriceIds);
+      return updateData;
+    }
+    catch (error) {
+      console.error('Failed to get price update data from pyth:', error);
+      throw error;
+    }
   }
 }

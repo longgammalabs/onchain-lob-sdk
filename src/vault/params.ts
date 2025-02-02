@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { VaultValueHistoryResolution } from '../models';
+import { Token, VaultHistoryPeriod } from '../models';
 
 /**
  * Transaction parameters.
@@ -71,6 +71,52 @@ export interface ApproveVaultParams extends TransactionParams {
 
   /**
    * The amount of tokens to approve.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   */
+  amount: BigNumber | bigint;
+}
+
+/**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface WrapNativeTokenVaultParams
+ * @extends TransactionParams
+ */
+export interface WrapNativeTokenVaultParams extends TransactionParams {
+  /**
+   * The Wrapped native token.
+   *
+   * @type {string}
+   */
+  token: Token;
+  /**
+   * The amount of tokens to wrap.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   */
+  amount: BigNumber | bigint;
+}
+
+/**
+ * Parameters for wrapping native tokens.
+ *
+ * @interface UnwrapNativeTokenVaultParams
+ * @extends TransactionParams
+ */
+export interface UnwrapNativeTokenVaultParams extends TransactionParams {
+  /**
+   * The Wrapped native token.
+   *
+   * @type {string}
+   */
+  token: Token;
+  /**
+   * The amount of tokens to unwrap.
    * If `bigint` is provided, then the token's contract unit is used.
    * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
    *
@@ -175,13 +221,19 @@ export interface RemoveLiquidityVaultParams extends TransactionParams {
   minTokenGet: BigNumber | bigint;
 }
 
-export type SubscribeToVaultUpdatesParams = {
-  user?: string;
-};
+export interface SubscribeToVaultTotalValuesParams {}
+export type UnsubscribeFromVaultTotalValuesParams = SubscribeToVaultTotalValuesParams;
 
-export type SubscribeToVaultValueHistoryParams = {
-  resolution?: VaultValueHistoryResolution;
-};
+export interface SubscribeToVaultDepositorsParams {}
+export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsParams;
+
+export interface SubscribeToVaultDepositActionsParams {}
+export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
+
+export interface SubscribeToVaultHistoryParams {
+  period: VaultHistoryPeriod;
+}
+export type UnsubscribeFromVaultHistoryParams = SubscribeToVaultHistoryParams;
 
 export type CalculateDepositDetailsSyncParams = {
   isLpTokenInput: boolean;

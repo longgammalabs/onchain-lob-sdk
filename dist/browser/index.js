@@ -1618,21 +1618,23 @@ var erc20WethAbi = [
 var lpManagerAbi = [
   {
     type: "constructor",
-    inputs: [],
+    inputs: [
+      {
+        name: "_pythAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_proxyPythAddress",
+        type: "address",
+        internalType: "address"
+      }
+    ],
     stateMutability: "nonpayable"
   },
   {
-    type: "function",
-    name: "DOMAIN_SEPARATOR",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32"
-      }
-    ],
-    stateMutability: "view"
+    type: "receive",
+    stateMutability: "payable"
   },
   {
     type: "function",
@@ -1682,6 +1684,11 @@ var lpManagerAbi = [
         name: "expires",
         type: "uint256",
         internalType: "uint256"
+      },
+      {
+        name: "priceUpdateData",
+        type: "bytes[]",
+        internalType: "bytes[]"
       }
     ],
     outputs: [
@@ -1691,21 +1698,21 @@ var lpManagerAbi = [
         internalType: "uint256"
       }
     ],
-    stateMutability: "nonpayable"
+    stateMutability: "payable"
   },
   {
     type: "function",
-    name: "approve",
+    name: "approveForLOB",
     inputs: [
       {
-        name: "lob",
-        type: "address",
-        internalType: "address"
+        name: "lobId",
+        type: "uint8",
+        internalType: "uint8"
       },
       {
-        name: "token",
-        type: "address",
-        internalType: "address"
+        name: "tokenId",
+        type: "uint8",
+        internalType: "uint8"
       },
       {
         name: "value",
@@ -1714,55 +1721,6 @@ var lpManagerAbi = [
       }
     ],
     outputs: [],
-    stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
-    name: "batchChangeOrder",
-    inputs: [
-      {
-        name: "lobId",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "orderIds",
-        type: "uint64[]",
-        internalType: "uint64[]"
-      },
-      {
-        name: "quantities",
-        type: "uint128[]",
-        internalType: "uint128[]"
-      },
-      {
-        name: "prices",
-        type: "uint72[]",
-        internalType: "uint72[]"
-      },
-      {
-        name: "maxCommissionPerOrder",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "postOnly",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
-      }
-    ],
-    outputs: [
-      {
-        name: "newOrderIds",
-        type: "uint64[]",
-        internalType: "uint64[]"
-      }
-    ],
     stateMutability: "nonpayable"
   },
   {
@@ -1818,59 +1776,10 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "changeOrder",
+    name: "changePauser",
     inputs: [
       {
-        name: "lobId",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "oldOrderId",
-        type: "uint64",
-        internalType: "uint64"
-      },
-      {
-        name: "newQuantity",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "newPrice",
-        type: "uint72",
-        internalType: "uint72"
-      },
-      {
-        name: "maxCommission",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "postOnly",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
-      }
-    ],
-    outputs: [
-      {
-        name: "orderId",
-        type: "uint64",
-        internalType: "uint64"
-      }
-    ],
-    stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
-    name: "changePrimaryMarketMaker",
-    inputs: [
-      {
-        name: "_primaryMarketMaker",
+        name: "pauser_",
         type: "address",
         internalType: "address"
       }
@@ -1880,10 +1789,10 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "changeRfqOrderSigner",
+    name: "changePrimaryMarketMaker",
     inputs: [
       {
-        name: "_rfqOrderSigner",
+        name: "_primaryMarketMaker",
         type: "address",
         internalType: "address"
       }
@@ -1907,6 +1816,16 @@ var lpManagerAbi = [
       },
       {
         name: "_targetWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_lowerBoundWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_upperBoundWeight",
         type: "uint16",
         internalType: "uint16"
       },
@@ -1979,46 +1898,10 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "eip712Domain",
+    name: "disableSlashingStatus",
     inputs: [],
-    outputs: [
-      {
-        name: "fields",
-        type: "bytes1",
-        internalType: "bytes1"
-      },
-      {
-        name: "name",
-        type: "string",
-        internalType: "string"
-      },
-      {
-        name: "version",
-        type: "string",
-        internalType: "string"
-      },
-      {
-        name: "chainId",
-        type: "uint256",
-        internalType: "uint256"
-      },
-      {
-        name: "verifyingContract",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "salt",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "extensions",
-        type: "uint256[]",
-        internalType: "uint256[]"
-      }
-    ],
-    stateMutability: "view"
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
     type: "function",
@@ -2052,13 +1935,18 @@ var lpManagerAbi = [
       },
       {
         name: "",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "",
         type: "uint16",
         internalType: "uint16"
       },
       {
         name: "",
-        type: "uint24",
-        internalType: "uint24"
+        type: "uint128",
+        internalType: "uint128"
       },
       {
         name: "",
@@ -2074,6 +1962,51 @@ var lpManagerAbi = [
         name: "",
         type: "uint16",
         internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
       }
     ],
     stateMutability: "view"
@@ -2138,32 +2071,8 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "getTokenSharesAndValues",
+    name: "getTokensCount",
     inputs: [],
-    outputs: [
-      {
-        name: "shares",
-        type: "uint256[]",
-        internalType: "uint256[]"
-      },
-      {
-        name: "usdValues",
-        type: "uint256[]",
-        internalType: "uint256[]"
-      }
-    ],
-    stateMutability: "view"
-  },
-  {
-    type: "function",
-    name: "getTotalSharesOf",
-    inputs: [
-      {
-        name: "tokenId",
-        type: "uint8",
-        internalType: "uint8"
-      }
-    ],
     outputs: [
       {
         name: "",
@@ -2175,13 +2084,13 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "getTotalValue",
+    name: "hwmLPPrice",
     inputs: [],
     outputs: [
       {
-        name: "totalUSDValue",
-        type: "uint256",
-        internalType: "uint256"
+        name: "",
+        type: "uint96",
+        internalType: "uint96"
       }
     ],
     stateMutability: "view"
@@ -2196,22 +2105,12 @@ var lpManagerAbi = [
         internalType: "address"
       },
       {
-        name: "_domainName",
-        type: "string",
-        internalType: "string"
-      },
-      {
-        name: "_oracle",
-        type: "address",
-        internalType: "address"
-      },
-      {
         name: "_liquidityToken",
         type: "address",
         internalType: "address"
       },
       {
-        name: "_rfqOrderSigner",
+        name: "_adminFeeRecipient",
         type: "address",
         internalType: "address"
       }
@@ -2330,20 +2229,40 @@ var lpManagerAbi = [
   },
   {
     type: "function",
-    name: "oracle",
+    name: "owner",
     inputs: [],
     outputs: [
       {
         name: "",
         type: "address",
-        internalType: "contract IOracle"
+        internalType: "address"
       }
     ],
     stateMutability: "view"
   },
   {
     type: "function",
-    name: "owner",
+    name: "pause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "paused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "pauser",
     inputs: [],
     outputs: [
       {
@@ -2410,6 +2329,11 @@ var lpManagerAbi = [
         name: "expires",
         type: "uint256",
         internalType: "uint256"
+      },
+      {
+        name: "priceUpdateData",
+        type: "bytes[]",
+        internalType: "bytes[]"
       }
     ],
     outputs: [
@@ -2419,108 +2343,7 @@ var lpManagerAbi = [
         internalType: "uint64"
       }
     ],
-    stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
-    name: "placeRfqOrder",
-    inputs: [
-      {
-        name: "isAsk",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "quantity",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "price",
-        type: "uint72",
-        internalType: "uint72"
-      },
-      {
-        name: "maxCommission",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
-      },
-      {
-        name: "rfqOrder",
-        type: "tuple",
-        internalType: "struct RfqOrder",
-        components: [
-          {
-            name: "lobId",
-            type: "uint8",
-            internalType: "uint8"
-          },
-          {
-            name: "qty",
-            type: "uint128",
-            internalType: "uint128"
-          },
-          {
-            name: "price",
-            type: "uint72",
-            internalType: "uint72"
-          },
-          {
-            name: "isAsk",
-            type: "bool",
-            internalType: "bool"
-          },
-          {
-            name: "postOnly",
-            type: "bool",
-            internalType: "bool"
-          },
-          {
-            name: "expires",
-            type: "uint256",
-            internalType: "uint256"
-          },
-          {
-            name: "userAddress",
-            type: "address",
-            internalType: "address"
-          },
-          {
-            name: "nonce",
-            type: "uint128",
-            internalType: "uint128"
-          }
-        ]
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32"
-      }
-    ],
-    outputs: [
-      {
-        name: "orderId",
-        type: "uint64",
-        internalType: "uint64"
-      }
-    ],
-    stateMutability: "nonpayable"
+    stateMutability: "payable"
   },
   {
     type: "function",
@@ -2576,6 +2399,11 @@ var lpManagerAbi = [
         name: "expires",
         type: "uint256",
         internalType: "uint256"
+      },
+      {
+        name: "priceUpdateData",
+        type: "bytes[]",
+        internalType: "bytes[]"
       }
     ],
     outputs: [
@@ -2585,7 +2413,7 @@ var lpManagerAbi = [
         internalType: "uint256"
       }
     ],
-    stateMutability: "nonpayable"
+    stateMutability: "payable"
   },
   {
     type: "function",
@@ -2593,19 +2421,6 @@ var lpManagerAbi = [
     inputs: [],
     outputs: [],
     stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
-    name: "rfqOrderSigner",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      }
-    ],
-    stateMutability: "view"
   },
   {
     type: "function",
@@ -2638,16 +2453,21 @@ var lpManagerAbi = [
       },
       {
         name: "_cooldownDuration",
-        type: "uint16",
-        internalType: "uint16"
-      },
-      {
-        name: "_maxOracleAge",
         type: "uint24",
         internalType: "uint24"
       },
       {
+        name: "_maxOracleAge",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
         name: "_minLiquidityValueUsd",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "_maxLiquidityValueUsd",
         type: "uint128",
         internalType: "uint128"
       },
@@ -2660,6 +2480,59 @@ var lpManagerAbi = [
         name: "_marketMakerLPShareBps",
         type: "uint16",
         internalType: "uint16"
+      },
+      {
+        name: "_nativeTokenEnabled",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_nativeTokenTokenId",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "_adminFeeRecipient",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_priceValidityPeriod",
+        type: "uint24",
+        internalType: "uint24"
+      },
+      {
+        name: "_baseMultiplier",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_maxAllowedPriceDeviation",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_perfFeeBps",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "_adminPerfFeeBps",
+        type: "uint16",
+        internalType: "uint16"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "slashMakersShares",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256"
       }
     ],
     outputs: [],
@@ -2688,6 +2561,16 @@ var lpManagerAbi = [
       },
       {
         name: "targetWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "lowerBoundWeight",
+        type: "uint16",
+        internalType: "uint16"
+      },
+      {
+        name: "upperBoundWeight",
         type: "uint16",
         internalType: "uint16"
       },
@@ -2737,6 +2620,13 @@ var lpManagerAbi = [
   },
   {
     type: "function",
+    name: "unpause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
     name: "upgradeToAndCall",
     inputs: [
       {
@@ -2754,9 +2644,35 @@ var lpManagerAbi = [
     stateMutability: "payable"
   },
   {
+    type: "function",
+    name: "validateLPPriceAndDistributeFees",
+    inputs: [
+      {
+        name: "priceUpdateData",
+        type: "bytes[]",
+        internalType: "bytes[]"
+      }
+    ],
+    outputs: [],
+    stateMutability: "payable"
+  },
+  {
+    type: "function",
+    name: "validateMarketMakerLPShare",
+    inputs: [],
+    outputs: [],
+    stateMutability: "view"
+  },
+  {
     type: "event",
     name: "ConfigSet",
     inputs: [
+      {
+        name: "dynamicFeesEnabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
       {
         name: "adminMintLPFeeBps",
         type: "uint16",
@@ -2783,18 +2699,24 @@ var lpManagerAbi = [
       },
       {
         name: "cooldownDuration",
-        type: "uint16",
-        indexed: false,
-        internalType: "uint16"
-      },
-      {
-        name: "maxOracleAge",
         type: "uint24",
         indexed: false,
         internalType: "uint24"
       },
       {
+        name: "maxOracleAge",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
         name: "minLiquidityValueUsd",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "maxLiquidityValueUsd",
         type: "uint128",
         indexed: false,
         internalType: "uint128"
@@ -2810,14 +2732,56 @@ var lpManagerAbi = [
         type: "uint16",
         indexed: false,
         internalType: "uint16"
+      },
+      {
+        name: "nativeTokenEnabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "nativeTokenTokenId",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8"
+      },
+      {
+        name: "adminFeeRecipient",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "priceValidityPeriod",
+        type: "uint24",
+        indexed: false,
+        internalType: "uint24"
+      },
+      {
+        name: "baseMultiplier",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      },
+      {
+        name: "maxAllowedPriceDeviation",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      },
+      {
+        name: "perfFeeBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "adminPerfFeeBps",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
       }
     ],
-    anonymous: false
-  },
-  {
-    type: "event",
-    name: "EIP712DomainChanged",
-    inputs: [],
     anonymous: false
   },
   {
@@ -2868,13 +2832,25 @@ var lpManagerAbi = [
         internalType: "uint256"
       },
       {
-        name: "lpTotalSupply",
+        name: "protocolFee",
         type: "uint256",
         indexed: false,
         internalType: "uint256"
       },
       {
         name: "mintedLP",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "accountLpShares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalSupply",
         type: "uint256",
         indexed: false,
         internalType: "uint256"
@@ -2917,13 +2893,25 @@ var lpManagerAbi = [
         internalType: "uint256"
       },
       {
-        name: "lpTotalSupply",
+        name: "protocolFee",
         type: "uint256",
         indexed: false,
         internalType: "uint256"
       },
       {
         name: "burnedLP",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "accountLpShares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalSupply",
         type: "uint256",
         indexed: false,
         internalType: "uint256"
@@ -2970,6 +2958,31 @@ var lpManagerAbi = [
         type: "uint16",
         indexed: false,
         internalType: "uint16"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "MakersSharesSlashed",
+    inputs: [
+      {
+        name: "marketMaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalSupply",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
       }
     ],
     anonymous: false
@@ -3033,6 +3046,75 @@ var lpManagerAbi = [
   },
   {
     type: "event",
+    name: "Paused",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "PauserChanged",
+    inputs: [
+      {
+        name: "newPauser",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "oldPauser",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "PerformanceFeesDistributed",
+    inputs: [
+      {
+        name: "currentPrice",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "previousHWM",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "adminFeeAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "marketMakerFeeAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      },
+      {
+        name: "totalSupply",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
     name: "PrimaryMarketMakerChanged",
     inputs: [
       {
@@ -3052,50 +3134,38 @@ var lpManagerAbi = [
   },
   {
     type: "event",
-    name: "RfqOrderPlaced",
+    name: "SlashingAvailableStatusChanged",
     inputs: [
       {
-        name: "owner",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "isAsk",
+        name: "status",
         type: "bool",
         indexed: false,
         internalType: "bool"
-      },
-      {
-        name: "quantity",
-        type: "uint128",
-        indexed: false,
-        internalType: "uint128"
-      },
-      {
-        name: "price",
-        type: "uint72",
-        indexed: false,
-        internalType: "uint72"
       }
     ],
     anonymous: false
   },
   {
     type: "event",
-    name: "RfqOrderSignerChanged",
+    name: "Sync",
     inputs: [
       {
-        name: "oldSigner",
+        name: "token",
         type: "address",
-        indexed: false,
+        indexed: true,
         internalType: "address"
       },
       {
-        name: "newSigner",
-        type: "address",
+        name: "tokenBalance",
+        type: "uint256",
         indexed: false,
-        internalType: "address"
+        internalType: "uint256"
+      },
+      {
+        name: "tokenReserved",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256"
       }
     ],
     anonymous: false
@@ -3129,6 +3199,18 @@ var lpManagerAbi = [
         internalType: "uint16"
       },
       {
+        name: "lowerBoundWeight",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
+        name: "upperBoundWeight",
+        type: "uint16",
+        indexed: false,
+        internalType: "uint16"
+      },
+      {
         name: "decimals",
         type: "uint8",
         indexed: false,
@@ -3145,6 +3227,19 @@ var lpManagerAbi = [
         type: "bytes32",
         indexed: false,
         internalType: "bytes32"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Unpaused",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: false,
+        internalType: "address"
       }
     ],
     anonymous: false
@@ -3196,6 +3291,16 @@ var lpManagerAbi = [
   },
   {
     type: "error",
+    name: "EnforcedPause",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ExpectedPause",
+    inputs: []
+  },
+  {
+    type: "error",
     name: "Expired",
     inputs: []
   },
@@ -3211,7 +3316,17 @@ var lpManagerAbi = [
   },
   {
     type: "error",
+    name: "Forbidden",
+    inputs: []
+  },
+  {
+    type: "error",
     name: "InsufficientBalance",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientFeeForPythUpdate",
     inputs: []
   },
   {
@@ -3241,11 +3356,6 @@ var lpManagerAbi = [
   },
   {
     type: "error",
-    name: "InvalidAmountToWithdraw",
-    inputs: []
-  },
-  {
-    type: "error",
     name: "InvalidFloatingPointRepresentation",
     inputs: []
   },
@@ -3256,27 +3366,17 @@ var lpManagerAbi = [
   },
   {
     type: "error",
-    name: "InvalidRfqOrderSide",
+    name: "InvalidOracleConfidenceLevel",
     inputs: []
   },
   {
     type: "error",
-    name: "InvalidRfqOrderSigner",
+    name: "InvalidTokenWeights",
     inputs: []
   },
   {
     type: "error",
     name: "InvalidTrader",
-    inputs: []
-  },
-  {
-    type: "error",
-    name: "InvalidTransfer",
-    inputs: []
-  },
-  {
-    type: "error",
-    name: "InvalidUserAddress",
     inputs: []
   },
   {
@@ -3287,6 +3387,21 @@ var lpManagerAbi = [
   {
     type: "error",
     name: "MarketMakerLPShareExceedsMaximum",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "MaxLiquidityValueExceeded",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "MaxOracleAgeExceedsMaximum",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NativeGasTokenDisabled",
     inputs: []
   },
   {
@@ -3343,8 +3458,19 @@ var lpManagerAbi = [
   },
   {
     type: "error",
-    name: "RfqOrderAlreadyUsed",
-    inputs: []
+    name: "SafeCastOverflowedUintDowncast",
+    inputs: [
+      {
+        name: "bits",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ]
   },
   {
     type: "error",
@@ -3359,7 +3485,22 @@ var lpManagerAbi = [
   },
   {
     type: "error",
+    name: "SlashingUnAvailable",
+    inputs: []
+  },
+  {
+    type: "error",
     name: "TokenDisabled",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "TokenWeightExceeded",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
     inputs: []
   },
   {
@@ -4643,6 +4784,221 @@ var OnchainLobSpotWebSocketService = class {
   }
 };
 
+// src/services/onchainLobVaultService/onchainLobVaultService.ts
+var OnchainLobVaultService = class extends RemoteService {
+  /**
+   * Retrieves the vault config.
+   * @param params - The parameters for the vault config request.
+   * @returns The vault config data.
+   */
+  async getVaultConfig(_params) {
+    const response = await this.fetch(`/vault-config`, "json");
+    return response;
+  }
+  /**
+   * Retrieves the vault total values.
+   * @param params - The parameters for the vault total values request.
+   * @returns The vault total values data.
+   */
+  async getVaultTotalValues(_params) {
+    const response = await this.fetch(`/vault-total-values`, "json");
+    return response;
+  }
+  /**
+   * Retrieves the vault deposit actions.
+   * @param params - The parameters for the vault deposit actions request.
+   * @returns The vault deposit actions data.
+   */
+  async getVaultDepositActions(params) {
+    const queryParams = new URLSearchParams({});
+    if (params.limit)
+      queryParams.append("limit", params.limit.toString());
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vault-deposit-actions?${queryParamsString}`, "json");
+    return response;
+  }
+  /**
+   * Retrieves the vault top depositors.
+   * @param params - The parameters for the vault top depositors request.
+   * @returns The vault top depositors data.
+   */
+  async getVaultDepositors(params) {
+    const queryParams = new URLSearchParams({});
+    if (params.limit)
+      queryParams.append("limit", params.limit.toString());
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vault-depositors?${queryParamsString}`, "json");
+    return response;
+  }
+  /**
+   * Retrieves the vault history.
+   * @param params - The parameters for the vault history request.
+   * @returns The vault history data.
+   */
+  async getVaultHistory(params) {
+    const queryParams = new URLSearchParams({
+      period: params.period
+    });
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vault-history?${queryParamsString}`, "json");
+    return response;
+  }
+};
+
+// src/services/onchainLobVaultWebSocketService/onchainLobVaultWebSocketService.ts
+var OnchainLobVaultWebSocketService = class {
+  /**
+   * Creates an instance of OnchainLobVaultWebSocketService.
+   * @param baseUrl - The base URL for the WebSocket connection.
+   * @param startImmediately - Whether to start the WebSocket client immediately.
+   */
+  constructor(baseUrl, startImmediately = true) {
+    this.baseUrl = baseUrl;
+    /**
+     * Event emitters for various WebSocket events.
+     */
+    __publicField(this, "events", {
+      vaultTotalValuesUpdated: new EventEmitter(),
+      vaultDepositActionsUpdated: new EventEmitter(),
+      vaultDepositorsUpdated: new EventEmitter(),
+      vaultHistoryUpdated: new EventEmitter(),
+      subscriptionError: new EventEmitter()
+    });
+    /**
+     * The WebSocket client used to communicate with the Onchain LOB vault.
+     */
+    __publicField(this, "onchainLobWebSocketClient");
+    /**
+     * Handles incoming WebSocket messages and emits the appropriate events.
+     * @param message - The WebSocket message received.
+     */
+    __publicField(this, "onSocketMessageReceived", (message) => {
+      try {
+        if (!message.data)
+          return;
+        switch (message.channel) {
+          case "vaultTotalValues":
+            this.events.vaultTotalValuesUpdated.emit(message.isSnapshot, message.data);
+            break;
+          case "vaultDepositActions":
+            this.events.vaultDepositActionsUpdated.emit(message.isSnapshot, message.data);
+            break;
+          case "vaultDepositors":
+            this.events.vaultDepositorsUpdated.emit(message.isSnapshot, message.data);
+            break;
+          case "vaultHistory":
+            this.events.vaultHistoryUpdated.emit(message.isSnapshot, message.data);
+            break;
+          case "error":
+            this.events.subscriptionError.emit(message.data);
+            break;
+          case "subscriptionResponse":
+            break;
+          default:
+            console.warn("Unknown channel in the socket message handler.", message.channel);
+        }
+      } catch (error) {
+        console.error("Unknown error in the socket message handler.", getErrorLogMessage(error));
+      }
+    });
+    this.onchainLobWebSocketClient = new OnchainLobWebSocketClient(baseUrl);
+    this.onchainLobWebSocketClient.events.messageReceived.addListener(this.onSocketMessageReceived);
+    if (startImmediately)
+      this.startOnchainLobWebSocketClientIfNeeded();
+  }
+  /**
+   * Subscribes to vault total values updates.
+   * @param params - The parameters for the vault total values subscription.
+   */
+  subscribeToVaultTotalValues(_params) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+    this.onchainLobWebSocketClient.subscribe({
+      channel: "vaultTotalValues"
+    });
+  }
+  /**
+   * Unsubscribes from vault total values updates.
+   * @param params - The parameters for the vault total values unsubscription.
+   */
+  unsubscribeFromVaultTotalValues(_params) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: "vaultTotalValues"
+    });
+  }
+  /**
+   * Subscribes to vault deposit actions updates.
+   * @param params - The parameters for the vault deposit actions subscription.
+   */
+  subscribeToVaultDepositActions(_params) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+    this.onchainLobWebSocketClient.subscribe({
+      channel: "vaultDepositActions"
+    });
+  }
+  /**
+   * Unsubscribes from vault deposit actions updates.
+   * @param params - The parameters for the vault deposit actions unsubscription.
+   */
+  unsubscribeFromVaultDepositActions(_params) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: "vaultDepositActions"
+    });
+  }
+  /**
+   * Subscribes to vault depositors updates.
+   * @param params - The parameters for the vault depositors subscription.
+   */
+  subscribeToVaultDepositors(_params) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+    this.onchainLobWebSocketClient.subscribe({
+      channel: "vaultDepositors"
+    });
+  }
+  /**
+   * Unsubscribes from vault depositors updates.
+   * @param params - The parameters for the vault depositors unsubscription.
+   */
+  unsubscribeFromVaultDepositors(_params) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: "vaultDepositors"
+    });
+  }
+  /**
+   * Subscribes to vault history updates.
+   * @param params - The parameters for the vault history subscription.
+   */
+  subscribeToVaultHistory(params) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+    this.onchainLobWebSocketClient.subscribe({
+      channel: "vaultHistory",
+      period: params.period
+    });
+  }
+  /**
+   * Unsubscribes from vault history updates.
+   * @param params - The parameters for the vault history unsubscription.
+   */
+  unsubscribeFromVaultHistory(params) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: "vaultHistory",
+      period: params.period
+    });
+  }
+  /**
+   * Disposes the WebSocket client and removes the message listener.
+   */
+  [Symbol.dispose]() {
+    this.onchainLobWebSocketClient.events.messageReceived.removeListener(this.onSocketMessageReceived);
+    this.onchainLobWebSocketClient.stop();
+  }
+  /**
+   * Starts the WebSocket client if it is not already started.
+   */
+  startOnchainLobWebSocketClientIfNeeded() {
+    this.onchainLobWebSocketClient.start().catch((error) => console.error(`Onchain LOB Web Socket has not been started. Error = ${getErrorLogMessage(error)}`));
+  }
+};
+
 // src/spot/limitDetails.ts
 import BigNumber4 from "bignumber.js";
 import { max } from "lodash";
@@ -5788,155 +6144,6 @@ var OnchainLobSpot = class {
   }
 };
 
-// src/vault/mock.ts
-var MockVault = class {
-  constructor() {
-    __publicField(this, "subscribeParams");
-    __publicField(this, "events", {
-      vaultUpdated: new EventEmitter(),
-      vaultValueHistoryUpdated: new EventEmitter(),
-      subscriptionError: new EventEmitter()
-    });
-    this.subscribeParams = void 0;
-    setInterval(() => {
-      if (this.subscribeParams) {
-        this.emitRandomVault();
-      }
-    }, 7e3);
-    setInterval(() => {
-      if (this.subscribeParams) {
-        this.emitRandomHistory();
-      }
-    }, 8340);
-  }
-  emitRandomVault() {
-    this.events.vaultUpdated.emit([{
-      totalUSDValue: Math.random() * 1e5,
-      pastWeekReturn: Math.random() * 100,
-      userUSDValue: this.subscribeParams?.user ? Math.random() * 1e4 : void 0,
-      userAllTimeEarnedUSDValue: this.subscribeParams?.user ? Math.random() * 5e3 : void 0,
-      leader: "0x4562393292392393293923",
-      vaultPerfomance: {
-        pnlPerfomance: Math.random() * 1e4,
-        maxDrowdownPercentage: Math.random() * 100,
-        volume: Math.random() * 1e6,
-        profitShare: Math.random() * 100
-      },
-      totalSupply: Math.random() * 1e7,
-      totalWeight: 120,
-      tokens: [{
-        address: "0x50c42deacd8fc9773493ed674b675be577f2634b",
-        symbol: "ETH",
-        tokenPriceUSD: 3238,
-        tokenValue: Math.random() * 1e4,
-        tokenWeight: 30
-      }, {
-        address: "0x29219dd400f2bf60e5a23d13be72b486d4038894",
-        symbol: "USDC",
-        tokenPriceUSD: 1,
-        tokenValue: Math.random() * 1e4,
-        tokenWeight: 60
-      }, {
-        address: "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
-        symbol: "S",
-        tokenPriceUSD: 0.8,
-        tokenValue: Math.random() * 1e4,
-        tokenWeight: 30
-      }]
-    }]);
-  }
-  emitRandomHistory() {
-    this.events.vaultValueHistoryUpdated.emit([{
-      pnl: Math.random() * 1e4,
-      totalUSDValue: Math.random() * 1e5,
-      time: Date.now(),
-      lastTouched: Date.now()
-    }]);
-  }
-  emitHistory() {
-    const timestamps = [1735765200, 1735851600, 1735938e3, 1736024400, 1736110800];
-    const history = timestamps.map((timestamp) => ({
-      pnl: Math.random() * 1e4,
-      totalUSDValue: Math.random() * 1e5,
-      time: timestamp,
-      lastTouched: timestamp
-    }));
-    this.events.vaultValueHistoryUpdated.emit(history);
-  }
-  subscribeToVaultUpdates(params) {
-    this.subscribeParams = params;
-  }
-  unsubscribeFromVaultUpdates() {
-    this.subscribeParams = void 0;
-  }
-  subscribeToVaultValueHistory(_params) {
-    setTimeout(() => {
-      this.emitHistory();
-    }, 1500);
-  }
-  unsubscribeFromVaultValueHistory() {
-    this.subscribeParams = void 0;
-  }
-  async vaultInfo() {
-    return {
-      vaultAddress: "0x123123123123123123123123",
-      fees: {
-        dynamicFeesEnabled: true,
-        adminMintLPFeeBps: 3e-3,
-        adminBurnLPFeeBps: 2e-3,
-        feeBps: 25e-4,
-        taxBps: 15e-4
-      },
-      lpToken: {
-        id: "",
-        name: "XLP",
-        symbol: "XLP",
-        contractAddress: "",
-        decimals: 18,
-        roundingDecimals: 6,
-        supportsPermit: false,
-        iconUrl: null,
-        fromOg: false
-      },
-      tokens: [
-        {
-          id: "0x50c42deacd8fc9773493ed674b675be577f2634b",
-          name: "Ether",
-          symbol: "ETH",
-          contractAddress: "0x50c42deacd8fc9773493ed674b675be577f2634b",
-          decimals: 18,
-          roundingDecimals: 6,
-          supportsPermit: false,
-          iconUrl: null,
-          fromOg: false
-        },
-        {
-          id: "0x29219dd400f2bf60e5a23d13be72b486d4038894",
-          name: "USD Coin",
-          symbol: "USDC",
-          contractAddress: "0x29219dd400f2bf60e5a23d13be72b486d4038894",
-          decimals: 6,
-          roundingDecimals: 6,
-          supportsPermit: false,
-          iconUrl: null,
-          fromOg: false
-        },
-        {
-          id: "s",
-          name: "Sonic",
-          symbol: "S",
-          contractAddress: "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
-          decimals: 18,
-          roundingDecimals: 6,
-          supportsPermit: false,
-          iconUrl: null,
-          fromOg: false
-        }
-      ]
-    };
-  }
-};
-
 // src/vault/depositDetails.ts
 import BigNumber8 from "bignumber.js";
 
@@ -6224,6 +6431,48 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     );
     return tx;
   }
+  async wrapNativeToken(params) {
+    const tokenContract = new Contract2(
+      params.token.contractAddress,
+      erc20WethAbi,
+      this.signer
+    );
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, params.token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.deposit(
+        {
+          value: amount,
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+    return tx;
+  }
+  async unwrapNativeToken(params) {
+    const tokenContract = new Contract2(
+      params.token.contractAddress,
+      erc20WethAbi,
+      this.signer
+    );
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, params.token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.withdraw(
+        amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+    return tx;
+  }
   async addLiquidity(params) {
     const token = this.vault.tokens.find((token2) => token2.contractAddress === params.token);
     if (!token) {
@@ -6319,6 +6568,61 @@ __publicField(_OnchainLobVaultContract, "defaultFastWaitTransaction", false);
 __publicField(_OnchainLobVaultContract, "defaultFastWaitTransactionInterval", 100);
 var OnchainLobVaultContract = _OnchainLobVaultContract;
 
+// src/vault/mappers.ts
+var mappers_exports2 = {};
+__export(mappers_exports2, {
+  mapTokenDtoToToken: () => mapTokenDtoToToken2,
+  mapVaultDepositActionDtoToVaultDepositAction: () => mapVaultDepositActionDtoToVaultDepositAction,
+  mapVaultDepositActionUpdateDtoToVaultDepositActionUpdate: () => mapVaultDepositActionUpdateDtoToVaultDepositActionUpdate,
+  mapVaultDepositorDtoToVaultDepositor: () => mapVaultDepositorDtoToVaultDepositor,
+  mapVaultDepositorUpdateDtoToVaultDepositorUpdate: () => mapVaultDepositorUpdateDtoToVaultDepositorUpdate,
+  mapVaultTotalValuesDtoToVaultTotalValues: () => mapVaultTotalValuesDtoToVaultTotalValues,
+  mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate: () => mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate
+});
+import BigNumber10 from "bignumber.js";
+var mapTokenDtoToToken2 = (dto) => {
+  return dto;
+};
+var mapVaultTotalValuesDtoToVaultTotalValues = (dto, tokens) => {
+  return {
+    ...dto,
+    rawTotalSupply: BigInt(dto.totalSupply),
+    totalSupply: BigNumber10(dto.totalSupply),
+    tokens: dto.tokens.map((dtoToken) => ({
+      ...dtoToken,
+      rawTokenBalance: BigInt(dtoToken.tokenBalance),
+      tokenBalance: tokenUtils_exports.convertTokensRawAmountToAmount(
+        dtoToken.tokenBalance,
+        tokens.find((token) => token.contractAddress === dtoToken.address).decimals
+      ),
+      rawTokenReserved: BigInt(dtoToken.tokenReserved),
+      tokenReserved: tokenUtils_exports.convertTokensRawAmountToAmount(
+        dtoToken.tokenReserved,
+        tokens.find((token) => token.contractAddress === dtoToken.address).decimals
+      )
+    }))
+  };
+};
+var mapVaultDepositActionDtoToVaultDepositAction = (dto, tokenDecimals, lpDecimals) => {
+  return {
+    ...dto,
+    rawTokenAmount: BigInt(dto.tokenAmount),
+    tokenAmount: tokenUtils_exports.convertTokensRawAmountToAmount(dto.tokenAmount, tokenDecimals),
+    rawLpAmount: BigInt(dto.lpAmount),
+    lpAmount: tokenUtils_exports.convertTokensRawAmountToAmount(dto.lpAmount, lpDecimals)
+  };
+};
+var mapVaultDepositorDtoToVaultDepositor = (dto, lpDecimals) => {
+  return {
+    ...dto,
+    rawLpAmount: BigInt(dto.lpAmount),
+    lpAmount: tokenUtils_exports.convertTokensRawAmountToAmount(dto.lpAmount, lpDecimals)
+  };
+};
+var mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate = (dto, tokens) => mapVaultTotalValuesDtoToVaultTotalValues(dto, tokens);
+var mapVaultDepositActionUpdateDtoToVaultDepositActionUpdate = (dto, tokenDecimals, lpDecimals) => mapVaultDepositActionDtoToVaultDepositAction(dto, tokenDecimals, lpDecimals);
+var mapVaultDepositorUpdateDtoToVaultDepositorUpdate = (dto, lpDecimals) => mapVaultDepositorDtoToVaultDepositor(dto, lpDecimals);
+
 // src/vault/onchainLobVault.ts
 var OnchainLobVault = class {
   constructor(options) {
@@ -6328,10 +6632,10 @@ var OnchainLobVault = class {
      * These events are emitted when data is updated related to subscriptions.
      */
     __publicField(this, "events", {
-      vaultUpdated: new EventEmitter(),
-      vaultValueHistoryUpdated: new EventEmitter(),
-      // userVaultHistoryUpdated: new EventEmitter(),
-      // depositorsUpdated: new EventEmitter(),
+      vaultTotalValuesUpdated: new EventEmitter(),
+      vaultDepositActionsUpdated: new EventEmitter(),
+      vaultDepositorsUpdated: new EventEmitter(),
+      vaultHistoryUpdated: new EventEmitter(),
       subscriptionError: new EventEmitter()
     });
     /**
@@ -6345,25 +6649,67 @@ var OnchainLobVault = class {
      */
     __publicField(this, "autoWaitTransaction");
     __publicField(this, "signer");
-    __publicField(this, "onchainLobVaultService");
-    __publicField(this, "onchainLobVaultWebSocketService");
-    __publicField(this, "mockVault");
+    __publicField(this, "onchainLobService");
+    __publicField(this, "onchainLobWebSocketService");
     __publicField(this, "vaultContract");
-    __publicField(this, "onVaultUpdated", (data) => {
-      this.events.vaultUpdated.emit(data);
+    __publicField(this, "mappers");
+    __publicField(this, "cachedVaultConfig");
+    __publicField(this, "cachedVaultConfigPromise");
+    __publicField(this, "onVaultTotalValuesUpdated", async (isSnapshot, data) => {
+      try {
+        const vaultConfig = await this.getCachedVaultConfig();
+        if (!vaultConfig)
+          return;
+        const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens);
+        this.events.vaultTotalValuesUpdated.emit(isSnapshot, totalValuesUpdates);
+      } catch (error) {
+        console.error(getErrorLogMessage(error));
+      }
     });
-    __publicField(this, "onVaultValueHistoryUpdated", (data) => {
-      this.events.vaultValueHistoryUpdated.emit(data);
+    __publicField(this, "onVaultDepositActionsUpdated", async (isSnapshot, data) => {
+      try {
+        const vaultConfig = await this.getCachedVaultConfig();
+        if (!vaultConfig)
+          return;
+        const depositActionUpdates = data.map(
+          (depositActionDto) => {
+            const token = vaultConfig.tokens.find((token2) => token2.symbol === depositActionDto.tokenSymbol);
+            return mapVaultDepositActionDtoToVaultDepositAction(depositActionDto, token.decimals, vaultConfig.lpToken.decimals);
+          }
+        );
+        this.events.vaultDepositActionsUpdated.emit(isSnapshot, depositActionUpdates);
+      } catch (error) {
+        console.error(getErrorLogMessage(error));
+      }
+    });
+    __publicField(this, "onVaultDepositorsUpdated", async (isSnapshot, data) => {
+      try {
+        const vaultConfig = await this.getCachedVaultConfig();
+        if (!vaultConfig)
+          return;
+        const depositorsUpdates = data.map(
+          (depositorDto) => mapVaultDepositorDtoToVaultDepositor(depositorDto, vaultConfig.lpToken.decimals)
+        );
+        this.events.vaultDepositorsUpdated.emit(isSnapshot, depositorsUpdates);
+      } catch (error) {
+        console.error(getErrorLogMessage(error));
+      }
+    });
+    __publicField(this, "onVaultHistoryUpdated", (isSnapshot, data) => {
+      try {
+        this.events.vaultHistoryUpdated.emit(isSnapshot, data);
+      } catch (error) {
+        console.error(getErrorLogMessage(error));
+      }
     });
     __publicField(this, "onSubscriptionError", (error) => {
       this.events.subscriptionError.emit(error);
     });
     this.signer = options.signer;
     this.autoWaitTransaction = options.autoWaitTransaction;
-    this.onchainLobVaultService = new OnchainLobSpotService(options.apiBaseUrl);
-    this.onchainLobVaultWebSocketService = new OnchainLobSpotWebSocketService(options.webSocketApiBaseUrl);
-    this.mockVault = new MockVault();
-    this.vaultContract = null;
+    this.onchainLobService = new OnchainLobVaultService(options.apiBaseUrl);
+    this.onchainLobWebSocketService = new OnchainLobVaultWebSocketService(options.webSocketApiBaseUrl);
+    this.mappers = mappers_exports2;
     this.attachEvents();
   }
   /**
@@ -6377,29 +6723,150 @@ var OnchainLobVault = class {
     return this;
   }
   /**
-   * Subscribes to the vault updates.
-   *
-   * @emits OnchainLobVault#events#vaultUpdated
-   */
-  subscribeToVaultUpdates(params) {
-    this.mockVault.subscribeToVaultUpdates(params);
+  * Approves the specified amount of tokens for the corresponding vault contract.
+  * You need to approve the tokens before you can deposit or withdraw.
+  *
+  * @param {ApproveVaultParams} params - The parameters for approving tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async approveTokens(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.approveTokens(params);
   }
   /**
-   * Unsubscribes from the vault updates.
+   * Deposit tokens amount into the vault
+   *
+   * @param {AddLiquidityVaultParams} params - The parameters for deposit.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
    */
-  unsubscribeFromVaultUpdates() {
-    this.mockVault.unsubscribeFromVaultUpdates();
+  async addLiquidity(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.addLiquidity(params);
   }
-  subscribeToVaultValueHistory(params) {
-    this.mockVault.subscribeToVaultValueHistory(params);
+  /**
+  * Wraps the specified amount of native tokens.
+  * You need to wrap the tokens before you can deposit.
+  *
+  * @param {WrapNativeTokenVaultParams} params - The parameters for wrapping tokens.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async wrapNativeTokens(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.wrapNativeToken(params);
   }
-  unsubscribeFromVaultValueHistory() {
-    this.mockVault.unsubscribeFromVaultValueHistory();
+  /**
+    * Unwraps the specified amount of native tokens.
+    * You need to unwrap the tokens after withdrawal to get native tokens.
+    *
+    * @param {UnwrapNativeTokenVaultParams} params - The parameters for unwrapping tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+  async unwrapNativeTokens(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.unwrapNativeToken(params);
   }
-  attachEvents() {
-    this.mockVault.events.vaultUpdated.addListener(this.onVaultUpdated);
-    this.mockVault.events.vaultValueHistoryUpdated.addListener(this.onVaultValueHistoryUpdated);
-    this.mockVault.events.subscriptionError.addListener(this.onSubscriptionError);
+  /**
+   * Withdraw LP amount from the vault
+   *
+   * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
+   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   */
+  async removeLiquidity(params) {
+    const vaultContract = await this.getVaultContract();
+    return vaultContract.removeLiquidity(params);
+  }
+  /**
+   * Retrieves the vault config information from cache.
+   *
+   * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
+   */
+  async getCachedVaultConfig() {
+    let vaultConfig = this.cachedVaultConfig;
+    if (!vaultConfig) {
+      try {
+        let getVaultConfigPromise = this.cachedVaultConfigPromise;
+        if (!getVaultConfigPromise) {
+          getVaultConfigPromise = this.getVaultConfig({});
+          this.cachedVaultConfigPromise = getVaultConfigPromise;
+        }
+        const vaultConfigRes = await getVaultConfigPromise;
+        this.cachedVaultConfigPromise = void 0;
+        vaultConfig = vaultConfigRes;
+      } catch (error) {
+        console.error(error);
+      }
+      if (!vaultConfig) return void 0;
+    }
+    return vaultConfig;
+  }
+  /**
+   * Retrieves the vault config.
+   *
+   * @param {GetVaultConfigParams} params - The parameters for retrieving the vault config.
+   * @returns {Promise<VaultConfig>} A Promise that resolves to vault config.
+   */
+  async getVaultConfig(params) {
+    const vaultConfigDto = await this.onchainLobService.getVaultConfig(params);
+    return vaultConfigDto;
+  }
+  /**
+   * Retrieves the vault total values.
+   *
+   * @param {GetVaultTotalValuesParams} params - The parameters for retrieving the vault total values.
+   * @returns {Promise<VaultTotalValues>} A Promise that resolves to vault total values.
+   */
+  async getVaultTotalValues(params) {
+    const [vaultConfig, vaultTotalValuesDto] = await Promise.all([
+      this.ensureVaultConfig(),
+      this.onchainLobService.getVaultTotalValues(params)
+    ]);
+    const vaultTotalValues = mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens);
+    return vaultTotalValues;
+  }
+  /**
+   * Retrieves the vault deposit actions.
+   *
+   * @param {GetVaultDepositActionsParams} params - The parameters for retrieving the vault deposit actions.
+   * @returns {Promise<VaultDepositAction[]>} A Promise that resolves to vault deposit actions.
+   */
+  async getVaultDepositActions(params) {
+    const [vaultConfig, vaultDepositActionsDtos] = await Promise.all([
+      this.ensureVaultConfig(),
+      this.onchainLobService.getVaultDepositActions(params)
+    ]);
+    const vaultDepositActions = vaultDepositActionsDtos.map(
+      (depositActionDto) => {
+        const token = vaultConfig.tokens.find((token2) => token2.symbol === depositActionDto.tokenSymbol);
+        return mapVaultDepositActionDtoToVaultDepositAction(depositActionDto, token.decimals, vaultConfig.lpToken.decimals);
+      }
+    );
+    return vaultDepositActions;
+  }
+  /**
+   * Retrieves the vault depositors.
+   *
+   * @param {GetVaultDepositorsParams} params - The parameters for retrieving the vault depositors.
+   * @returns {Promise<VaultDepositor[]>} A Promise that resolves to vault depositors.
+   */
+  async getVaultDepositors(params) {
+    const [vaultConfig, vaultDepositorsDtos] = await Promise.all([
+      this.ensureVaultConfig(),
+      this.onchainLobService.getVaultDepositors(params)
+    ]);
+    const vaultDepositors = vaultDepositorsDtos.map(
+      (depositorDto) => mapVaultDepositorDtoToVaultDepositor(depositorDto, vaultConfig.lpToken.decimals)
+    );
+    return vaultDepositors;
+  }
+  /**
+   * Retrieves the vault history.
+   *
+   * @param {GetVaultHistoryParams} params - The parameters for retrieving the vault history.
+   * @returns {Promise<VaultDepositor[]>} A Promise that resolves to vault history.
+   */
+  async getVaultHistory(params) {
+    const vaultHistoryDtos = await this.onchainLobService.getVaultHistory(params);
+    return vaultHistoryDtos;
   }
   /**
    * Calculates the deposit LP details for a given token inputs without API request.
@@ -6420,34 +6887,76 @@ var OnchainLobVault = class {
     return getWithdrawDetails(params);
   }
   /**
-   * Deposit tokens amount into the vault
+   * Subscribes to the vault total values updates.
    *
-   * @param {AddLiquidityVaultParams} params - The parameters for deposit.
-   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   * @emits OnchainLobVault#events#vaultTotalValuesUpdated
    */
-  async addLiquidity(params) {
-    const vaultContract = await this.getVaultContract();
-    return vaultContract.addLiquidity(params);
+  subscribeToVaultTotalValues(params) {
+    this.onchainLobWebSocketService.subscribeToVaultTotalValues(params);
   }
   /**
-   * Withdraw LP amount from the vault
-   *
-   * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
-   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+   * Unsubscribes from the vault total values updates.
    */
-  async removeLiquidity(params) {
-    const vaultContract = await this.getVaultContract();
-    return vaultContract.removeLiquidity(params);
+  unsubscribeToVaultTotalValues(params) {
+    this.onchainLobWebSocketService.unsubscribeFromVaultTotalValues(params);
   }
-  async getVaultConfig() {
-    return this.mockVault.vaultInfo();
+  /**
+   * Subscribes to the vault deposit actions updates.
+   *
+   * @emits OnchainLobVault#events#vaultDepositActionsUpdated
+   */
+  subscribeToVaultDepositActions(params) {
+    this.onchainLobWebSocketService.subscribeToVaultDepositActions(params);
+  }
+  /**
+   * Unsubscribes from the vault deposit actions updates.
+   */
+  unsubscribeFromVaultDepositActions(params) {
+    this.onchainLobWebSocketService.unsubscribeFromVaultDepositActions(params);
+  }
+  /**
+   * Subscribes to the vault depositors updates.
+   *
+   * @emits OnchainLobVault#events#vaultDepositorsUpdated
+   */
+  subscribeToVaultDepositors(params) {
+    this.onchainLobWebSocketService.subscribeToVaultDepositors(params);
+  }
+  /**
+   * Unsubscribes from the vault depositors updates.
+   */
+  unsubscribeFromVaultDepositors(params) {
+    this.onchainLobWebSocketService.unsubscribeFromVaultDepositors(params);
+  }
+  /**
+   * Subscribes to the vault history updates.
+   *
+   * @param {SubscribeToVaultHistoryParams} params - The parameters for subscribing to the vault history updates.
+   * @emits OnchainLobVault#events#vaultHistoryUpdated
+   */
+  subscribeToVaultHistory(params) {
+    this.onchainLobWebSocketService.subscribeToVaultHistory(params);
+  }
+  /**
+   * Unsubscribes from the vault history updates.
+   *
+   * @param {UnsubscribeFromVaultHistoryParams} params - The parameters for unsubscribing from the vault history updates.
+   */
+  unsubscribeFromVaultHistory(params) {
+    this.onchainLobWebSocketService.unsubscribeFromVaultHistory(params);
+  }
+  async ensureVaultConfig() {
+    const vaultConfig = await this.getCachedVaultConfig();
+    if (!vaultConfig)
+      throw new Error(`Vault config not found`);
+    return vaultConfig;
   }
   async getVaultContract() {
     if (this.signer === null) {
       throw new Error("Signer is not set");
     }
     if (!this.vaultContract) {
-      const vault = await this.getVaultConfig();
+      const vault = await this.getVaultConfig({});
       this.vaultContract = new OnchainLobVaultContract({
         vault,
         signer: this.signer,
@@ -6455,6 +6964,20 @@ var OnchainLobVault = class {
       });
     }
     return this.vaultContract;
+  }
+  attachEvents() {
+    this.onchainLobWebSocketService.events.vaultTotalValuesUpdated.addListener(this.onVaultTotalValuesUpdated);
+    this.onchainLobWebSocketService.events.vaultDepositActionsUpdated.addListener(this.onVaultDepositActionsUpdated);
+    this.onchainLobWebSocketService.events.vaultDepositorsUpdated.addListener(this.onVaultDepositorsUpdated);
+    this.onchainLobWebSocketService.events.vaultHistoryUpdated.addListener(this.onVaultHistoryUpdated);
+    this.onchainLobWebSocketService.events.subscriptionError.addListener(this.onSubscriptionError);
+  }
+  detachEvents() {
+    this.onchainLobWebSocketService.events.vaultTotalValuesUpdated.removeListener(this.onVaultTotalValuesUpdated);
+    this.onchainLobWebSocketService.events.vaultDepositActionsUpdated.removeListener(this.onVaultDepositActionsUpdated);
+    this.onchainLobWebSocketService.events.vaultDepositorsUpdated.removeListener(this.onVaultDepositorsUpdated);
+    this.onchainLobWebSocketService.events.vaultHistoryUpdated.removeListener(this.onVaultHistoryUpdated);
+    this.onchainLobWebSocketService.events.subscriptionError.removeListener(this.onSubscriptionError);
   }
 };
 
@@ -6500,6 +7023,8 @@ export {
   OnchainLobSpotService,
   OnchainLobSpotWebSocketService,
   OnchainLobVault,
+  OnchainLobVaultService,
+  OnchainLobVaultWebSocketService,
   TimeoutScheduler
 };
 //# sourceMappingURL=index.js.map

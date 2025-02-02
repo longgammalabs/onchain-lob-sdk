@@ -1,23 +1,18 @@
 import { Signer } from 'ethers/providers';
 import { type PublicEventEmitter } from '../common';
-import type { VaultConfig, VaultValuesUpdate, VaultValueHistoryUpdate } from '../models';
-import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../services';
-import { AddLiquidityVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, RemoveLiquidityVaultParams, SubscribeToVaultUpdatesParams, SubscribeToVaultValueHistoryParams, WithdrawDetails } from './params';
+import type { VaultConfig, VaultTotalValuesUpdate, VaultHistoryUpdate, VaultDepositActionUpdate, VaultDepositorUpdate, VaultTotalValues, VaultDepositAction, VaultDepositor, VaultHistory } from '../models';
+import { OnchainLobVaultService, OnchainLobVaultWebSocketService } from '../services';
+import { AddLiquidityVaultParams, ApproveVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, RemoveLiquidityVaultParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, SubscribeToVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, UnwrapNativeTokenVaultParams, WithdrawDetails, WrapNativeTokenVaultParams } from './params';
 import { OnchainLobVaultContract } from './onchainLobVaultContract';
 import { ContractTransactionResponse } from 'ethers';
+import * as mappers from './mappers';
+import { GetVaultConfigParams, GetVaultDepositActionsParams, GetVaultDepositorsParams, GetVaultHistoryParams, GetVaultTotalValuesParams } from '../services/onchainLobVaultService/params';
 /**
  * Options for configuring the OnchainLobVault instance.
  *
  * @interface OnchainLobVaultOptions
  */
 export interface OnchainLobVaultOptions {
-    /**
-     * Whether to automatically wait for transactions to be confirmed.
-     *
-     * @type {boolean}
-     * @optional
-     */
-    autoWaitTransaction?: boolean;
     /**
      * The ethers signer used for signing transactions.
      * For only http/ws operations, you can set this to null.
@@ -37,23 +32,72 @@ export interface OnchainLobVaultOptions {
      * @type {string}
      */
     webSocketApiBaseUrl: string;
+    /**
+     * Whether to connect to the WebSocket immediately after creating the OnchainLobVault (true)
+     * or when the first subscription is called (false).
+     * By default, the WebSocket is connected immediately.
+     *
+     * @type {boolean}
+     * @optional
+     */
+    webSocketConnectImmediately?: boolean;
+    /**
+     * Whether to automatically wait for transactions to be confirmed.
+     *
+     * @type {boolean}
+     * @optional
+     */
+    autoWaitTransaction?: boolean;
+    /**
+     * Whether to use a fast algorithm for waiting for transaction to be confirmed.
+     *
+     * @type {boolean}
+     * @optional
+     */
+    fastWaitTransaction?: boolean;
+    /**
+     * Interval between requests in milliseconds when using a fast algorithm for waiting for transaction confirmations.
+     *
+     * @type {number}
+     * @optional
+     */
+    fastWaitTransactionInterval?: number;
+    /**
+     * Timeout in milliseconds when using a fast algorithm for waiting for transaction confirmations.
+     *
+     * @type {number}
+     * @optional
+     */
+    fastWaitTransactionTimeout?: number;
 }
 /**
  * Events are emitted when data related to subscriptions is updated.
  */
 interface OnchainLobVaultEvents {
     /**
-     * Emitted when a vault value changes, e.g. any user deposits in the vault or token prices are updated.
+     * Emitted when a vault total values changes, e.g. any user deposits in the vault or token prices are updated.
      * @event
-     * @type {PublicEventEmitter<readonly [data: VaultUpdate[]]>}
+     * @type {PublicEventEmitter<readonly [data: VaultTotalValuesUpdate]>}
      */
-    vaultUpdated: PublicEventEmitter<readonly [data: VaultValuesUpdate[]]>;
+    vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesUpdate]>;
     /**
-     * Emitted when a vault history value changes.
+     * Emitted when a vault history changes.
      * @event
-     * @type {PublicEventEmitter<readonly [data: VaultHistoryUpdate[]]>;
+     * @type {PublicEventEmitter<readonly [data: VaultHistoryUpdate[]]>};
      */
-    vaultValueHistoryUpdated: PublicEventEmitter<readonly [data: VaultValueHistoryUpdate[]]>;
+    vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryUpdate[]]>;
+    /**
+     * Emitted when a vault deposit actions changes.
+     * @event
+     * @type {PublicEventEmitter<readonly [data: VaultDepositActionUpdate[]]>;}
+     */
+    vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionUpdate[]]>;
+    /**
+     * Emitted when a vault depositors changes.
+     * @event
+     * @type {PublicEventEmitter<readonly [data: VaultDepositorUpdate[]]>;}
+     */
+    vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorUpdate[]]>;
     /**
      * Emitted when there is an error related to a subscription.
      * @event
@@ -83,10 +127,12 @@ export declare class OnchainLobVault {
      */
     autoWaitTransaction: boolean | undefined;
     protected signer: Signer | null;
-    protected readonly onchainLobVaultService: OnchainLobSpotService;
-    protected readonly onchainLobVaultWebSocketService: OnchainLobSpotWebSocketService;
-    private mockVault;
+    protected readonly onchainLobService: OnchainLobVaultService;
+    protected readonly onchainLobWebSocketService: OnchainLobVaultWebSocketService;
     private vaultContract;
+    protected readonly mappers: typeof mappers;
+    protected readonly cachedVaultConfig: VaultConfig | undefined;
+    private cachedVaultConfigPromise;
     constructor(options: Readonly<OnchainLobVaultOptions>);
     /**
      * Sets a new signer for the OnchainLobVault instance.
@@ -96,21 +142,84 @@ export declare class OnchainLobVault {
      */
     setSigner(signer: Signer | null): OnchainLobVault;
     /**
-     * Subscribes to the vault updates.
-     *
-     * @emits OnchainLobVault#events#vaultUpdated
-     */
-    subscribeToVaultUpdates(params: SubscribeToVaultUpdatesParams): void;
+    * Approves the specified amount of tokens for the corresponding vault contract.
+    * You need to approve the tokens before you can deposit or withdraw.
+    *
+    * @param {ApproveVaultParams} params - The parameters for approving tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+    approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse>;
     /**
-     * Unsubscribes from the vault updates.
+     * Deposit tokens amount into the vault
+     *
+     * @param {AddLiquidityVaultParams} params - The parameters for deposit.
+     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
      */
-    unsubscribeFromVaultUpdates(): void;
-    subscribeToVaultValueHistory(params: SubscribeToVaultValueHistoryParams): void;
-    unsubscribeFromVaultValueHistory(): void;
-    protected attachEvents(): void;
-    protected onVaultUpdated: Parameters<typeof this.mockVault.events.vaultUpdated['addListener']>[0];
-    protected onVaultValueHistoryUpdated: Parameters<typeof this.mockVault.events.vaultValueHistoryUpdated['addListener']>[0];
-    protected onSubscriptionError: Parameters<typeof this.mockVault.events.subscriptionError['addListener']>[0];
+    addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse>;
+    /**
+    * Wraps the specified amount of native tokens.
+    * You need to wrap the tokens before you can deposit.
+    *
+    * @param {WrapNativeTokenVaultParams} params - The parameters for wrapping tokens.
+    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+    */
+    wrapNativeTokens(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
+    /**
+      * Unwraps the specified amount of native tokens.
+      * You need to unwrap the tokens after withdrawal to get native tokens.
+      *
+      * @param {UnwrapNativeTokenVaultParams} params - The parameters for unwrapping tokens.
+      * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+      */
+    unwrapNativeTokens(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse>;
+    /**
+     * Withdraw LP amount from the vault
+     *
+     * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
+     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+     */
+    removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
+    /**
+     * Retrieves the vault config information from cache.
+     *
+     * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
+     */
+    getCachedVaultConfig(): Promise<VaultConfig | undefined>;
+    /**
+     * Retrieves the vault config.
+     *
+     * @param {GetVaultConfigParams} params - The parameters for retrieving the vault config.
+     * @returns {Promise<VaultConfig>} A Promise that resolves to vault config.
+     */
+    getVaultConfig(params: GetVaultConfigParams): Promise<VaultConfig>;
+    /**
+     * Retrieves the vault total values.
+     *
+     * @param {GetVaultTotalValuesParams} params - The parameters for retrieving the vault total values.
+     * @returns {Promise<VaultTotalValues>} A Promise that resolves to vault total values.
+     */
+    getVaultTotalValues(params: GetVaultTotalValuesParams): Promise<VaultTotalValues>;
+    /**
+     * Retrieves the vault deposit actions.
+     *
+     * @param {GetVaultDepositActionsParams} params - The parameters for retrieving the vault deposit actions.
+     * @returns {Promise<VaultDepositAction[]>} A Promise that resolves to vault deposit actions.
+     */
+    getVaultDepositActions(params: GetVaultDepositActionsParams): Promise<VaultDepositAction[]>;
+    /**
+     * Retrieves the vault depositors.
+     *
+     * @param {GetVaultDepositorsParams} params - The parameters for retrieving the vault depositors.
+     * @returns {Promise<VaultDepositor[]>} A Promise that resolves to vault depositors.
+     */
+    getVaultDepositors(params: GetVaultDepositorsParams): Promise<VaultDepositor[]>;
+    /**
+     * Retrieves the vault history.
+     *
+     * @param {GetVaultHistoryParams} params - The parameters for retrieving the vault history.
+     * @returns {Promise<VaultDepositor[]>} A Promise that resolves to vault history.
+     */
+    getVaultHistory(params: GetVaultHistoryParams): Promise<VaultHistory[]>;
     /**
      * Calculates the deposit LP details for a given token inputs without API request.
      *
@@ -126,20 +235,56 @@ export declare class OnchainLobVault {
      */
     calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails;
     /**
-     * Deposit tokens amount into the vault
+     * Subscribes to the vault total values updates.
      *
-     * @param {AddLiquidityVaultParams} params - The parameters for deposit.
-     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+     * @emits OnchainLobVault#events#vaultTotalValuesUpdated
      */
-    addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse>;
+    subscribeToVaultTotalValues(params: SubscribeToVaultTotalValuesParams): void;
     /**
-     * Withdraw LP amount from the vault
-     *
-     * @param {RemoveLiquidityVaultParams} params - The parameters for withdraw.
-     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+     * Unsubscribes from the vault total values updates.
      */
-    removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse>;
-    getVaultConfig(): Promise<VaultConfig>;
+    unsubscribeToVaultTotalValues(params: UnsubscribeFromVaultTotalValuesParams): void;
+    /**
+     * Subscribes to the vault deposit actions updates.
+     *
+     * @emits OnchainLobVault#events#vaultDepositActionsUpdated
+     */
+    subscribeToVaultDepositActions(params: SubscribeToVaultDepositActionsParams): void;
+    /**
+     * Unsubscribes from the vault deposit actions updates.
+     */
+    unsubscribeFromVaultDepositActions(params: UnsubscribeFromVaultDepositActionsParams): void;
+    /**
+     * Subscribes to the vault depositors updates.
+     *
+     * @emits OnchainLobVault#events#vaultDepositorsUpdated
+     */
+    subscribeToVaultDepositors(params: SubscribeToVaultDepositorsParams): void;
+    /**
+     * Unsubscribes from the vault depositors updates.
+     */
+    unsubscribeFromVaultDepositors(params: UnsubscribeFromVaultDepositorsParams): void;
+    /**
+     * Subscribes to the vault history updates.
+     *
+     * @param {SubscribeToVaultHistoryParams} params - The parameters for subscribing to the vault history updates.
+     * @emits OnchainLobVault#events#vaultHistoryUpdated
+     */
+    subscribeToVaultHistory(params: SubscribeToVaultHistoryParams): void;
+    /**
+     * Unsubscribes from the vault history updates.
+     *
+     * @param {UnsubscribeFromVaultHistoryParams} params - The parameters for unsubscribing from the vault history updates.
+     */
+    unsubscribeFromVaultHistory(params: UnsubscribeFromVaultHistoryParams): void;
+    protected ensureVaultConfig(): Promise<VaultConfig>;
     protected getVaultContract(): Promise<OnchainLobVaultContract>;
+    protected attachEvents(): void;
+    protected detachEvents(): void;
+    protected onVaultTotalValuesUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultTotalValuesUpdated['addListener']>[0];
+    protected onVaultDepositActionsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositActionsUpdated['addListener']>[0];
+    protected onVaultDepositorsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositorsUpdated['addListener']>[0];
+    protected onVaultHistoryUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultHistoryUpdated['addListener']>[0];
+    protected onSubscriptionError: Parameters<typeof this.onchainLobWebSocketService.events.subscriptionError['addListener']>[0];
 }
 export {};

@@ -3,13 +3,13 @@ import { Button, Typography, Box } from '@mui/material';
 import { OnchainLobClientContext } from './clientContext';
 import { VaultConfig } from 'onchain-lob-sdk';
 
-const VaultInfoDisplay: React.FC = () => {
+const VaultConfigDisplay: React.FC = () => {
   const [vaultConfig, setVaultConfig] = useState<VaultConfig | null>(null);
   const onchainLobClient = useContext(OnchainLobClientContext);
 
   const fetchVaultInfo = async () => {
     try {
-      const info = await onchainLobClient.vault.getVaultConfig();
+      const info = await onchainLobClient.vault.getVaultConfig({});
       setVaultConfig(info);
     }
     catch (error) {
@@ -19,7 +19,7 @@ const VaultInfoDisplay: React.FC = () => {
 
   return (
     <Box>
-      <Button variant="contained" onClick={fetchVaultInfo}>Get Vault Info</Button>
+      <Button variant="contained" onClick={fetchVaultInfo}>Get Vault Config</Button>
       {vaultConfig && (
         <Box mt={2}>
           <Typography variant="h6">
@@ -46,4 +46,4 @@ const VaultInfoDisplay: React.FC = () => {
   );
 };
 
-export default VaultInfoDisplay;
+export default VaultConfigDisplay;

@@ -1,21 +1,23 @@
 export const lpManagerAbi = [
   {
     type: 'constructor',
-    inputs: [],
+    inputs: [
+      {
+        name: '_pythAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: '_proxyPythAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
     stateMutability: 'nonpayable',
   },
   {
-    type: 'function',
-    name: 'DOMAIN_SEPARATOR',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'bytes32',
-        internalType: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
+    type: 'receive',
+    stateMutability: 'payable',
   },
   {
     type: 'function',
@@ -66,6 +68,11 @@ export const lpManagerAbi = [
         type: 'uint256',
         internalType: 'uint256',
       },
+      {
+        name: 'priceUpdateData',
+        type: 'bytes[]',
+        internalType: 'bytes[]',
+      },
     ],
     outputs: [
       {
@@ -74,21 +81,21 @@ export const lpManagerAbi = [
         internalType: 'uint256',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
   },
   {
     type: 'function',
-    name: 'approve',
+    name: 'approveForLOB',
     inputs: [
       {
-        name: 'lob',
-        type: 'address',
-        internalType: 'address',
+        name: 'lobId',
+        type: 'uint8',
+        internalType: 'uint8',
       },
       {
-        name: 'token',
-        type: 'address',
-        internalType: 'address',
+        name: 'tokenId',
+        type: 'uint8',
+        internalType: 'uint8',
       },
       {
         name: 'value',
@@ -97,55 +104,6 @@ export const lpManagerAbi = [
       },
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'batchChangeOrder',
-    inputs: [
-      {
-        name: 'lobId',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-      {
-        name: 'orderIds',
-        type: 'uint64[]',
-        internalType: 'uint64[]',
-      },
-      {
-        name: 'quantities',
-        type: 'uint128[]',
-        internalType: 'uint128[]',
-      },
-      {
-        name: 'prices',
-        type: 'uint72[]',
-        internalType: 'uint72[]',
-      },
-      {
-        name: 'maxCommissionPerOrder',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-      {
-        name: 'postOnly',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'expires',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: 'newOrderIds',
-        type: 'uint64[]',
-        internalType: 'uint64[]',
-      },
-    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -201,59 +159,10 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'changeOrder',
+    name: 'changePauser',
     inputs: [
       {
-        name: 'lobId',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-      {
-        name: 'oldOrderId',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-      {
-        name: 'newQuantity',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-      {
-        name: 'newPrice',
-        type: 'uint72',
-        internalType: 'uint72',
-      },
-      {
-        name: 'maxCommission',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-      {
-        name: 'postOnly',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'expires',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: 'orderId',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'changePrimaryMarketMaker',
-    inputs: [
-      {
-        name: '_primaryMarketMaker',
+        name: 'pauser_',
         type: 'address',
         internalType: 'address',
       },
@@ -263,10 +172,10 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'changeRfqOrderSigner',
+    name: 'changePrimaryMarketMaker',
     inputs: [
       {
-        name: '_rfqOrderSigner',
+        name: '_primaryMarketMaker',
         type: 'address',
         internalType: 'address',
       },
@@ -290,6 +199,16 @@ export const lpManagerAbi = [
       },
       {
         name: '_targetWeight',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: '_lowerBoundWeight',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: '_upperBoundWeight',
         type: 'uint16',
         internalType: 'uint16',
       },
@@ -362,46 +281,10 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'eip712Domain',
+    name: 'disableSlashingStatus',
     inputs: [],
-    outputs: [
-      {
-        name: 'fields',
-        type: 'bytes1',
-        internalType: 'bytes1',
-      },
-      {
-        name: 'name',
-        type: 'string',
-        internalType: 'string',
-      },
-      {
-        name: 'version',
-        type: 'string',
-        internalType: 'string',
-      },
-      {
-        name: 'chainId',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: 'verifyingContract',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'salt',
-        type: 'bytes32',
-        internalType: 'bytes32',
-      },
-      {
-        name: 'extensions',
-        type: 'uint256[]',
-        internalType: 'uint256[]',
-      },
-    ],
-    stateMutability: 'view',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -435,13 +318,18 @@ export const lpManagerAbi = [
       },
       {
         name: '',
+        type: 'uint24',
+        internalType: 'uint24',
+      },
+      {
+        name: '',
         type: 'uint16',
         internalType: 'uint16',
       },
       {
         name: '',
-        type: 'uint24',
-        internalType: 'uint24',
+        type: 'uint128',
+        internalType: 'uint128',
       },
       {
         name: '',
@@ -457,6 +345,51 @@ export const lpManagerAbi = [
         name: '',
         type: 'uint16',
         internalType: 'uint16',
+      },
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+      {
+        name: '',
+        type: 'uint8',
+        internalType: 'uint8',
+      },
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: '',
+        type: 'uint24',
+        internalType: 'uint24',
+      },
+      {
+        name: '',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: '',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: '',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: '',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -521,32 +454,8 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'getTokenSharesAndValues',
+    name: 'getTokensCount',
     inputs: [],
-    outputs: [
-      {
-        name: 'shares',
-        type: 'uint256[]',
-        internalType: 'uint256[]',
-      },
-      {
-        name: 'usdValues',
-        type: 'uint256[]',
-        internalType: 'uint256[]',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getTotalSharesOf',
-    inputs: [
-      {
-        name: 'tokenId',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
     outputs: [
       {
         name: '',
@@ -558,13 +467,13 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'getTotalValue',
+    name: 'hwmLPPrice',
     inputs: [],
     outputs: [
       {
-        name: 'totalUSDValue',
-        type: 'uint256',
-        internalType: 'uint256',
+        name: '',
+        type: 'uint96',
+        internalType: 'uint96',
       },
     ],
     stateMutability: 'view',
@@ -579,22 +488,12 @@ export const lpManagerAbi = [
         internalType: 'address',
       },
       {
-        name: '_domainName',
-        type: 'string',
-        internalType: 'string',
-      },
-      {
-        name: '_oracle',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
         name: '_liquidityToken',
         type: 'address',
         internalType: 'address',
       },
       {
-        name: '_rfqOrderSigner',
+        name: '_adminFeeRecipient',
         type: 'address',
         internalType: 'address',
       },
@@ -713,20 +612,40 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
-    name: 'oracle',
+    name: 'owner',
     inputs: [],
     outputs: [
       {
         name: '',
         type: 'address',
-        internalType: 'contract IOracle',
+        internalType: 'address',
       },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    name: 'owner',
+    name: 'pause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'paused',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'pauser',
     inputs: [],
     outputs: [
       {
@@ -794,106 +713,10 @@ export const lpManagerAbi = [
         type: 'uint256',
         internalType: 'uint256',
       },
-    ],
-    outputs: [
       {
-        name: 'orderId',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'placeRfqOrder',
-    inputs: [
-      {
-        name: 'isAsk',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'quantity',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-      {
-        name: 'price',
-        type: 'uint72',
-        internalType: 'uint72',
-      },
-      {
-        name: 'maxCommission',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-      {
-        name: 'expires',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: 'rfqOrder',
-        type: 'tuple',
-        internalType: 'struct RfqOrder',
-        components: [
-          {
-            name: 'lobId',
-            type: 'uint8',
-            internalType: 'uint8',
-          },
-          {
-            name: 'qty',
-            type: 'uint128',
-            internalType: 'uint128',
-          },
-          {
-            name: 'price',
-            type: 'uint72',
-            internalType: 'uint72',
-          },
-          {
-            name: 'isAsk',
-            type: 'bool',
-            internalType: 'bool',
-          },
-          {
-            name: 'postOnly',
-            type: 'bool',
-            internalType: 'bool',
-          },
-          {
-            name: 'expires',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
-          {
-            name: 'userAddress',
-            type: 'address',
-            internalType: 'address',
-          },
-          {
-            name: 'nonce',
-            type: 'uint128',
-            internalType: 'uint128',
-          },
-        ],
-      },
-      {
-        name: 'v',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-      {
-        name: 'r',
-        type: 'bytes32',
-        internalType: 'bytes32',
-      },
-      {
-        name: 's',
-        type: 'bytes32',
-        internalType: 'bytes32',
+        name: 'priceUpdateData',
+        type: 'bytes[]',
+        internalType: 'bytes[]',
       },
     ],
     outputs: [
@@ -903,7 +726,7 @@ export const lpManagerAbi = [
         internalType: 'uint64',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
   },
   {
     type: 'function',
@@ -960,6 +783,11 @@ export const lpManagerAbi = [
         type: 'uint256',
         internalType: 'uint256',
       },
+      {
+        name: 'priceUpdateData',
+        type: 'bytes[]',
+        internalType: 'bytes[]',
+      },
     ],
     outputs: [
       {
@@ -968,7 +796,7 @@ export const lpManagerAbi = [
         internalType: 'uint256',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
   },
   {
     type: 'function',
@@ -976,19 +804,6 @@ export const lpManagerAbi = [
     inputs: [],
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'rfqOrderSigner',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -1021,16 +836,21 @@ export const lpManagerAbi = [
       },
       {
         name: '_cooldownDuration',
-        type: 'uint16',
-        internalType: 'uint16',
-      },
-      {
-        name: '_maxOracleAge',
         type: 'uint24',
         internalType: 'uint24',
       },
       {
+        name: '_maxOracleAge',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
         name: '_minLiquidityValueUsd',
+        type: 'uint128',
+        internalType: 'uint128',
+      },
+      {
+        name: '_maxLiquidityValueUsd',
         type: 'uint128',
         internalType: 'uint128',
       },
@@ -1043,6 +863,59 @@ export const lpManagerAbi = [
         name: '_marketMakerLPShareBps',
         type: 'uint16',
         internalType: 'uint16',
+      },
+      {
+        name: '_nativeTokenEnabled',
+        type: 'bool',
+        internalType: 'bool',
+      },
+      {
+        name: '_nativeTokenTokenId',
+        type: 'uint8',
+        internalType: 'uint8',
+      },
+      {
+        name: '_adminFeeRecipient',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: '_priceValidityPeriod',
+        type: 'uint24',
+        internalType: 'uint24',
+      },
+      {
+        name: '_baseMultiplier',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: '_maxAllowedPriceDeviation',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: '_perfFeeBps',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: '_adminPerfFeeBps',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'slashMakersShares',
+    inputs: [
+      {
+        name: 'amount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
     ],
     outputs: [],
@@ -1071,6 +944,16 @@ export const lpManagerAbi = [
       },
       {
         name: 'targetWeight',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: 'lowerBoundWeight',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
+      {
+        name: 'upperBoundWeight',
         type: 'uint16',
         internalType: 'uint16',
       },
@@ -1120,6 +1003,13 @@ export const lpManagerAbi = [
   },
   {
     type: 'function',
+    name: 'unpause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'upgradeToAndCall',
     inputs: [
       {
@@ -1137,9 +1027,35 @@ export const lpManagerAbi = [
     stateMutability: 'payable',
   },
   {
+    type: 'function',
+    name: 'validateLPPriceAndDistributeFees',
+    inputs: [
+      {
+        name: 'priceUpdateData',
+        type: 'bytes[]',
+        internalType: 'bytes[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'validateMarketMakerLPShare',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'view',
+  },
+  {
     type: 'event',
     name: 'ConfigSet',
     inputs: [
+      {
+        name: 'dynamicFeesEnabled',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
       {
         name: 'adminMintLPFeeBps',
         type: 'uint16',
@@ -1166,18 +1082,24 @@ export const lpManagerAbi = [
       },
       {
         name: 'cooldownDuration',
-        type: 'uint16',
-        indexed: false,
-        internalType: 'uint16',
-      },
-      {
-        name: 'maxOracleAge',
         type: 'uint24',
         indexed: false,
         internalType: 'uint24',
       },
       {
+        name: 'maxOracleAge',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
+      },
+      {
         name: 'minLiquidityValueUsd',
+        type: 'uint128',
+        indexed: false,
+        internalType: 'uint128',
+      },
+      {
+        name: 'maxLiquidityValueUsd',
         type: 'uint128',
         indexed: false,
         internalType: 'uint128',
@@ -1194,13 +1116,55 @@ export const lpManagerAbi = [
         indexed: false,
         internalType: 'uint16',
       },
+      {
+        name: 'nativeTokenEnabled',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
+      {
+        name: 'nativeTokenTokenId',
+        type: 'uint8',
+        indexed: false,
+        internalType: 'uint8',
+      },
+      {
+        name: 'adminFeeRecipient',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'priceValidityPeriod',
+        type: 'uint24',
+        indexed: false,
+        internalType: 'uint24',
+      },
+      {
+        name: 'baseMultiplier',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+      {
+        name: 'maxAllowedPriceDeviation',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+      {
+        name: 'perfFeeBps',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
+      },
+      {
+        name: 'adminPerfFeeBps',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
+      },
     ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'EIP712DomainChanged',
-    inputs: [],
     anonymous: false,
   },
   {
@@ -1251,13 +1215,25 @@ export const lpManagerAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'lpTotalSupply',
+        name: 'protocolFee',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
       },
       {
         name: 'mintedLP',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'accountLpShares',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'totalSupply',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
@@ -1300,13 +1276,25 @@ export const lpManagerAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'lpTotalSupply',
+        name: 'protocolFee',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
       },
       {
         name: 'burnedLP',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'accountLpShares',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'totalSupply',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
@@ -1353,6 +1341,31 @@ export const lpManagerAbi = [
         type: 'uint16',
         indexed: false,
         internalType: 'uint16',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'MakersSharesSlashed',
+    inputs: [
+      {
+        name: 'marketMaker',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'totalSupply',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
     ],
     anonymous: false,
@@ -1416,6 +1429,75 @@ export const lpManagerAbi = [
   },
   {
     type: 'event',
+    name: 'Paused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'PauserChanged',
+    inputs: [
+      {
+        name: 'newPauser',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'oldPauser',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'PerformanceFeesDistributed',
+    inputs: [
+      {
+        name: 'currentPrice',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'previousHWM',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'adminFeeAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'marketMakerFeeAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'totalSupply',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'PrimaryMarketMakerChanged',
     inputs: [
       {
@@ -1435,50 +1517,38 @@ export const lpManagerAbi = [
   },
   {
     type: 'event',
-    name: 'RfqOrderPlaced',
+    name: 'SlashingAvailableStatusChanged',
     inputs: [
       {
-        name: 'owner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'isAsk',
+        name: 'status',
         type: 'bool',
         indexed: false,
         internalType: 'bool',
-      },
-      {
-        name: 'quantity',
-        type: 'uint128',
-        indexed: false,
-        internalType: 'uint128',
-      },
-      {
-        name: 'price',
-        type: 'uint72',
-        indexed: false,
-        internalType: 'uint72',
       },
     ],
     anonymous: false,
   },
   {
     type: 'event',
-    name: 'RfqOrderSignerChanged',
+    name: 'Sync',
     inputs: [
       {
-        name: 'oldSigner',
+        name: 'token',
         type: 'address',
-        indexed: false,
+        indexed: true,
         internalType: 'address',
       },
       {
-        name: 'newSigner',
-        type: 'address',
+        name: 'tokenBalance',
+        type: 'uint256',
         indexed: false,
-        internalType: 'address',
+        internalType: 'uint256',
+      },
+      {
+        name: 'tokenReserved',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
     ],
     anonymous: false,
@@ -1512,6 +1582,18 @@ export const lpManagerAbi = [
         internalType: 'uint16',
       },
       {
+        name: 'lowerBoundWeight',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
+      },
+      {
+        name: 'upperBoundWeight',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
+      },
+      {
         name: 'decimals',
         type: 'uint8',
         indexed: false,
@@ -1528,6 +1610,19 @@ export const lpManagerAbi = [
         type: 'bytes32',
         indexed: false,
         internalType: 'bytes32',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Unpaused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1579,6 +1674,16 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
+    name: 'EnforcedPause',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ExpectedPause',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'Expired',
     inputs: [],
   },
@@ -1594,7 +1699,17 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
+    name: 'Forbidden',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'InsufficientBalance',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InsufficientFeeForPythUpdate',
     inputs: [],
   },
   {
@@ -1624,11 +1739,6 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
-    name: 'InvalidAmountToWithdraw',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'InvalidFloatingPointRepresentation',
     inputs: [],
   },
@@ -1639,27 +1749,17 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
-    name: 'InvalidRfqOrderSide',
+    name: 'InvalidOracleConfidenceLevel',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'InvalidRfqOrderSigner',
+    name: 'InvalidTokenWeights',
     inputs: [],
   },
   {
     type: 'error',
     name: 'InvalidTrader',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'InvalidTransfer',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'InvalidUserAddress',
     inputs: [],
   },
   {
@@ -1670,6 +1770,21 @@ export const lpManagerAbi = [
   {
     type: 'error',
     name: 'MarketMakerLPShareExceedsMaximum',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'MaxLiquidityValueExceeded',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'MaxOracleAgeExceedsMaximum',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NativeGasTokenDisabled',
     inputs: [],
   },
   {
@@ -1726,8 +1841,19 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
-    name: 'RfqOrderAlreadyUsed',
-    inputs: [],
+    name: 'SafeCastOverflowedUintDowncast',
+    inputs: [
+      {
+        name: 'bits',
+        type: 'uint8',
+        internalType: 'uint8',
+      },
+      {
+        name: 'value',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
   },
   {
     type: 'error',
@@ -1742,7 +1868,22 @@ export const lpManagerAbi = [
   },
   {
     type: 'error',
+    name: 'SlashingUnAvailable',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'TokenDisabled',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'TokenWeightExceeded',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'TransferFailed',
     inputs: [],
   },
   {

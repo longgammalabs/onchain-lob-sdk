@@ -107,7 +107,7 @@ export interface UnwrapNativeTokenSpotParams extends TransactionParams {
      */
     market: string;
     /**
-     * The amount of tokens to wrap.
+     * The amount of tokens to unwrap.
      * If `bigint` is provided, then the token's contract unit is used.
      * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
      *

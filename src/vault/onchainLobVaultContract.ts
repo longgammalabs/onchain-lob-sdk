@@ -4,9 +4,11 @@ import { Contract, type Signer, ContractTransactionResponse } from 'ethers';
 import type {
   AddLiquidityVaultParams,
   ApproveVaultParams,
-  RemoveLiquidityVaultParams
+  RemoveLiquidityVaultParams,
+  UnwrapNativeTokenVaultParams,
+  WrapNativeTokenVaultParams
 } from './params';
-import { erc20Abi, lpManagerAbi } from '../abi';
+import { erc20Abi, erc20WethAbi, lpManagerAbi } from '../abi';
 import type { VaultConfig } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -74,6 +76,52 @@ export class OnchainLobVaultContract {
       tokenContract,
       tokenContract.approve!(
         params.vault,
+        amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
+
+    return tx;
+  }
+
+  async wrapNativeToken(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
+    const tokenContract = new Contract(
+      params.token.contractAddress,
+      erc20WethAbi,
+      this.signer
+    );
+
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, params.token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.deposit!(
+        {
+          value: amount,
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
+
+    return tx;
+  }
+
+  async unwrapNativeToken(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
+    const tokenContract = new Contract(
+      params.token.contractAddress,
+      erc20WethAbi,
+      this.signer
+    );
+
+    const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, params.token.decimals);
+    const tx = await this.processContractMethodCall(
+      tokenContract,
+      tokenContract.withdraw!(
         amount,
         {
           gasLimit: params.gasLimit,

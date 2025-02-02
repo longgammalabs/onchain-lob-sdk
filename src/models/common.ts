@@ -46,6 +46,21 @@ export interface Token {
    * Indicates if token is mem-token from Organic Growth
    */
   fromOg: boolean;
+
+  /**
+   * Indicates if token is native
+   */
+  isNative: boolean;
+
+  /**
+   * Token's price feed id
+   */
+  priceFeed: string | null;
+
+  /**
+   * Token's price feed decimals
+   */
+  priceFeedDecimals: number | null;
 }
 
 export type TokenUpdate = Token;

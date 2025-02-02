@@ -151,7 +151,7 @@ export class OnchainLobVaultContract {
       throw Error('Token Id not found.');
     }
 
-    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map(ti => ti.id.toString()));
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokens.map(t => t.priceFeed || ''));
 
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const amountUsd = this.convertTokensAmountToRawAmountIfNeeded(params.amountUsd, 18);
@@ -192,7 +192,7 @@ export class OnchainLobVaultContract {
       throw Error('Token Id not found.');
     }
 
-    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokenIds.map(ti => ti.id.toString()));
+    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokens.map(t => t.priceFeed || ''));
 
     const burnLP = this.convertTokensAmountToRawAmountIfNeeded(params.burnLP, this.vault.lpToken.decimals);
     const minUsdValue = this.convertTokensAmountToRawAmountIfNeeded(params.minUsdValue, 18);

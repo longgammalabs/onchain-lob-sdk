@@ -46,8 +46,8 @@ export interface VaultTotalValuesDto {
   pastWeekReturn: number;
   leaderAddress: string;
   leaderUSDValue: number;
-  vaultPerfomance: {
-    pnlPerfomance: number;
+  vaultPerformance: {
+    pnlPerformance: number;
     maxDrowdownPercentage: number;
     volume: number;
     profitShare: number;

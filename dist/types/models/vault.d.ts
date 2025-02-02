@@ -31,11 +31,11 @@ export interface VaultTotalValues {
     /**
      * The vault's performance.
      */
-    vaultPerfomance: {
+    vaultPerformance: {
         /**
          * The vault's pnl performance in USD.
          */
-        pnlPerfomance: number;
+        pnlPerformance: number;
         /**
          * The vault's max drawdown percentage.
          */

@@ -6483,7 +6483,8 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     if (!tokenId) {
       throw Error("Token Id not found.");
     }
-    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokens.map((t) => t.priceFeed || ""));
+    const priceUpdateFeedIds = this.vault.tokens.map((t) => t.priceFeed || "");
+    const priceUpdateData = await this.getPriceUpdateData(priceUpdateFeedIds);
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const amountUsd = this.convertTokensAmountToRawAmountIfNeeded(params.amountUsd, 18);
     const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
@@ -6505,7 +6506,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
-          value: priceUpdateData.length,
+          value: priceUpdateFeedIds.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,
@@ -6524,7 +6525,8 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
     if (!tokenId) {
       throw Error("Token Id not found.");
     }
-    const priceUpdateData = await this.getPriceUpdateData(this.vault.tokens.map((t) => t.priceFeed || ""));
+    const priceUpdateFeedIds = this.vault.tokens.map((t) => t.priceFeed || "");
+    const priceUpdateData = await this.getPriceUpdateData(priceUpdateFeedIds);
     const burnLP = this.convertTokensAmountToRawAmountIfNeeded(params.burnLP, this.vault.lpToken.decimals);
     const minUsdValue = this.convertTokensAmountToRawAmountIfNeeded(params.minUsdValue, 18);
     const minTokenGet = this.convertTokensAmountToRawAmountIfNeeded(params.minTokenGet, token.decimals);
@@ -6539,7 +6541,7 @@ var _OnchainLobVaultContract = class _OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
-          value: priceUpdateData.length,
+          value: priceUpdateFeedIds.length,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,

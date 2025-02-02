@@ -62,12 +62,12 @@ export declare class OnchainLobVaultWebSocketService implements Disposable {
      * Subscribes to vault history updates.
      * @param params - The parameters for the vault history subscription.
      */
-    subscribeToVaultHistory(params: SubscribeToVaultHistoryParams): void;
+    subscribeToVaultHistory(_params: SubscribeToVaultHistoryParams): void;
     /**
      * Unsubscribes from vault history updates.
      * @param params - The parameters for the vault history unsubscription.
      */
-    unsubscribeFromVaultHistory(params: UnsubscribeFromVaultHistoryParams): void;
+    unsubscribeFromVaultHistory(_params: UnsubscribeFromVaultHistoryParams): void;
     /**
      * Disposes the WebSocket client and removes the message listener.
      */

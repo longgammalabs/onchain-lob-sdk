@@ -4998,21 +4998,19 @@ var OnchainLobVaultWebSocketService = class {
    * Subscribes to vault history updates.
    * @param params - The parameters for the vault history subscription.
    */
-  subscribeToVaultHistory(params) {
+  subscribeToVaultHistory(_params) {
     this.startOnchainLobWebSocketClientIfNeeded();
     this.onchainLobWebSocketClient.subscribe({
-      channel: "vaultHistory",
-      period: params.period
+      channel: "vaultHistory"
     });
   }
   /**
    * Unsubscribes from vault history updates.
    * @param params - The parameters for the vault history unsubscription.
    */
-  unsubscribeFromVaultHistory(params) {
+  unsubscribeFromVaultHistory(_params) {
     this.onchainLobWebSocketClient.unsubscribe({
-      channel: "vaultHistory",
-      period: params.period
+      channel: "vaultHistory"
     });
   }
   /**
@@ -6952,7 +6950,7 @@ var OnchainLobVault = class {
   /**
    * Unsubscribes from the vault total values updates.
    */
-  unsubscribeToVaultTotalValues(params) {
+  unsubscribeFromVaultTotalValues(params) {
     this.onchainLobWebSocketService.unsubscribeFromVaultTotalValues(params);
   }
   /**

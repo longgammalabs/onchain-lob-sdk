@@ -131,12 +131,11 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Subscribes to vault history updates.
    * @param params - The parameters for the vault history subscription.
    */
-  subscribeToVaultHistory(params: SubscribeToVaultHistoryParams) {
+  subscribeToVaultHistory(_params: SubscribeToVaultHistoryParams) {
     this.startOnchainLobWebSocketClientIfNeeded();
 
     this.onchainLobWebSocketClient.subscribe({
       channel: 'vaultHistory',
-      period: params.period,
     });
   }
 
@@ -144,10 +143,9 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Unsubscribes from vault history updates.
    * @param params - The parameters for the vault history unsubscription.
    */
-  unsubscribeFromVaultHistory(params: UnsubscribeFromVaultHistoryParams) {
+  unsubscribeFromVaultHistory(_params: UnsubscribeFromVaultHistoryParams) {
     this.onchainLobWebSocketClient.unsubscribe({
       channel: 'vaultHistory',
-      period: params.period,
     });
   }
 

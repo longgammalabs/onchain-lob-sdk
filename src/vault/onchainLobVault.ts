@@ -409,7 +409,7 @@ export class OnchainLobVault {
   /**
    * Unsubscribes from the vault total values updates.
    */
-  unsubscribeToVaultTotalValues(params: UnsubscribeFromVaultTotalValuesParams): void {
+  unsubscribeFromVaultTotalValues(params: UnsubscribeFromVaultTotalValuesParams): void {
     this.onchainLobWebSocketService.unsubscribeFromVaultTotalValues(params);
   }
 

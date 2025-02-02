@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Token, VaultHistoryPeriod } from '../models';
+import { Token } from '../models';
 
 /**
  * Transaction parameters.
@@ -230,9 +230,7 @@ export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsPar
 export interface SubscribeToVaultDepositActionsParams {}
 export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
 
-export interface SubscribeToVaultHistoryParams {
-  period: VaultHistoryPeriod;
-}
+export interface SubscribeToVaultHistoryParams {}
 export type UnsubscribeFromVaultHistoryParams = SubscribeToVaultHistoryParams;
 
 export type CalculateDepositDetailsSyncParams = {

@@ -158,6 +158,14 @@ export class OnchainLobVaultContract {
     const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
     const expires = getExpires();
 
+    console.log(`tokenId: ${BigInt(tokenId.id)}`);
+    console.log(`amount: ${amount}`);
+    console.log(`amountUsd: ${amountUsd}`);
+    console.log(`minLpMinted: ${minLpMinted}`);
+    console.log(`expires: ${expires}`);
+    console.log(`priceUpdateData`);
+    console.log(priceUpdateData);
+
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.addLiquidity!(

@@ -31,6 +31,7 @@ export interface VaultDepositActionDto {
 export interface VaultDepositorDto {
   userAddress: string;
   lpAmount: string;
+  usdCostBasis: number;
   lastTouched: number;
 }
 

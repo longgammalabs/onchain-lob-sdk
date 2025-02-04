@@ -55,6 +55,9 @@ export class OnchainLobVaultService extends RemoteService {
     if (params.limit)
       queryParams.append('limit', params.limit.toString());
 
+    if (params.address)
+      queryParams.append('address', params.address);
+
     const queryParamsString = decodeURIComponent(queryParams.toString());
     const response = await this.fetch<VaultDepositorDto[]>(`/vault-depositors?${queryParamsString}`, 'json');
 

@@ -21,7 +21,7 @@ export interface VaultTotalValues {
   totalUSDCostBasis: number;
 
   /**
-   * The past week return of the vault in percentage.
+   * The past week return of the vault in percentage points.
    */
   pastWeekReturn: number;
 
@@ -282,6 +282,11 @@ export type VaultDepositor = {
    * The formatted amount of the depositor's LP tokens in BigNumber
    */
   lpAmount: BigNumber;
+
+  /**
+   * The amount of the depositor's deposits and withdrawals. Need for pnl calculation
+   */
+  usdCostBasis: number;
 
   /**
    * The timestamp of the last depositor's interaction with the vault.

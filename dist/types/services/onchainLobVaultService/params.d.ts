@@ -7,6 +7,7 @@ export interface GetVaultDepositActionsParams {
     limit?: number;
 }
 export interface GetVaultDepositorsParams {
+    address?: string;
     limit?: number;
 }
 export interface GetVaultHistoryParams {

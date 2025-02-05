@@ -44,6 +44,7 @@ export interface VaultHistoryDto {
 export interface VaultTotalValuesDto {
   totalUSDValue: number;
   totalUSDCostBasis: number;
+  lpPrice: number;
   pastWeekReturn: number;
   leaderAddress: string;
   leaderUSDValue: number;

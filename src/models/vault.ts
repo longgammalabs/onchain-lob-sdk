@@ -21,6 +21,11 @@ export interface VaultTotalValues {
   totalUSDCostBasis: number;
 
   /**
+   * The price of the LP token in USD.
+   */
+  lpPrice: number;
+
+  /**
    * The past week return of the vault in percentage points.
    */
   pastWeekReturn: number;

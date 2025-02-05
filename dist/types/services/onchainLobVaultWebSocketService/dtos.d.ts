@@ -13,6 +13,7 @@ export interface VaultDepositActionUpdateDto {
 export interface VaultDepositorUpdateDto {
     userAddress: string;
     lpAmount: string;
+    usdCostBasis: number;
     lastTouched: number;
 }
 export interface VaultHistoryUpdateDto {
@@ -23,6 +24,7 @@ export interface VaultHistoryUpdateDto {
 export interface VaultTotalValuesUpdateDto {
     totalUSDValue: number;
     totalUSDCostBasis: number;
+    lpPrice: number;
     pastWeekReturn: number;
     leaderAddress: string;
     leaderUSDValue: number;

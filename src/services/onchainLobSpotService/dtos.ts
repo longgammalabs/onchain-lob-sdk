@@ -96,6 +96,7 @@ export interface TokenDto {
   isNative: boolean;
   priceFeed: string | null;
   priceFeedDecimals: number | null;
+  isUserGenerated: boolean;
 }
 
 export interface MarketDto {
@@ -124,6 +125,7 @@ export interface MarketDto {
   aggressiveFee: string;
   passiveFee: string;
   passiveOrderPayout: string;
+  isUserGenerated: boolean;
 }
 
 export interface CandleDto {

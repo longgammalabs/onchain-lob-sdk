@@ -16,6 +16,7 @@ export const testMarket = {
     supportsPermit: false,
     iconUrl: null,
     fromOg: false,
+    isUserGenerated: false,
   },
   quoteToken: {
     id: 'USDC',
@@ -27,6 +28,7 @@ export const testMarket = {
     supportsPermit: false,
     iconUrl: null,
     fromOg: false,
+    isUserGenerated: false,
   },
   orderbookAddress: '0xecafa4a614552a85aeba08e0922b987dd51b86a4'.toLowerCase(),
   aggregations: expect.any(Array),
@@ -54,6 +56,7 @@ export const testMarket = {
   aggressiveFee: 0.0003,
   passiveFee: 0,
   passiveOrderPayout: 0.00005,
+  isUserGenerated: false,
 };
 
 export const testOrderbook: Orderbook['levels'] = {

@@ -140,4 +140,5 @@ export interface TokenUpdateDto {
   priceFeed: string | null;
   priceFeedDecimals: number | null;
   isUserGenerated: boolean;
+  description: string;
 }

@@ -97,6 +97,7 @@ export interface TokenDto {
   priceFeed: string | null;
   priceFeedDecimals: number | null;
   isUserGenerated: boolean;
+  description: string;
 }
 
 export interface MarketDto {

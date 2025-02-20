@@ -25,6 +25,10 @@ export interface VaultTotalValues {
      */
     pastWeekReturn: number;
     /**
+     * The annualized percentage rate (APR) calculated from the past week's performance.
+     */
+    pastWeekApr: number;
+    /**
      * The deposit leader address.
      */
     leaderAddress: string;
@@ -125,6 +129,10 @@ export type VaultHistory = {
      * The vault's total USD value.
      */
     totalUSDValue: number;
+    /**
+     * The LP price value.
+     */
+    lpPrice: number;
     /**
      * The timestamp of the vault history.
      */

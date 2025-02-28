@@ -4558,7 +4558,7 @@ var OnchainLobSpotWebSocketService = class {
             this.events.allMarketsUpdated.emit(message.isSnapshot, message.data);
             break;
           case "market":
-            this.events.marketUpdated.emit(message.id, message.isSnapshot, message.data);
+            this.events.marketUpdated.emit(message.id, message.isSnapshot, message.data[0]);
             break;
           case "orderbook":
             this.events.orderbookUpdated.emit(message.id, message.isSnapshot, message.data);
@@ -4791,8 +4791,12 @@ var OnchainLobVaultService = class extends RemoteService {
    * @param params - The parameters for the vault config request.
    * @returns The vault config data.
    */
-  async getVaultConfig(_params) {
-    const response = await this.fetch(`/vault-config`, "json");
+  async getVaultConfig(params) {
+    const queryParams = new URLSearchParams({});
+    if (params.vault)
+      queryParams.append("vault", params.vault);
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vault-config?${queryParamsString}`, "json");
     return response;
   }
   /**
@@ -4800,8 +4804,12 @@ var OnchainLobVaultService = class extends RemoteService {
    * @param params - The parameters for the vault total values request.
    * @returns The vault total values data.
    */
-  async getVaultTotalValues(_params) {
-    const response = await this.fetch(`/vault-total-values`, "json");
+  async getVaultTotalValues(params) {
+    const queryParams = new URLSearchParams({});
+    if (params.vault)
+      queryParams.append("vault", params.vault);
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vault-total-values?${queryParamsString}`, "json");
     return response;
   }
   /**
@@ -4811,6 +4819,7 @@ var OnchainLobVaultService = class extends RemoteService {
    */
   async getVaultDepositActions(params) {
     const queryParams = new URLSearchParams({});
+    queryParams.append("vault", params.vault);
     if (params.limit)
       queryParams.append("limit", params.limit.toString());
     const queryParamsString = decodeURIComponent(queryParams.toString());
@@ -4824,6 +4833,7 @@ var OnchainLobVaultService = class extends RemoteService {
    */
   async getVaultDepositors(params) {
     const queryParams = new URLSearchParams({});
+    queryParams.append("vault", params.vault);
     if (params.limit)
       queryParams.append("limit", params.limit.toString());
     if (params.address)
@@ -4839,7 +4849,8 @@ var OnchainLobVaultService = class extends RemoteService {
    */
   async getVaultHistory(params) {
     const queryParams = new URLSearchParams({
-      period: params.period
+      period: params.period,
+      vault: params.vault
     });
     const queryParamsString = decodeURIComponent(queryParams.toString());
     const response = await this.fetch(`/vault-history?${queryParamsString}`, "json");
@@ -4880,16 +4891,16 @@ var OnchainLobVaultWebSocketService = class {
           return;
         switch (message.channel) {
           case "vaultTotalValues":
-            this.events.vaultTotalValuesUpdated.emit(message.isSnapshot, message.data);
+            this.events.vaultTotalValuesUpdated.emit(message.id, message.isSnapshot, message.data[0]);
             break;
           case "vaultDepositActions":
-            this.events.vaultDepositActionsUpdated.emit(message.isSnapshot, message.data);
+            this.events.vaultDepositActionsUpdated.emit(message.id, message.isSnapshot, message.data);
             break;
           case "vaultDepositors":
-            this.events.vaultDepositorsUpdated.emit(message.isSnapshot, message.data);
+            this.events.vaultDepositorsUpdated.emit(message.id, message.isSnapshot, message.data);
             break;
           case "vaultHistory":
-            this.events.vaultHistoryUpdated.emit(message.isSnapshot, message.data);
+            this.events.vaultHistoryUpdated.emit(message.id, message.isSnapshot, message.data);
             break;
           case "error":
             this.events.subscriptionError.emit(message.data);
@@ -4912,76 +4923,84 @@ var OnchainLobVaultWebSocketService = class {
    * Subscribes to vault total values updates.
    * @param params - The parameters for the vault total values subscription.
    */
-  subscribeToVaultTotalValues(_params) {
+  subscribeToVaultTotalValues(params) {
     this.startOnchainLobWebSocketClientIfNeeded();
     this.onchainLobWebSocketClient.subscribe({
-      channel: "vaultTotalValues"
+      channel: "vaultTotalValues",
+      vault: params.vault
     });
   }
   /**
    * Unsubscribes from vault total values updates.
    * @param params - The parameters for the vault total values unsubscription.
    */
-  unsubscribeFromVaultTotalValues(_params) {
+  unsubscribeFromVaultTotalValues(params) {
     this.onchainLobWebSocketClient.unsubscribe({
-      channel: "vaultTotalValues"
+      channel: "vaultTotalValues",
+      vault: params.vault
     });
   }
   /**
    * Subscribes to vault deposit actions updates.
    * @param params - The parameters for the vault deposit actions subscription.
    */
-  subscribeToVaultDepositActions(_params) {
+  subscribeToVaultDepositActions(params) {
     this.startOnchainLobWebSocketClientIfNeeded();
     this.onchainLobWebSocketClient.subscribe({
-      channel: "vaultDepositActions"
+      channel: "vaultDepositActions",
+      vault: params.vault
     });
   }
   /**
    * Unsubscribes from vault deposit actions updates.
    * @param params - The parameters for the vault deposit actions unsubscription.
    */
-  unsubscribeFromVaultDepositActions(_params) {
+  unsubscribeFromVaultDepositActions(params) {
     this.onchainLobWebSocketClient.unsubscribe({
-      channel: "vaultDepositActions"
+      channel: "vaultDepositActions",
+      vault: params.vault
     });
   }
   /**
    * Subscribes to vault depositors updates.
    * @param params - The parameters for the vault depositors subscription.
    */
-  subscribeToVaultDepositors(_params) {
+  subscribeToVaultDepositors(params) {
     this.startOnchainLobWebSocketClientIfNeeded();
     this.onchainLobWebSocketClient.subscribe({
-      channel: "vaultDepositors"
+      channel: "vaultDepositors",
+      vault: params.vault
     });
   }
   /**
    * Unsubscribes from vault depositors updates.
    * @param params - The parameters for the vault depositors unsubscription.
    */
-  unsubscribeFromVaultDepositors(_params) {
+  unsubscribeFromVaultDepositors(params) {
     this.onchainLobWebSocketClient.unsubscribe({
-      channel: "vaultDepositors"
+      channel: "vaultDepositors",
+      vault: params.vault
     });
   }
   /**
    * Subscribes to vault history updates.
    * @param params - The parameters for the vault history subscription.
    */
-  subscribeToVaultHistory(_params) {
+  subscribeToVaultHistory(params) {
     this.startOnchainLobWebSocketClientIfNeeded();
     this.onchainLobWebSocketClient.subscribe({
-      channel: "vaultHistory"
+      channel: "vaultHistory",
+      vault: params.vault
     });
   }
   /**
    * Unsubscribes from vault history updates.
    * @param params - The parameters for the vault history unsubscription.
    */
-  unsubscribeFromVaultHistory(_params) {
+  unsubscribeFromVaultHistory(params) {
     this.onchainLobWebSocketClient.unsubscribe({
-      channel: "vaultHistory"
+      channel: "vaultHistory",
+      vault: params.vault
     });
   }
   /**
@@ -6681,24 +6700,26 @@ var OnchainLobVault = class {
     __publicField(this, "signer");
     __publicField(this, "onchainLobService");
     __publicField(this, "onchainLobWebSocketService");
-    __publicField(this, "vaultContract");
+    __publicField(this, "vaultContracts", /* @__PURE__ */ new Map());
     __publicField(this, "mappers");
-    __publicField(this, "cachedVaultConfig");
-    __publicField(this, "cachedVaultConfigPromise");
-    __publicField(this, "onVaultTotalValuesUpdated", async (isSnapshot, data) => {
+    __publicField(this, "cachedVaultConfigs", /* @__PURE__ */ new Map());
+    __publicField(this, "cachedVaultConfigsPromise");
+    __publicField(this, "onVaultTotalValuesUpdated", async (vaultId, isSnapshot, data) => {
       try {
-        const vaultConfig = await this.getCachedVaultConfig();
+        const vaultConfigs = await this.getCachedVaultConfigs();
+        const vaultConfig = vaultConfigs?.get(vaultId);
         if (!vaultConfig)
           return;
         const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens, vaultConfig.lpToken);
-        this.events.vaultTotalValuesUpdated.emit(isSnapshot, totalValuesUpdates);
+        this.events.vaultTotalValuesUpdated.emit(vaultId, isSnapshot, totalValuesUpdates);
       } catch (error) {
         console.error(getErrorLogMessage(error));
       }
     });
-    __publicField(this, "onVaultDepositActionsUpdated", async (isSnapshot, data) => {
+    __publicField(this, "onVaultDepositActionsUpdated", async (vaultId, isSnapshot, data) => {
       try {
-        const vaultConfig = await this.getCachedVaultConfig();
+        const vaultConfigs = await this.getCachedVaultConfigs();
+        const vaultConfig = vaultConfigs?.get(vaultId);
         if (!vaultConfig)
           return;
         const depositActionUpdates = data.map(
@@ -6707,27 +6728,28 @@ var OnchainLobVault = class {
             return mapVaultDepositActionDtoToVaultDepositAction(depositActionDto, token.decimals, vaultConfig.lpToken.decimals);
           }
         );
-        this.events.vaultDepositActionsUpdated.emit(isSnapshot, depositActionUpdates);
+        this.events.vaultDepositActionsUpdated.emit(vaultId, isSnapshot, depositActionUpdates);
       } catch (error) {
         console.error(getErrorLogMessage(error));
       }
     });
-    __publicField(this, "onVaultDepositorsUpdated", async (isSnapshot, data) => {
+    __publicField(this, "onVaultDepositorsUpdated", async (vaultId, isSnapshot, data) => {
       try {
-        const vaultConfig = await this.getCachedVaultConfig();
+        const vaultConfigs = await this.getCachedVaultConfigs();
+        const vaultConfig = vaultConfigs?.get(vaultId);
         if (!vaultConfig)
           return;
         const depositorsUpdates = data.map(
           (depositorDto) => mapVaultDepositorDtoToVaultDepositor(depositorDto, vaultConfig.lpToken.decimals)
         );
-        this.events.vaultDepositorsUpdated.emit(isSnapshot, depositorsUpdates);
+        this.events.vaultDepositorsUpdated.emit(vaultId, isSnapshot, depositorsUpdates);
       } catch (error) {
         console.error(getErrorLogMessage(error));
       }
     });
-    __publicField(this, "onVaultHistoryUpdated", (isSnapshot, data) => {
+    __publicField(this, "onVaultHistoryUpdated", (vaultId, isSnapshot, data) => {
       try {
-        this.events.vaultHistoryUpdated.emit(isSnapshot, data);
+        this.events.vaultHistoryUpdated.emit(vaultId, isSnapshot, data);
       } catch (error) {
         console.error(getErrorLogMessage(error));
       }
@@ -6760,7 +6782,7 @@ var OnchainLobVault = class {
   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
   */
   async approveTokens(params) {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
     return vaultContract.approveTokens(params);
   }
   /**
@@ -6770,7 +6792,7 @@ var OnchainLobVault = class {
    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
    */
   async addLiquidity(params) {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
     return vaultContract.addLiquidity(params);
   }
   /**
@@ -6781,7 +6803,7 @@ var OnchainLobVault = class {
   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
   */
   async wrapNativeTokens(params) {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
     return vaultContract.wrapNativeToken(params);
   }
   /**
@@ -6792,7 +6814,7 @@ var OnchainLobVault = class {
     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
     */
   async unwrapNativeTokens(params) {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
     return vaultContract.unwrapNativeToken(params);
   }
   /**
@@ -6802,55 +6824,66 @@ var OnchainLobVault = class {
    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
    */
   async removeLiquidity(params) {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
     return vaultContract.removeLiquidity(params);
   }
   /**
-   * Retrieves the vault config information from cache.
+   * Retrieves the vault configs information from cache.
    *
-   * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
+   * @returns {Promise<Map<string, VaultConfig> | undefined>} A Promise that resolves to the vault configs information or undefined if error when requesting vault configs.
    */
-  async getCachedVaultConfig() {
-    let vaultConfig = this.cachedVaultConfig;
-    if (!vaultConfig) {
+  async getCachedVaultConfigs() {
+    const vaultConfigs = this.cachedVaultConfigs;
+    if (!vaultConfigs.size) {
       try {
-        let getVaultConfigPromise = this.cachedVaultConfigPromise;
-        if (!getVaultConfigPromise) {
-          getVaultConfigPromise = this.getVaultConfig({});
-          this.cachedVaultConfigPromise = getVaultConfigPromise;
+        let getVaultConfigsPromise = this.cachedVaultConfigsPromise;
+        if (!getVaultConfigsPromise) {
+          getVaultConfigsPromise = this.getVaultConfigs({});
+          this.cachedVaultConfigsPromise = getVaultConfigsPromise;
         }
-        const vaultConfigRes = await getVaultConfigPromise;
-        this.cachedVaultConfigPromise = void 0;
-        vaultConfig = vaultConfigRes;
+        const vaultConfigRes = await getVaultConfigsPromise;
+        this.cachedVaultConfigsPromise = void 0;
+        vaultConfigRes.forEach((vault) => vaultConfigs.set(vault.vaultAddress, vault));
       } catch (error) {
         console.error(error);
       }
-      if (!vaultConfig) return void 0;
+      if (!vaultConfigs.size) return void 0;
     }
-    return vaultConfig;
+    return vaultConfigs;
   }
   /**
-   * Retrieves the vault config.
+   * Retrieves the vault config for the specified vault.
    *
    * @param {GetVaultConfigParams} params - The parameters for retrieving the vault config.
-   * @returns {Promise<VaultConfig>} A Promise that resolves to vault config.
+   * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to vault config or undefined if vault is not found.
    */
   async getVaultConfig(params) {
-    const vaultConfigDto = await this.onchainLobService.getVaultConfig(params);
-    return vaultConfigDto;
+    const vaultConfigs = await this.getVaultConfigs(params);
+    return vaultConfigs[0];
+  }
+  /**
+   * Retrieves the vaults configs.
+   *
+   * @param {GetVaultConfigsParams} params - The parameters for retrieving the vault config.
+   * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
+   */
+  async getVaultConfigs(params) {
+    const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
+    return vaultConfigDtos;
   }
   /**
    * Retrieves the vault total values.
    *
    * @param {GetVaultTotalValuesParams} params - The parameters for retrieving the vault total values.
-   * @returns {Promise<VaultTotalValues>} A Promise that resolves to vault total values.
+   * @returns {Promise<VaultTotalValues | undefined>} A Promise that resolves to vault total values.
    */
   async getVaultTotalValues(params) {
     const [vaultConfig, vaultTotalValuesDto] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultTotalValues(params)
     ]);
-    const vaultTotalValues = mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens, vaultConfig.lpToken);
+    if (!vaultTotalValuesDto[0]) return void 0;
+    const vaultTotalValues = mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto[0], vaultConfig.tokens, vaultConfig.lpToken);
     return vaultTotalValues;
   }
   /**
@@ -6861,7 +6894,7 @@ var OnchainLobVault = class {
    */
   async getVaultDepositActions(params) {
     const [vaultConfig, vaultDepositActionsDtos] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultDepositActions(params)
     ]);
     const vaultDepositActions = vaultDepositActionsDtos.map(
@@ -6880,7 +6913,7 @@ var OnchainLobVault = class {
    */
   async getVaultDepositors(params) {
     const [vaultConfig, vaultDepositorsDtos] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultDepositors(params)
     ]);
     const vaultDepositors = vaultDepositorsDtos.map(
@@ -6975,25 +7008,28 @@ var OnchainLobVault = class {
   unsubscribeFromVaultHistory(params) {
     this.onchainLobWebSocketService.unsubscribeFromVaultHistory(params);
   }
-  async ensureVaultConfig() {
-    const vaultConfig = await this.getCachedVaultConfig();
+  async ensureVaultConfig(params) {
+    const vaultConfigs = await this.getCachedVaultConfigs();
+    const vaultConfig = vaultConfigs?.get(params.vault);
     if (!vaultConfig)
       throw new Error(`Vault config not found`);
     return vaultConfig;
   }
-  async getVaultContract() {
+  async getVaultContract(params) {
     if (this.signer === null) {
       throw new Error("Signer is not set");
     }
-    if (!this.vaultContract) {
-      const vault = await this.getVaultConfig({});
-      this.vaultContract = new OnchainLobVaultContract({
-        vault,
+    let vaultContract = this.vaultContracts.get(params.vault);
+    if (!vaultContract) {
+      const vaultConfig = await this.ensureVaultConfig({ vault: params.vault });
+      vaultContract = new OnchainLobVaultContract({
+        vault: vaultConfig,
         signer: this.signer,
         autoWaitTransaction: this.autoWaitTransaction
       });
+      this.vaultContracts.set(params.vault, vaultContract);
     }
-    return this.vaultContract;
+    return vaultContract;
   }
   attachEvents() {
     this.onchainLobWebSocketService.events.vaultTotalValuesUpdated.addListener(this.onVaultTotalValuesUpdated);

@@ -2,6 +2,7 @@ import type { DepositActionDirection } from '../../models';
 import { TokenDto } from '../onchainLobSpotService';
 export interface VaultConfigDto {
     vaultAddress: string;
+    vaultName: string;
     pythAddress: string;
     lpToken: TokenDto;
     tokens: TokenDto[];
@@ -18,6 +19,7 @@ export interface VaultConfigDto {
     };
 }
 export interface VaultDepositActionDto {
+    vaultAddress: string;
     userAddress: string;
     timestamp: number;
     txnHash: string;
@@ -29,18 +31,21 @@ export interface VaultDepositActionDto {
     commissionUsd: number;
 }
 export interface VaultDepositorDto {
+    vaultAddress: string;
     userAddress: string;
     lpAmount: string;
     usdCostBasis: number;
     lastTouched: number;
 }
 export interface VaultHistoryDto {
+    vaultAddress: string;
     pnl: number;
     totalUSDValue: number;
     lpPrice: number;
     time: number;
 }
 export interface VaultTotalValuesDto {
+    vaultAddress: string;
     totalUSDValue: number;
     totalUSDCostBasis: number;
     lpPrice: number;

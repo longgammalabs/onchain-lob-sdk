@@ -2,10 +2,10 @@ import type { VaultTotalValuesUpdateDto, VaultDepositActionUpdateDto, VaultDepos
 import type { SubscribeToVaultTotalValuesParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams } from './params';
 import { OnchainLobWebSocketClient, type OnchainLobWebSocketResponseDto, type PublicEventEmitter } from '../../common';
 interface OnchainLobVaultWebSocketServiceEvents {
-    vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesUpdateDto]>;
-    vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionUpdateDto[]]>;
-    vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorUpdateDto[]]>;
-    vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryUpdateDto[]]>;
+    vaultTotalValuesUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultTotalValuesUpdateDto]>;
+    vaultDepositActionsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositActionUpdateDto[]]>;
+    vaultDepositorsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositorUpdateDto[]]>;
+    vaultHistoryUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultHistoryUpdateDto[]]>;
     subscriptionError: PublicEventEmitter<readonly [error: string]>;
 }
 /**
@@ -32,42 +32,42 @@ export declare class OnchainLobVaultWebSocketService implements Disposable {
      * Subscribes to vault total values updates.
      * @param params - The parameters for the vault total values subscription.
      */
-    subscribeToVaultTotalValues(_params: SubscribeToVaultTotalValuesParams): void;
+    subscribeToVaultTotalValues(params: SubscribeToVaultTotalValuesParams): void;
     /**
      * Unsubscribes from vault total values updates.
      * @param params - The parameters for the vault total values unsubscription.
      */
-    unsubscribeFromVaultTotalValues(_params: UnsubscribeFromVaultTotalValuesParams): void;
+    unsubscribeFromVaultTotalValues(params: UnsubscribeFromVaultTotalValuesParams): void;
     /**
      * Subscribes to vault deposit actions updates.
      * @param params - The parameters for the vault deposit actions subscription.
      */
-    subscribeToVaultDepositActions(_params: SubscribeToVaultDepositActionsParams): void;
+    subscribeToVaultDepositActions(params: SubscribeToVaultDepositActionsParams): void;
     /**
      * Unsubscribes from vault deposit actions updates.
      * @param params - The parameters for the vault deposit actions unsubscription.
      */
-    unsubscribeFromVaultDepositActions(_params: UnsubscribeFromVaultDepositActionsParams): void;
+    unsubscribeFromVaultDepositActions(params: UnsubscribeFromVaultDepositActionsParams): void;
     /**
      * Subscribes to vault depositors updates.
      * @param params - The parameters for the vault depositors subscription.
      */
-    subscribeToVaultDepositors(_params: SubscribeToVaultDepositorsParams): void;
+    subscribeToVaultDepositors(params: SubscribeToVaultDepositorsParams): void;
     /**
      * Unsubscribes from vault depositors updates.
      * @param params - The parameters for the vault depositors unsubscription.
      */
-    unsubscribeFromVaultDepositors(_params: UnsubscribeFromVaultDepositorsParams): void;
+    unsubscribeFromVaultDepositors(params: UnsubscribeFromVaultDepositorsParams): void;
     /**
      * Subscribes to vault history updates.
      * @param params - The parameters for the vault history subscription.
      */
-    subscribeToVaultHistory(_params: SubscribeToVaultHistoryParams): void;
+    subscribeToVaultHistory(params: SubscribeToVaultHistoryParams): void;
     /**
      * Unsubscribes from vault history updates.
      * @param params - The parameters for the vault history unsubscription.
      */
-    unsubscribeFromVaultHistory(_params: UnsubscribeFromVaultHistoryParams): void;
+    unsubscribeFromVaultHistory(params: UnsubscribeFromVaultHistoryParams): void;
     /**
      * Disposes the WebSocket client and removes the message listener.
      */

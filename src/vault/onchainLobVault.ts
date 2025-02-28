@@ -15,6 +15,12 @@ import { AddLiquidityVaultParams,
   CalculateDepositDetailsSyncParams,
   CalculateWithdrawDetailsSyncParams,
   DepositDetails,
+  GetVaultConfigParams,
+  GetVaultConfigsParams,
+  GetVaultDepositActionsParams,
+  GetVaultDepositorsParams,
+  GetVaultHistoryParams,
+  GetVaultTotalValuesParams,
   RemoveLiquidityVaultParams,
   SubscribeToVaultDepositActionsParams,
   SubscribeToVaultDepositorsParams,
@@ -33,11 +39,6 @@ import { getWithdrawDetails } from './withdrawDetails';
 import { OnchainLobVaultContract } from './onchainLobVaultContract';
 import { ContractTransactionResponse } from 'ethers';
 import * as mappers from './mappers';
-import { GetVaultConfigParams,
-  GetVaultDepositActionsParams,
-  GetVaultDepositorsParams,
-  GetVaultHistoryParams,
-  GetVaultTotalValuesParams } from '../services/onchainLobVaultService/params';
 import { getErrorLogMessage } from '../logging';
 
 /**
@@ -120,28 +121,28 @@ interface OnchainLobVaultEvents {
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultTotalValuesUpdate]>}
    */
-  vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesUpdate]>;
+  vaultTotalValuesUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultTotalValuesUpdate]>;
 
   /**
    * Emitted when a vault history changes.
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultHistoryUpdate[]]>};
    */
-  vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryUpdate[]]>;
+  vaultHistoryUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultHistoryUpdate[]]>;
 
   /**
    * Emitted when a vault deposit actions changes.
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultDepositActionUpdate[]]>;}
    */
-  vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionUpdate[]]>;
+  vaultDepositActionsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositActionUpdate[]]>;
 
   /**
    * Emitted when a vault depositors changes.
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultDepositorUpdate[]]>;}
    */
-  vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorUpdate[]]>;
+  vaultDepositorsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositorUpdate[]]>;
 
   /**
    * Emitted when there is an error related to a subscription.
@@ -184,10 +185,10 @@ export class OnchainLobVault {
 
   protected readonly onchainLobService: OnchainLobVaultService;
   protected readonly onchainLobWebSocketService: OnchainLobVaultWebSocketService;
-  private vaultContract: OnchainLobVaultContract | undefined = undefined;
+  private vaultContracts: Map<string, OnchainLobVaultContract> = new Map();
   protected readonly mappers: typeof mappers;
-  protected readonly cachedVaultConfig: VaultConfig | undefined = undefined;
-  private cachedVaultConfigPromise: Promise<VaultConfig> | undefined = undefined;
+  protected readonly cachedVaultConfigs: Map<string, VaultConfig> = new Map();
+  private cachedVaultConfigsPromise: Promise<VaultConfig[]> | undefined = undefined;
 
   constructor(options: Readonly<OnchainLobVaultOptions>) {
     this.signer = options.signer;
@@ -218,7 +219,7 @@ export class OnchainLobVault {
   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
   */
   async approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.approveTokens(params);
   }
@@ -230,7 +231,7 @@ export class OnchainLobVault {
    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
    */
   async addLiquidity(params: AddLiquidityVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.addLiquidity(params);
   }
@@ -243,7 +244,7 @@ export class OnchainLobVault {
   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
   */
   async wrapNativeTokens(params: WrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.wrapNativeToken(params);
   }
@@ -256,7 +257,7 @@ export class OnchainLobVault {
     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
     */
   async unwrapNativeTokens(params: UnwrapNativeTokenVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.unwrapNativeToken(params);
   }
@@ -268,64 +269,78 @@ export class OnchainLobVault {
    * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
    */
   async removeLiquidity(params: RemoveLiquidityVaultParams): Promise<ContractTransactionResponse> {
-    const vaultContract = await this.getVaultContract();
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.removeLiquidity(params);
   }
 
   /**
-   * Retrieves the vault config information from cache.
+   * Retrieves the vault configs information from cache.
    *
-   * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to the vault config information or undefined if error when requesting vault config.
+   * @returns {Promise<Map<string, VaultConfig> | undefined>} A Promise that resolves to the vault configs information or undefined if error when requesting vault configs.
    */
-  async getCachedVaultConfig(): Promise<VaultConfig | undefined> {
-    let vaultConfig = this.cachedVaultConfig;
+  async getCachedVaultConfigs(): Promise<Map<string, VaultConfig> | undefined> {
+    const vaultConfigs = this.cachedVaultConfigs;
 
-    if (!vaultConfig) {
+    if (!vaultConfigs.size) {
       try {
-        let getVaultConfigPromise = this.cachedVaultConfigPromise;
-        if (!getVaultConfigPromise) {
-          getVaultConfigPromise = this.getVaultConfig({});
-          this.cachedVaultConfigPromise = getVaultConfigPromise;
+        let getVaultConfigsPromise = this.cachedVaultConfigsPromise;
+        if (!getVaultConfigsPromise) {
+          getVaultConfigsPromise = this.getVaultConfigs({});
+          this.cachedVaultConfigsPromise = getVaultConfigsPromise;
         }
 
-        const vaultConfigRes = await getVaultConfigPromise;
-        this.cachedVaultConfigPromise = undefined;
-        vaultConfig = vaultConfigRes;
+        const vaultConfigRes = await getVaultConfigsPromise;
+        this.cachedVaultConfigsPromise = undefined;
+        vaultConfigRes.forEach(vault => vaultConfigs.set(vault.vaultAddress, vault));
       }
       catch (error) {
         console.error(error);
       }
 
-      if (!vaultConfig) return undefined;
+      if (!vaultConfigs.size) return undefined;
     }
 
-    return vaultConfig;
+    return vaultConfigs;
   }
 
   /**
-   * Retrieves the vault config.
+   * Retrieves the vault config for the specified vault.
    *
    * @param {GetVaultConfigParams} params - The parameters for retrieving the vault config.
-   * @returns {Promise<VaultConfig>} A Promise that resolves to vault config.
+   * @returns {Promise<VaultConfig | undefined>} A Promise that resolves to vault config or undefined if vault is not found.
    */
-  async getVaultConfig(params: GetVaultConfigParams): Promise<VaultConfig> {
-    const vaultConfigDto = await this.onchainLobService.getVaultConfig(params);
-    return vaultConfigDto;
+  async getVaultConfig(params: GetVaultConfigParams): Promise<VaultConfig | undefined> {
+    const vaultConfigs = await this.getVaultConfigs(params);
+    return vaultConfigs[0];
+  }
+
+  /**
+   * Retrieves the vaults configs.
+   *
+   * @param {GetVaultConfigsParams} params - The parameters for retrieving the vault config.
+   * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
+   */
+  async getVaultConfigs(params: GetVaultConfigsParams): Promise<VaultConfig[]> {
+    const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
+    return vaultConfigDtos;
   }
 
   /**
    * Retrieves the vault total values.
    *
    * @param {GetVaultTotalValuesParams} params - The parameters for retrieving the vault total values.
-   * @returns {Promise<VaultTotalValues>} A Promise that resolves to vault total values.
+   * @returns {Promise<VaultTotalValues | undefined>} A Promise that resolves to vault total values.
    */
-  async getVaultTotalValues(params: GetVaultTotalValuesParams): Promise<VaultTotalValues> {
+  async getVaultTotalValues(params: GetVaultTotalValuesParams): Promise<VaultTotalValues | undefined> {
     const [vaultConfig, vaultTotalValuesDto] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultTotalValues(params),
     ]);
-    const vaultTotalValues = mappers.mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto, vaultConfig.tokens, vaultConfig.lpToken);
+
+    if (!vaultTotalValuesDto[0]) return undefined;
+
+    const vaultTotalValues = mappers.mapVaultTotalValuesDtoToVaultTotalValues(vaultTotalValuesDto[0], vaultConfig.tokens, vaultConfig.lpToken);
     return vaultTotalValues;
   }
 
@@ -337,7 +352,7 @@ export class OnchainLobVault {
    */
   async getVaultDepositActions(params: GetVaultDepositActionsParams): Promise<VaultDepositAction[]> {
     const [vaultConfig, vaultDepositActionsDtos] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultDepositActions(params),
     ]);
     const vaultDepositActions = vaultDepositActionsDtos.map(
@@ -357,7 +372,7 @@ export class OnchainLobVault {
    */
   async getVaultDepositors(params: GetVaultDepositorsParams): Promise<VaultDepositor[]> {
     const [vaultConfig, vaultDepositorsDtos] = await Promise.all([
-      this.ensureVaultConfig(),
+      this.ensureVaultConfig({ vault: params.vault }),
       this.onchainLobService.getVaultDepositors(params),
     ]);
     const vaultDepositors = vaultDepositorsDtos.map(
@@ -464,30 +479,34 @@ export class OnchainLobVault {
     this.onchainLobWebSocketService.unsubscribeFromVaultHistory(params);
   }
 
-  protected async ensureVaultConfig(): Promise<VaultConfig> {
-    const vaultConfig = await this.getCachedVaultConfig();
+  protected async ensureVaultConfig(params: { vault: string }): Promise<VaultConfig> {
+    const vaultConfigs = await this.getCachedVaultConfigs();
+    const vaultConfig = vaultConfigs?.get(params.vault);
     if (!vaultConfig)
       throw new Error(`Vault config not found`);
 
     return vaultConfig;
   }
 
-  protected async getVaultContract(): Promise<OnchainLobVaultContract> {
+  protected async getVaultContract(params: { vault: string }): Promise<OnchainLobVaultContract> {
     if (this.signer === null) {
       throw new Error('Signer is not set');
     }
 
-    if (!this.vaultContract) {
-      const vault = await this.getVaultConfig({});
+    let vaultContract = this.vaultContracts.get(params.vault);
 
-      this.vaultContract = new OnchainLobVaultContract({
-        vault: vault,
+    if (!vaultContract) {
+      const vaultConfig = await this.ensureVaultConfig({ vault: params.vault });
+
+      vaultContract = new OnchainLobVaultContract({
+        vault: vaultConfig,
         signer: this.signer,
         autoWaitTransaction: this.autoWaitTransaction,
       });
+      this.vaultContracts.set(params.vault, vaultContract);
     }
 
-    return this.vaultContract;
+    return vaultContract;
   }
 
   protected attachEvents(): void {
@@ -506,22 +525,24 @@ export class OnchainLobVault {
     this.onchainLobWebSocketService.events.subscriptionError.removeListener(this.onSubscriptionError);
   }
 
-  protected onVaultTotalValuesUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultTotalValuesUpdated['addListener']>[0] = async (isSnapshot, data) => {
+  protected onVaultTotalValuesUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultTotalValuesUpdated['addListener']>[0] = async (vaultId, isSnapshot, data) => {
     try {
-      const vaultConfig = await this.getCachedVaultConfig();
+      const vaultConfigs = await this.getCachedVaultConfigs();
+      const vaultConfig = vaultConfigs?.get(vaultId);
       if (!vaultConfig)
         return;
       const totalValuesUpdates = this.mappers.mapVaultTotalValuesUpdateDtoToVaultTotalValuesUpdate(data, vaultConfig.tokens, vaultConfig.lpToken);
-      (this.events.vaultTotalValuesUpdated as ToEventEmitter<typeof this.events.vaultTotalValuesUpdated>).emit(isSnapshot, totalValuesUpdates);
+      (this.events.vaultTotalValuesUpdated as ToEventEmitter<typeof this.events.vaultTotalValuesUpdated>).emit(vaultId, isSnapshot, totalValuesUpdates);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));
     }
   };
 
-  protected onVaultDepositActionsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositActionsUpdated['addListener']>[0] = async (isSnapshot, data) => {
+  protected onVaultDepositActionsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositActionsUpdated['addListener']>[0] = async (vaultId, isSnapshot, data) => {
     try {
-      const vaultConfig = await this.getCachedVaultConfig();
+      const vaultConfigs = await this.getCachedVaultConfigs();
+      const vaultConfig = vaultConfigs?.get(vaultId);
       if (!vaultConfig)
         return;
       const depositActionUpdates = data.map(
@@ -530,31 +551,32 @@ export class OnchainLobVault {
           return mappers.mapVaultDepositActionDtoToVaultDepositAction(depositActionDto, token.decimals, vaultConfig.lpToken.decimals);
         }
       );
-      (this.events.vaultDepositActionsUpdated as ToEventEmitter<typeof this.events.vaultDepositActionsUpdated>).emit(isSnapshot, depositActionUpdates);
+      (this.events.vaultDepositActionsUpdated as ToEventEmitter<typeof this.events.vaultDepositActionsUpdated>).emit(vaultId, isSnapshot, depositActionUpdates);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));
     }
   };
 
-  protected onVaultDepositorsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositorsUpdated['addListener']>[0] = async (isSnapshot, data) => {
+  protected onVaultDepositorsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultDepositorsUpdated['addListener']>[0] = async (vaultId, isSnapshot, data) => {
     try {
-      const vaultConfig = await this.getCachedVaultConfig();
+      const vaultConfigs = await this.getCachedVaultConfigs();
+      const vaultConfig = vaultConfigs?.get(vaultId);
       if (!vaultConfig)
         return;
       const depositorsUpdates = data.map(
         depositorDto => mappers.mapVaultDepositorDtoToVaultDepositor(depositorDto, vaultConfig.lpToken.decimals)
       );
-      (this.events.vaultDepositorsUpdated as ToEventEmitter<typeof this.events.vaultDepositorsUpdated>).emit(isSnapshot, depositorsUpdates);
+      (this.events.vaultDepositorsUpdated as ToEventEmitter<typeof this.events.vaultDepositorsUpdated>).emit(vaultId, isSnapshot, depositorsUpdates);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));
     }
   };
 
-  protected onVaultHistoryUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultHistoryUpdated['addListener']>[0] = (isSnapshot, data) => {
+  protected onVaultHistoryUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultHistoryUpdated['addListener']>[0] = (vaultId, isSnapshot, data) => {
     try {
-      (this.events.vaultHistoryUpdated as ToEventEmitter<typeof this.events.vaultHistoryUpdated>).emit(isSnapshot, data);
+      (this.events.vaultHistoryUpdated as ToEventEmitter<typeof this.events.vaultHistoryUpdated>).emit(vaultId, isSnapshot, data);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));

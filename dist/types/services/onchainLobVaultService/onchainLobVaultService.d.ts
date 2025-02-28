@@ -11,13 +11,13 @@ export declare class OnchainLobVaultService extends RemoteService {
      * @param params - The parameters for the vault config request.
      * @returns The vault config data.
      */
-    getVaultConfig(_params: GetVaultConfigParams): Promise<VaultConfigDto>;
+    getVaultConfig(params: GetVaultConfigParams): Promise<VaultConfigDto[]>;
     /**
      * Retrieves the vault total values.
      * @param params - The parameters for the vault total values request.
      * @returns The vault total values data.
      */
-    getVaultTotalValues(_params: GetVaultTotalValuesParams): Promise<VaultTotalValuesDto>;
+    getVaultTotalValues(params: GetVaultTotalValuesParams): Promise<VaultTotalValuesDto[]>;
     /**
      * Retrieves the vault deposit actions.
      * @param params - The parameters for the vault deposit actions request.

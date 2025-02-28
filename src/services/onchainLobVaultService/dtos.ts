@@ -3,6 +3,7 @@ import { TokenDto } from '../onchainLobSpotService';
 
 export interface VaultConfigDto {
   vaultAddress: string;
+  vaultName: string;
   pythAddress: string;
   lpToken: TokenDto;
   tokens: TokenDto[];
@@ -17,6 +18,7 @@ export interface VaultConfigDto {
 }
 
 export interface VaultDepositActionDto {
+  vaultAddress: string;
   userAddress: string;
   timestamp: number;
   txnHash: string;
@@ -29,6 +31,7 @@ export interface VaultDepositActionDto {
 }
 
 export interface VaultDepositorDto {
+  vaultAddress: string;
   userAddress: string;
   lpAmount: string;
   usdCostBasis: number;
@@ -36,6 +39,7 @@ export interface VaultDepositorDto {
 }
 
 export interface VaultHistoryDto {
+  vaultAddress: string;
   pnl: number;
   totalUSDValue: number;
   lpPrice: number;
@@ -43,6 +47,7 @@ export interface VaultHistoryDto {
 }
 
 export interface VaultTotalValuesDto {
+  vaultAddress: string;
   totalUSDValue: number;
   totalUSDCostBasis: number;
   lpPrice: number;

@@ -1,11 +1,19 @@
-export interface SubscribeToVaultTotalValuesParams {}
+export interface SubscribeToVaultTotalValuesParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultTotalValuesParams = SubscribeToVaultTotalValuesParams;
 
-export interface SubscribeToVaultDepositorsParams {}
+export interface SubscribeToVaultDepositorsParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsParams;
 
-export interface SubscribeToVaultDepositActionsParams {}
+export interface SubscribeToVaultDepositActionsParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
 
-export interface SubscribeToVaultHistoryParams {}
+export interface SubscribeToVaultHistoryParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultHistoryParams = SubscribeToVaultHistoryParams;

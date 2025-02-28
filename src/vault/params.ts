@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Token } from '../models';
+import { Token, VaultHistoryPeriod } from '../models';
 
 /**
  * Transaction parameters.
@@ -87,6 +87,12 @@ export interface ApproveVaultParams extends TransactionParams {
  */
 export interface WrapNativeTokenVaultParams extends TransactionParams {
   /**
+   * The vault identifier.
+   *
+   * @type {string}
+   */
+  vault: string;
+  /**
    * The Wrapped native token.
    *
    * @type {string}
@@ -109,6 +115,12 @@ export interface WrapNativeTokenVaultParams extends TransactionParams {
  * @extends TransactionParams
  */
 export interface UnwrapNativeTokenVaultParams extends TransactionParams {
+  /**
+   * The vault identifier.
+   *
+   * @type {string}
+   */
+  vault: string;
   /**
    * The Wrapped native token.
    *
@@ -221,16 +233,24 @@ export interface RemoveLiquidityVaultParams extends TransactionParams {
   minTokenGet: BigNumber | bigint;
 }
 
-export interface SubscribeToVaultTotalValuesParams {}
+export interface SubscribeToVaultTotalValuesParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultTotalValuesParams = SubscribeToVaultTotalValuesParams;
 
-export interface SubscribeToVaultDepositorsParams {}
+export interface SubscribeToVaultDepositorsParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsParams;
 
-export interface SubscribeToVaultDepositActionsParams {}
+export interface SubscribeToVaultDepositActionsParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
 
-export interface SubscribeToVaultHistoryParams {}
+export interface SubscribeToVaultHistoryParams {
+  vault: string;
+}
 export type UnsubscribeFromVaultHistoryParams = SubscribeToVaultHistoryParams;
 
 export type CalculateDepositDetailsSyncParams = {
@@ -302,3 +322,89 @@ export type WithdrawDetails = {
     minTokenGet: bigint;
   };
 };
+
+export interface GetVaultConfigParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   */
+  vault: string;
+}
+
+export interface GetVaultConfigsParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   * @optional
+   * @note If not provided, all configs will be returned
+   */
+  vault?: string;
+}
+
+export interface GetVaultTotalValuesParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   */
+  vault: string;
+}
+
+export interface GetVaultDepositActionsParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   */
+  vault: string;
+  /**
+   * Number of deposit actions to retrieve
+   *
+   * @type {number}
+   * @optional
+   * @default 100
+   */
+  limit?: number;
+}
+
+export interface GetVaultDepositorsParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   */
+  vault: string;
+  /**
+   * Address of depositor to retrieve
+   *
+   * @type {string}
+   * @optional
+   * @note If not provided, all depositors will be returned
+   */
+  address?: string;
+  /**
+   * Number of depositors to retrieve
+   *
+   * @type {number}
+   * @optional
+   * @default 100
+   */
+  limit?: number;
+}
+
+export interface GetVaultHistoryParams {
+  /**
+   * Id of the requested vault
+   *
+   * @type {string}
+   */
+  vault: string;
+  /**
+   * Period of the historical data to retrieve
+   *
+   * @type {VaultHistoryPeriod}
+   */
+  period: VaultHistoryPeriod;
+}

@@ -1,5 +1,6 @@
 import type { DepositActionDirection } from '../../models';
 export interface VaultDepositActionUpdateDto {
+    vaultAddress: string;
     userAddress: string;
     timestamp: number;
     txnHash: string;
@@ -11,18 +12,21 @@ export interface VaultDepositActionUpdateDto {
     commissionUsd: number;
 }
 export interface VaultDepositorUpdateDto {
+    vaultAddress: string;
     userAddress: string;
     lpAmount: string;
     usdCostBasis: number;
     lastTouched: number;
 }
 export interface VaultHistoryUpdateDto {
+    vaultAddress: string;
     pnl: number;
     totalUSDValue: number;
     lpPrice: number;
     time: number;
 }
 export interface VaultTotalValuesUpdateDto {
+    vaultAddress: string;
     totalUSDValue: number;
     totalUSDCostBasis: number;
     lpPrice: number;

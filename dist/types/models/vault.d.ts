@@ -9,6 +9,10 @@ export type DepositActionDirection = 'deposit' | 'withdraw';
  */
 export interface VaultTotalValues {
     /**
+     * The vault's address.
+     */
+    vaultAddress: string;
+    /**
      * The total USD value of the vault.
      */
     totalUSDValue: number;
@@ -122,6 +126,10 @@ export type VaultHistoryPeriod = '1h' | '1D' | '1W' | '1M' | '1Y';
  */
 export type VaultHistory = {
     /**
+     * The vault's address.
+     */
+    vaultAddress: string;
+    /**
      * The vault's pnl performance in USD.
      */
     pnl: number;
@@ -146,6 +154,10 @@ export type VaultHistoryUpdate = VaultHistory;
  * Represents the static vault config.
  */
 export type VaultConfig = {
+    /**
+     * The vault's name
+     */
+    vaultName: string;
     /**
      * The vault's contract address
      */
@@ -184,6 +196,10 @@ export type VaultConfig = {
  * Represents the deposit/withdraw action in the vault.
  */
 export type VaultDepositAction = {
+    /**
+     * The action's vault address
+     */
+    vaultAddress: string;
     /**
      * The action initiator's account address
      */
@@ -234,6 +250,10 @@ export type VaultDepositActionUpdate = VaultDepositAction;
  * Represents the vault depositor.
  */
 export type VaultDepositor = {
+    /**
+     * The vault's address
+     */
+    vaultAddress: string;
     /**
      * The depositor's account address
      */

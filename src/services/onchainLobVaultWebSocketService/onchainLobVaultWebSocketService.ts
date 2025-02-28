@@ -21,10 +21,10 @@ import {
 import { getErrorLogMessage } from '../../logging';
 
 interface OnchainLobVaultWebSocketServiceEvents {
-  vaultTotalValuesUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultTotalValuesUpdateDto]>;
-  vaultDepositActionsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositActionUpdateDto[]]>;
-  vaultDepositorsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultDepositorUpdateDto[]]>;
-  vaultHistoryUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: VaultHistoryUpdateDto[]]>;
+  vaultTotalValuesUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultTotalValuesUpdateDto]>;
+  vaultDepositActionsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositActionUpdateDto[]]>;
+  vaultDepositorsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositorUpdateDto[]]>;
+  vaultHistoryUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultHistoryUpdateDto[]]>;
   subscriptionError: PublicEventEmitter<readonly [error: string]>;
 }
 
@@ -65,11 +65,12 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Subscribes to vault total values updates.
    * @param params - The parameters for the vault total values subscription.
    */
-  subscribeToVaultTotalValues(_params: SubscribeToVaultTotalValuesParams) {
+  subscribeToVaultTotalValues(params: SubscribeToVaultTotalValuesParams) {
     this.startOnchainLobWebSocketClientIfNeeded();
 
     this.onchainLobWebSocketClient.subscribe({
       channel: 'vaultTotalValues',
+      vault: params.vault,
     });
   }
 
@@ -77,9 +78,10 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Unsubscribes from vault total values updates.
    * @param params - The parameters for the vault total values unsubscription.
    */
-  unsubscribeFromVaultTotalValues(_params: UnsubscribeFromVaultTotalValuesParams) {
+  unsubscribeFromVaultTotalValues(params: UnsubscribeFromVaultTotalValuesParams) {
     this.onchainLobWebSocketClient.unsubscribe({
       channel: 'vaultTotalValues',
+      vault: params.vault,
     });
   }
 
@@ -87,11 +89,12 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Subscribes to vault deposit actions updates.
    * @param params - The parameters for the vault deposit actions subscription.
    */
-  subscribeToVaultDepositActions(_params: SubscribeToVaultDepositActionsParams) {
+  subscribeToVaultDepositActions(params: SubscribeToVaultDepositActionsParams) {
     this.startOnchainLobWebSocketClientIfNeeded();
 
     this.onchainLobWebSocketClient.subscribe({
       channel: 'vaultDepositActions',
+      vault: params.vault,
     });
   }
 
@@ -99,9 +102,10 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Unsubscribes from vault deposit actions updates.
    * @param params - The parameters for the vault deposit actions unsubscription.
    */
-  unsubscribeFromVaultDepositActions(_params: UnsubscribeFromVaultDepositActionsParams) {
+  unsubscribeFromVaultDepositActions(params: UnsubscribeFromVaultDepositActionsParams) {
     this.onchainLobWebSocketClient.unsubscribe({
       channel: 'vaultDepositActions',
+      vault: params.vault,
     });
   }
 
@@ -109,11 +113,12 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Subscribes to vault depositors updates.
    * @param params - The parameters for the vault depositors subscription.
    */
-  subscribeToVaultDepositors(_params: SubscribeToVaultDepositorsParams) {
+  subscribeToVaultDepositors(params: SubscribeToVaultDepositorsParams) {
     this.startOnchainLobWebSocketClientIfNeeded();
 
     this.onchainLobWebSocketClient.subscribe({
       channel: 'vaultDepositors',
+      vault: params.vault,
     });
   }
 
@@ -121,9 +126,10 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Unsubscribes from vault depositors updates.
    * @param params - The parameters for the vault depositors unsubscription.
    */
-  unsubscribeFromVaultDepositors(_params: UnsubscribeFromVaultDepositorsParams) {
+  unsubscribeFromVaultDepositors(params: UnsubscribeFromVaultDepositorsParams) {
     this.onchainLobWebSocketClient.unsubscribe({
       channel: 'vaultDepositors',
+      vault: params.vault,
     });
   }
 
@@ -131,11 +137,12 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Subscribes to vault history updates.
    * @param params - The parameters for the vault history subscription.
    */
-  subscribeToVaultHistory(_params: SubscribeToVaultHistoryParams) {
+  subscribeToVaultHistory(params: SubscribeToVaultHistoryParams) {
     this.startOnchainLobWebSocketClientIfNeeded();
 
     this.onchainLobWebSocketClient.subscribe({
       channel: 'vaultHistory',
+      vault: params.vault,
     });
   }
 
@@ -143,9 +150,10 @@ export class OnchainLobVaultWebSocketService implements Disposable {
    * Unsubscribes from vault history updates.
    * @param params - The parameters for the vault history unsubscription.
    */
-  unsubscribeFromVaultHistory(_params: UnsubscribeFromVaultHistoryParams) {
+  unsubscribeFromVaultHistory(params: UnsubscribeFromVaultHistoryParams) {
     this.onchainLobWebSocketClient.unsubscribe({
       channel: 'vaultHistory',
+      vault: params.vault,
     });
   }
 
@@ -176,19 +184,19 @@ export class OnchainLobVaultWebSocketService implements Disposable {
       switch (message.channel) {
         case 'vaultTotalValues':
           (this.events.vaultTotalValuesUpdated as ToEventEmitter<typeof this.events.vaultTotalValuesUpdated>)
-            .emit(message.isSnapshot, message.data as VaultTotalValuesUpdateDto);
+            .emit(message.id, message.isSnapshot, (message.data as VaultTotalValuesUpdateDto[])[0]!);
           break;
         case 'vaultDepositActions':
           (this.events.vaultDepositActionsUpdated as ToEventEmitter<typeof this.events.vaultDepositActionsUpdated>)
-            .emit(message.isSnapshot, message.data as VaultDepositActionUpdateDto[]);
+            .emit(message.id, message.isSnapshot, message.data as VaultDepositActionUpdateDto[]);
           break;
         case 'vaultDepositors':
           (this.events.vaultDepositorsUpdated as ToEventEmitter<typeof this.events.vaultDepositorsUpdated>)
-            .emit(message.isSnapshot, message.data as VaultDepositorUpdateDto[]);
+            .emit(message.id, message.isSnapshot, message.data as VaultDepositorUpdateDto[]);
           break;
         case 'vaultHistory':
           (this.events.vaultHistoryUpdated as ToEventEmitter<typeof this.events.vaultHistoryUpdated>)
-            .emit(message.isSnapshot, message.data as VaultHistoryUpdateDto[]);
+            .emit(message.id, message.isSnapshot, message.data as VaultHistoryUpdateDto[]);
           break;
         case 'error':
           (this.events.subscriptionError as ToEventEmitter<typeof this.events.subscriptionError>).emit(message.data as string);

@@ -12,8 +12,13 @@ export class OnchainLobVaultService extends RemoteService {
    * @param params - The parameters for the vault config request.
    * @returns The vault config data.
    */
-  async getVaultConfig(_params: GetVaultConfigParams): Promise<VaultConfigDto> {
-    const response = await this.fetch<VaultConfigDto>(`/vault-config`, 'json');
+  async getVaultConfig(params: GetVaultConfigParams): Promise<VaultConfigDto[]> {
+    const queryParams = new URLSearchParams({});
+    if (params.vault)
+      queryParams.append('vault', params.vault);
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<VaultConfigDto[]>(`/vault-config?${queryParamsString}`, 'json');
 
     return response;
   }
@@ -23,8 +28,13 @@ export class OnchainLobVaultService extends RemoteService {
    * @param params - The parameters for the vault total values request.
    * @returns The vault total values data.
    */
-  async getVaultTotalValues(_params: GetVaultTotalValuesParams): Promise<VaultTotalValuesDto> {
-    const response = await this.fetch<VaultTotalValuesDto>(`/vault-total-values`, 'json');
+  async getVaultTotalValues(params: GetVaultTotalValuesParams): Promise<VaultTotalValuesDto[]> {
+    const queryParams = new URLSearchParams({});
+    if (params.vault)
+      queryParams.append('vault', params.vault);
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<VaultTotalValuesDto[]>(`/vault-total-values?${queryParamsString}`, 'json');
 
     return response;
   }
@@ -36,6 +46,9 @@ export class OnchainLobVaultService extends RemoteService {
    */
   async getVaultDepositActions(params: GetVaultDepositActionsParams): Promise<VaultDepositActionDto[]> {
     const queryParams = new URLSearchParams({});
+
+    queryParams.append('vault', params.vault);
+
     if (params.limit)
       queryParams.append('limit', params.limit.toString());
 
@@ -52,6 +65,9 @@ export class OnchainLobVaultService extends RemoteService {
    */
   async getVaultDepositors(params: GetVaultDepositorsParams): Promise<VaultDepositorDto[]> {
     const queryParams = new URLSearchParams({});
+
+    queryParams.append('vault', params.vault);
+
     if (params.limit)
       queryParams.append('limit', params.limit.toString());
 
@@ -72,6 +88,7 @@ export class OnchainLobVaultService extends RemoteService {
   async getVaultHistory(params: GetVaultHistoryParams): Promise<VaultHistoryDto[]> {
     const queryParams = new URLSearchParams({
       period: params.period,
+      vault: params.vault,
     });
 
     const queryParamsString = decodeURIComponent(queryParams.toString());

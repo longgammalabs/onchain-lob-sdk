@@ -304,7 +304,7 @@ export class OnchainLobSpotWebSocketService implements Disposable {
           (this.events.allMarketsUpdated as ToEventEmitter<typeof this.events.allMarketsUpdated>).emit(message.isSnapshot, message.data as MarketUpdateDto[]);
           break;
         case 'market':
-          (this.events.marketUpdated as ToEventEmitter<typeof this.events.marketUpdated>).emit(message.id, message.isSnapshot, message.data as MarketUpdateDto);
+          (this.events.marketUpdated as ToEventEmitter<typeof this.events.marketUpdated>).emit(message.id, message.isSnapshot, (message.data as MarketUpdateDto[])[0]!);
           break;
         case 'orderbook':
           (this.events.orderbookUpdated as ToEventEmitter<typeof this.events.orderbookUpdated>).emit(message.id, message.isSnapshot, message.data as OrderbookUpdateDto);

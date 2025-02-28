@@ -7,7 +7,8 @@ import type { VaultConfig, VaultTotalValuesUpdate,
   VaultTotalValues,
   VaultDepositAction,
   VaultDepositor,
-  VaultHistory
+  VaultHistory,
+  VaultListItem
 } from '../models';
 import { OnchainLobVaultService, OnchainLobVaultWebSocketService } from '../services';
 import { AddLiquidityVaultParams,
@@ -20,6 +21,7 @@ import { AddLiquidityVaultParams,
   GetVaultDepositActionsParams,
   GetVaultDepositorsParams,
   GetVaultHistoryParams,
+  GetVaultsListParams,
   GetVaultTotalValuesParams,
   RemoveLiquidityVaultParams,
   SubscribeToVaultDepositActionsParams,
@@ -324,6 +326,17 @@ export class OnchainLobVault {
   async getVaultConfigs(params: GetVaultConfigsParams): Promise<VaultConfig[]> {
     const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
     return vaultConfigDtos;
+  }
+
+  /**
+   * Retrieves the vaults list.
+   *
+   * @param {GetVaultsListParams} params - The parameters for retrieving the vault config.
+   * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
+   */
+  async getVaultsList(params: GetVaultsListParams): Promise<VaultListItem[]> {
+    const vaultListItemDtos = await this.onchainLobService.getVaultsList(params);
+    return vaultListItemDtos;
   }
 
   /**

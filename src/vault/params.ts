@@ -343,6 +343,16 @@ export interface GetVaultConfigsParams {
   vault?: string;
 }
 
+export interface GetVaultsListParams {
+  /**
+   * Address of depositor, whos balance will be in ersponse
+   *
+   * @type {string}
+   * @optional
+   */
+  address?: string;
+}
+
 export interface GetVaultTotalValuesParams {
   /**
    * Id of the requested vault

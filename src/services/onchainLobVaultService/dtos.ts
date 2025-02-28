@@ -1,10 +1,25 @@
 import type { DepositActionDirection } from '../../models';
 import { TokenDto } from '../onchainLobSpotService';
 
+export interface VaultListItemDto {
+  vaultName: string;
+  vaultAddress: string;
+  makerAddress: string;
+  apr: number;
+  tvl: number;
+  pnl: number;
+  depositorsCount: number;
+  userDepositUsd: number;
+  creationTimestamp: number;
+  isUserGenerated: boolean;
+}
+
 export interface VaultConfigDto {
   vaultAddress: string;
   vaultName: string;
   pythAddress: string;
+  creationTimestamp: number;
+  isUserGenerated: boolean;
   lpToken: TokenDto;
   tokens: TokenDto[];
   tokenIds: { tokenAddress: string; id: number }[];

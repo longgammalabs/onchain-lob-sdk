@@ -1,8 +1,8 @@
 import { Signer } from 'ethers/providers';
 import { type PublicEventEmitter } from '../common';
-import type { VaultConfig, VaultTotalValuesUpdate, VaultHistoryUpdate, VaultDepositActionUpdate, VaultDepositorUpdate, VaultTotalValues, VaultDepositAction, VaultDepositor, VaultHistory } from '../models';
+import type { VaultConfig, VaultTotalValuesUpdate, VaultHistoryUpdate, VaultDepositActionUpdate, VaultDepositorUpdate, VaultTotalValues, VaultDepositAction, VaultDepositor, VaultHistory, VaultListItem } from '../models';
 import { OnchainLobVaultService, OnchainLobVaultWebSocketService } from '../services';
-import { AddLiquidityVaultParams, ApproveVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, GetVaultConfigParams, GetVaultConfigsParams, GetVaultDepositActionsParams, GetVaultDepositorsParams, GetVaultHistoryParams, GetVaultTotalValuesParams, RemoveLiquidityVaultParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, SubscribeToVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, UnwrapNativeTokenVaultParams, WithdrawDetails, WrapNativeTokenVaultParams } from './params';
+import { AddLiquidityVaultParams, ApproveVaultParams, CalculateDepositDetailsSyncParams, CalculateWithdrawDetailsSyncParams, DepositDetails, GetVaultConfigParams, GetVaultConfigsParams, GetVaultDepositActionsParams, GetVaultDepositorsParams, GetVaultHistoryParams, GetVaultsListParams, GetVaultTotalValuesParams, RemoveLiquidityVaultParams, SubscribeToVaultDepositActionsParams, SubscribeToVaultDepositorsParams, SubscribeToVaultHistoryParams, SubscribeToVaultTotalValuesParams, UnsubscribeFromVaultDepositActionsParams, UnsubscribeFromVaultDepositorsParams, UnsubscribeFromVaultHistoryParams, UnsubscribeFromVaultTotalValuesParams, UnwrapNativeTokenVaultParams, WithdrawDetails, WrapNativeTokenVaultParams } from './params';
 import { OnchainLobVaultContract } from './onchainLobVaultContract';
 import { ContractTransactionResponse } from 'ethers';
 import * as mappers from './mappers';
@@ -198,6 +198,13 @@ export declare class OnchainLobVault {
      * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
      */
     getVaultConfigs(params: GetVaultConfigsParams): Promise<VaultConfig[]>;
+    /**
+     * Retrieves the vaults list.
+     *
+     * @param {GetVaultsListParams} params - The parameters for retrieving the vault config.
+     * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
+     */
+    getVaultsList(params: GetVaultsListParams): Promise<VaultListItem[]>;
     /**
      * Retrieves the vault total values.
      *

@@ -4787,6 +4787,19 @@ var OnchainLobSpotWebSocketService = class {
 // src/services/onchainLobVaultService/onchainLobVaultService.ts
 var OnchainLobVaultService = class extends RemoteService {
   /**
+   * Retrieves the vaults list.
+   * @param params - The parameters for the vaults list request.
+   * @returns The vaults list data.
+   */
+  async getVaultsList(params) {
+    const queryParams = new URLSearchParams({});
+    if (params.address)
+      queryParams.append("address", params.address);
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch(`/vaults-list?${queryParamsString}`, "json");
+    return response;
+  }
+  /**
    * Retrieves the vault config.
    * @param params - The parameters for the vault config request.
    * @returns The vault config data.
@@ -6870,6 +6883,16 @@ var OnchainLobVault = class {
   async getVaultConfigs(params) {
     const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
     return vaultConfigDtos;
+  }
+  /**
+   * Retrieves the vaults list.
+   *
+   * @param {GetVaultsListParams} params - The parameters for retrieving the vault config.
+   * @returns {Promise<VaultConfig[]>} A Promise that resolves to vault config.
+   */
+  async getVaultsList(params) {
+    const vaultListItemDtos = await this.onchainLobService.getVaultsList(params);
+    return vaultListItemDtos;
   }
   /**
    * Retrieves the vault total values.

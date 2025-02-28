@@ -1,12 +1,28 @@
 import { RemoteService } from '../remoteService';
-import { VaultConfigDto, VaultDepositActionDto, VaultDepositorDto, VaultHistoryDto, VaultTotalValuesDto } from './dtos';
-import { GetVaultConfigParams, GetVaultDepositActionsParams, GetVaultDepositorsParams, GetVaultHistoryParams, GetVaultTotalValuesParams } from './params';
+import { VaultConfigDto, VaultDepositActionDto, VaultDepositorDto, VaultHistoryDto, VaultListItemDto, VaultTotalValuesDto } from './dtos';
+import { GetVaultConfigParams, GetVaultDepositActionsParams, GetVaultDepositorsParams, GetVaultHistoryParams, GetVaultsListParams, GetVaultTotalValuesParams } from './params';
 
 /**
  * OnchainLobVaultService provides methods to interact with the Onchain LOB vault API.
  * It extends the RemoteService class to leverage common remote service functionalities.
  */
 export class OnchainLobVaultService extends RemoteService {
+  /**
+   * Retrieves the vaults list.
+   * @param params - The parameters for the vaults list request.
+   * @returns The vaults list data.
+   */
+  async getVaultsList(params: GetVaultsListParams): Promise<VaultListItemDto[]> {
+    const queryParams = new URLSearchParams({});
+    if (params.address)
+      queryParams.append('address', params.address);
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<VaultListItemDto[]>(`/vaults-list?${queryParamsString}`, 'json');
+
+    return response;
+  }
+
   /**
    * Retrieves the vault config.
    * @param params - The parameters for the vault config request.

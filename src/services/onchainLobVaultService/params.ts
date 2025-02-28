@@ -1,5 +1,9 @@
 import { VaultHistoryPeriod } from '../../models';
 
+export interface GetVaultsListParams {
+  address?: string;
+}
+
 export interface GetVaultConfigParams {
   vault?: string;
 }

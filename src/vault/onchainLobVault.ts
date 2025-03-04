@@ -410,6 +410,8 @@ export class OnchainLobVault {
    *
    * @param {CalculateDepositDetailsSyncParams} params - The parameters for the deposit LP details calculation.
    * @returns {DepositDetails} Deposit LP details data.
+   * @deprecated This method is not ready for use yet and may produce incorrect results.
+   * @todo Implement proper calculation logic for withdraw details.
    */
   calculateDepositDetailsSync(params: CalculateDepositDetailsSyncParams): DepositDetails {
     return getDepositDetails(params);
@@ -420,6 +422,8 @@ export class OnchainLobVault {
    *
    * @param {CalculateWithdrawDetailsSyncParams} params - The parameters for the withdraw LP details calculation.
    * @returns {WithdrawDetails} Withdraw LP details data.
+   * @deprecated This method is not ready for use yet and may produce incorrect results.
+   * @todo Implement proper calculation logic for withdraw details.
    */
   calculateWithdrawDetailsSync(params: CalculateWithdrawDetailsSyncParams): WithdrawDetails {
     return getWithdrawDetails(params);

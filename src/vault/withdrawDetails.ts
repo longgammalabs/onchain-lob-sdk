@@ -42,21 +42,11 @@ export const getWithdrawDetails = ({
     const lpAmount = BigNumber(lpInput).dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
     const tokenAmountUSDWithoutFee = lpAmount.times(totalValue).div(totalSupply).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
 
-    const tokenAmountUSD = binarySearch(
-      (x: BigNumber) => {
-        const amountUSD = BigNumber(x);
-        const feeAmount = calculateFeeAmountUSD(amountUSD).dp(USD_DECIMALS, BigNumber.ROUND_FLOOR);
-        return amountUSD.minus(feeAmount).minus(tokenAmountUSDWithoutFee);
-      },
-      BigNumber(0),
-      tokenAmountUSDWithoutFee,
-      tokenAmountUSDWithoutFee.times(BigNumber(1).plus(maxFeeBps))
-    );
+    const tokenAmountUSD = tokenAmountUSDWithoutFee.div(BigNumber(1).minus(maxFeeBps));
 
-    if (tokenAmountUSD === null) return details;
-
-    const feeAmount = BigNumber(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
+    const feeAmountUSD = BigNumber(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
     const tokenReceive = tokenAmountUSDWithoutFee.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
+    const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
 
     details = { ...details, lpSpend: lpAmount, tokenReceive, fee: feeAmount };
   }

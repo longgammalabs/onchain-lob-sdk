@@ -23,7 +23,7 @@ export const getDepositDetails = ({
   let details: DepositDetails = { tokenSpend: BigNumber(0), lpReceive: BigNumber(0), fee: BigNumber(0), params: { amount: 0n, amountUsd: 0n, minLpMinted: 0n } };
 
   const calculateFeeAmountUSD = (amountUSD: BigNumber) => {
-    const dinamicFeeBps = getFeeBasisPoints({
+    const dynamicFeeBps = getFeeBasisPoints({
       totalValue,
       initialTokenValue: tokenValue,
       nextTokenValue: tokenValue.plus(amountUSD),
@@ -33,7 +33,7 @@ export const getDepositDetails = ({
       taxBasisPoints: fee.taxBps,
       dynamicFeesEnabled: fee.dynamicFeesEnabled,
     });
-    const feeBps = dinamicFeeBps.plus(fee.adminMintLPFeeBps);
+    const feeBps = dynamicFeeBps.plus(fee.adminMintLPFeeBps);
     const feeAmountUSD = amountUSD.times(feeBps);
     return feeAmountUSD;
   };
@@ -65,7 +65,11 @@ export const getDepositDetails = ({
     const amountUSD = amount.times(tokenPriceUSD).dp(USD_DECIMALS, BigNumber.ROUND_FLOOR);
     const feeAmountUSD = calculateFeeAmountUSD(amountUSD).dp(USD_DECIMALS, BigNumber.ROUND_FLOOR);
     const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
-    const lpAmount = amountUSD.minus(feeAmountUSD).times(totalSupply).div(totalValue).dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
+    const lpAmount = amountUSD
+      .minus(feeAmountUSD)
+      .times(totalSupply)
+      .div(totalValue)
+      .dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
 
     details = { ...details, tokenSpend: amount, lpReceive: lpAmount, fee: feeAmount };
   }
@@ -90,7 +94,9 @@ const getParams = (
   tokenDecimals: number,
   lpTokenDecimals: number
 ): DepositDetails['params'] => {
-  const minLpMintedWithSlippage = lpAmount.times((BigNumber(1).minus(slippage))).dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
+  const minLpMintedWithSlippage = lpAmount
+    .times(BigNumber(1).minus(slippage))
+    .dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
   return {
     amount: parseUnits(amount.toString(), tokenDecimals),
     amountUsd: parseUnits(amountUSD.toString(), USD_DECIMALS),

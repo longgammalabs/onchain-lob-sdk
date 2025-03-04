@@ -1,6 +1,7 @@
 import type { Signer } from 'ethers/providers';
 
 import { OnchainLobSpot } from './spot';
+import { OnchainLobVault } from './vault';
 
 /**
  * The options for the OnchainLobClient.
@@ -87,12 +88,21 @@ export class OnchainLobClient {
   readonly spot: OnchainLobSpot;
 
   /**
+   * The OnchainLobVault instance that provides the API functions to interact with the Onchain LOB Vault contract.
+   *
+   * @type {OnchainLobVault}
+   * @readonly
+   */
+  readonly vault: OnchainLobVault;
+
+  /**
    * Creates a new OnchainLobClient instance.
    *
    * @param {OnchainLobClientOptions} options - The options for the OnchainLobClient.
    */
   constructor(options: Readonly<OnchainLobClientOptions>) {
     this.spot = new OnchainLobSpot(options);
+    this.vault = new OnchainLobVault(options);
   }
 
   /**
@@ -102,5 +112,6 @@ export class OnchainLobClient {
    */
   setSigner(signer: Signer | null): void {
     this.spot.setSigner(signer);
+    this.vault.setSigner(signer);
   }
 }

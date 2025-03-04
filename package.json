@@ -23,6 +23,7 @@
     "default": "./dist/node/index.js"
   },
   "dependencies": {
+    "@pythnetwork/pyth-evm-js": "^1.83.0",
     "bignumber.js": "^9.1.2",
     "ethers": "^6.13.2",
     "lodash": "^4.17.21"

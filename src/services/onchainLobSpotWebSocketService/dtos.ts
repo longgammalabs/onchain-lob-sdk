@@ -123,6 +123,7 @@ export interface MarketUpdateDto {
   aggressiveFee: string;
   passiveFee: string;
   passiveOrderPayout: string;
+  isUserGenerated: boolean;
 }
 
 export interface TokenUpdateDto {
@@ -135,4 +136,9 @@ export interface TokenUpdateDto {
   supportsPermit: boolean;
   iconUrl: string | null;
   fromOg: boolean;
+  isNative: boolean;
+  priceFeed: string | null;
+  priceFeedDecimals: number | null;
+  isUserGenerated: boolean;
+  description: string;
 }

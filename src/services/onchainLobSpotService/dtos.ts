@@ -93,6 +93,11 @@ export interface TokenDto {
   supportsPermit: boolean;
   iconUrl: string | null;
   fromOg: boolean;
+  isNative: boolean;
+  priceFeed: string | null;
+  priceFeedDecimals: number | null;
+  isUserGenerated: boolean;
+  description: string;
 }
 
 export interface MarketDto {
@@ -121,6 +126,7 @@ export interface MarketDto {
   aggressiveFee: string;
   passiveFee: string;
   passiveOrderPayout: string;
+  isUserGenerated: boolean;
 }
 
 export interface CandleDto {

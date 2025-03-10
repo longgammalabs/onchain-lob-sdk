@@ -6,6 +6,7 @@ export interface VaultListItemDto {
   vaultAddress: string;
   makerAddress: string;
   apr: number;
+  apy: number;
   tvl: number;
   pnl: number;
   depositorsCount: number;

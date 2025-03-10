@@ -213,6 +213,11 @@ export type VaultListItem = {
   apr: number;
 
   /**
+   * The vault's apy
+   */
+  apy: number;
+
+  /**
    * The vault's tvl in usd
    */
   tvl: number;

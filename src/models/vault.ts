@@ -31,16 +31,6 @@ export interface VaultTotalValues {
   lpPrice: number;
 
   /**
-   * The past week return of the vault in percentage points.
-   */
-  pastWeekReturn: number;
-
-  /**
-   * The annualized percentage rate (APR) calculated from the past week's performance.
-   */
-  pastWeekApr: number;
-
-  /**
    * The deposit leader address.
    */
   leaderAddress: string;
@@ -73,6 +63,21 @@ export interface VaultTotalValues {
      * The vault's profit share in percentage.
      */
     profitShare: number;
+
+    /**
+     * The past week return of the vault in percentage points.
+     */
+    pastWeekReturn: number;
+
+    /**
+     * The annualized percentage rate (APR) calculated from the past week's performance.
+     */
+    pastWeekApr: number;
+
+    /**
+     * The annualized percentage yield (APY) calculated from the past week's performance.
+     */
+    pastWeekApy: number;
   };
 
   /**

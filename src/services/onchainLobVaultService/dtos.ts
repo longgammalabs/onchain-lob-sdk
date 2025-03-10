@@ -66,8 +66,6 @@ export interface VaultTotalValuesDto {
   totalUSDValue: number;
   totalUSDCostBasis: number;
   lpPrice: number;
-  pastWeekReturn: number;
-  pastWeekApr: number;
   leaderAddress: string;
   leaderUSDValue: number;
   vaultPerformance: {
@@ -75,6 +73,9 @@ export interface VaultTotalValuesDto {
     maxDrowdownPercentage: number;
     volume: number;
     profitShare: number;
+    pastWeekReturn: number;
+    pastWeekApr: number;
+    pastWeekApy: number;
   };
   totalSupply: string;
   totalWeight: number;

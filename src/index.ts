@@ -73,6 +73,7 @@ export type {
   UserBalances,
   UserDeposits,
 
+  VaultListItem,
   VaultConfig,
   VaultTotalValues,
   VaultTotalValuesUpdate,

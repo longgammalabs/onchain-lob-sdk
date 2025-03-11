@@ -40,7 +40,28 @@ export {
   type GetUserDepositsParams
 } from './spot';
 
-export { OnchainLobVault } from './vault';
+export { 
+  OnchainLobVault, 
+
+  type ApproveVaultParams,
+  type WrapNativeTokenVaultParams,
+  type UnwrapNativeTokenVaultParams,
+  type AddLiquidityVaultParams,
+  type RemoveLiquidityVaultParams,
+
+  type CalculateDepositDetailsSyncParams,
+  type DepositDetails,
+  type CalculateWithdrawDetailsSyncParams,
+  type WithdrawDetails,
+
+  type GetVaultConfigParams,
+  type GetVaultConfigsParams,
+  type GetVaultsListParams,
+  type GetVaultTotalValuesParams,
+  type GetVaultDepositActionsParams,
+  type GetVaultDepositorsParams,
+  type GetVaultHistoryParams 
+} from './vault';
 
 export type {
   Side,

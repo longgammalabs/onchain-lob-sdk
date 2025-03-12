@@ -35,7 +35,9 @@ export {
   type GetCandlesParams,
 
   type CalculateLimitDetailsParams,
+  type CalculateLimitDetailsSyncParams,
   type CalculateMarketDetailsParams,
+  type CalculateMarketDetailsSyncParams,
   type GetUserBalancesParams,
   type GetUserDepositsParams
 } from './spot';

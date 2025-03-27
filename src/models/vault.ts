@@ -203,6 +203,16 @@ export type VaultListItem = {
   vaultAddress: string;
 
   /**
+   * The vault's lp token address
+   */
+  lpTokenAddress: string;
+
+  /**
+   * The vault's lp token symbol
+   */
+  lpTokenSymbol: string;
+
+  /**
    * The vault's market maker address
    */
   makerAddress: string;

@@ -5,6 +5,8 @@ export interface VaultListItemDto {
   vaultName: string;
   vaultAddress: string;
   makerAddress: string;
+  lpTokenAddress: string;
+  lpTokenSymbol: string;
   apr: number;
   apy: number;
   tvl: number;

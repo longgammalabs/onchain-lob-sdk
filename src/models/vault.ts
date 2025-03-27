@@ -203,6 +203,16 @@ export type VaultListItem = {
   vaultAddress: string;
 
   /**
+   * The vault's lp token address
+   */
+  lpTokenAddress: string;
+
+  /**
+   * The vault's lp token symbol
+   */
+  lpTokenSymbol: string;
+
+  /**
    * The vault's market maker address
    */
   makerAddress: string;
@@ -266,6 +276,16 @@ export type VaultConfig = {
    * The vault's pyth address
    */
   pythAddress: string;
+
+  /**
+   * The vault's market cap in bigint
+   */
+  rawMarketCap: bigint;
+
+  /**
+   * The vault's market cap in BigNumber
+   */
+  marketCap: BigNumber;
 
   /**
    * The vault's creation timestamp in milliseconds

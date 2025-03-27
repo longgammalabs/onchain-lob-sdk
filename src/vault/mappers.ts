@@ -5,15 +5,26 @@ import type {
   VaultDepositor,
   VaultTotalValuesUpdate,
   VaultDepositActionUpdate,
-  VaultDepositorUpdate
+  VaultDepositorUpdate,
+  VaultConfig
 } from '../models';
 import type { TokenDto } from '../services/onchainLobSpotService';
 import { tokenUtils } from '../utils';
-import { VaultDepositActionDto, VaultDepositorDto, VaultTotalValuesDto } from '../services/onchainLobVaultService';
+import { VaultConfigDto, VaultDepositActionDto, VaultDepositorDto, VaultTotalValuesDto } from '../services/onchainLobVaultService';
 import { VaultDepositActionUpdateDto, VaultDepositorUpdateDto, VaultTotalValuesUpdateDto } from '../services/onchainLobVaultWebSocketService/dtos';
+import { convertTokensRawAmountToAmount } from '../utils/tokenUtils';
+import { USD_DECIMALS } from './constants';
 
 export const mapTokenDtoToToken = (dto: TokenDto): Token => {
   return dto;
+};
+
+export const mapVaultConfigDtoToVaultConfig = (dto: VaultConfigDto): VaultConfig => {
+  return {
+    ...dto,
+    marketCap: convertTokensRawAmountToAmount(dto.marektCap, USD_DECIMALS),
+    rawMarketCap: BigInt(dto.marektCap)
+  };
 };
 
 export const mapVaultTotalValuesDtoToVaultTotalValues = (dto: VaultTotalValuesDto, tokens: Token[], lpToken: Token): VaultTotalValues => {

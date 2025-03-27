@@ -5,6 +5,8 @@ export interface VaultListItemDto {
   vaultName: string;
   vaultAddress: string;
   makerAddress: string;
+  lpTokenAddress: string;
+  lpTokenSymbol: string;
   apr: number;
   apy: number;
   tvl: number;
@@ -19,6 +21,7 @@ export interface VaultConfigDto {
   vaultAddress: string;
   vaultName: string;
   pythAddress: string;
+  marektCap: string;
   creationTimestamp: number;
   isUserGenerated: boolean;
   lpToken: TokenDto;

@@ -325,7 +325,8 @@ export class OnchainLobVault {
    */
   async getVaultConfigs(params: GetVaultConfigsParams): Promise<VaultConfig[]> {
     const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
-    return vaultConfigDtos;
+    const vaultConfigs = vaultConfigDtos.map((vaultConfigDto) => mappers.mapVaultConfigDtoToVaultConfig(vaultConfigDto))
+    return vaultConfigs;
   }
 
   /**

@@ -21,6 +21,7 @@ export interface VaultConfigDto {
   vaultAddress: string;
   vaultName: string;
   pythAddress: string;
+  marektCap: string;
   creationTimestamp: number;
   isUserGenerated: boolean;
   lpToken: TokenDto;

@@ -278,6 +278,16 @@ export type VaultConfig = {
   pythAddress: string;
 
   /**
+   * The vault's market cap in bigint
+   */
+  rawMarketCap: bigint;
+
+  /**
+   * The vault's market cap in BigNumber
+   */
+  marketCap: BigNumber;
+
+  /**
    * The vault's creation timestamp in milliseconds
    */
   creationTimestamp: number;

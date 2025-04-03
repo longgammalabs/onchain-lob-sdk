@@ -68,7 +68,9 @@ export interface FillUpdateDto {
   txnHash: string;
   price: string;
   size: string;
+  volumeUsd: number;
   fee: string;
+  feeUsd: number;
 }
 
 export interface CandleUpdateDto {
@@ -92,6 +94,7 @@ export interface TradeUpdateDto {
   tradeId: string;
   direction: Direction;
   price: string;
+  priceUsd: number;
   size: string;
   timestamp: number;
   txnHash: string;
@@ -108,7 +111,10 @@ export interface MarketUpdateDto {
   priceScalingFactor: number;
   bestAsk: string | null;
   bestBid: string | null;
+  tradingVolume: string;
+  tradingVolumeUsd: number;
   tradingVolume24h: string;
+  tradingVolume24hUsd: number;
   lastPrice: string | null;
   lowPrice24h: string | null;
   highPrice24h: string | null;
@@ -137,8 +143,11 @@ export interface TokenUpdateDto {
   iconUrl: string | null;
   fromOg: boolean;
   isNative: boolean;
+  pythAddress: string | null;
   priceFeed: string | null;
   priceFeedDecimals: number | null;
+  priceUsd: number | null;
   isUserGenerated: boolean;
   description: string;
+  lastTouched: number | null;
 }

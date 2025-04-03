@@ -61,6 +61,7 @@ export interface TradeDto {
   tradeId: string;
   direction: Direction;
   price: string;
+  priceUsd: number;
   size: string;
   timestamp: number;
   txnHash: string;
@@ -80,7 +81,9 @@ export interface FillDto {
   txnHash: string;
   price: string;
   size: string;
+  volumeUsd: number;
   fee: string;
+  feeUsd: number;
 }
 
 export interface TokenDto {
@@ -94,10 +97,13 @@ export interface TokenDto {
   iconUrl: string | null;
   fromOg: boolean;
   isNative: boolean;
+  pythAddress: string | null;
   priceFeed: string | null;
   priceFeedDecimals: number | null;
+  priceUsd: number | null;
   isUserGenerated: boolean;
   description: string;
+  lastTouched: number | null;
 }
 
 export interface MarketDto {
@@ -113,7 +119,10 @@ export interface MarketDto {
   priceScalingFactor: number;
   bestAsk: string | null;
   bestBid: string | null;
+  tradingVolume: string;
+  tradingVolumeUsd: number;
   tradingVolume24h: string;
+  tradingVolume24hUsd: number;
   lastPrice: string | null;
   lowPrice24h: string | null;
   highPrice24h: string | null;

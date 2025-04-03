@@ -50,6 +50,8 @@ export const mapMarketDtoToMarket = (dto: MarketDto, priceFactor: number, sizeFa
     bestAsk: dto.bestAsk ? tokenUtils.convertTokensRawAmountToAmount(dto.bestAsk, priceFactor) : null,
     rawBestBid: dto.bestBid ? BigInt(dto.bestBid) : null,
     bestBid: dto.bestBid ? tokenUtils.convertTokensRawAmountToAmount(dto.bestBid, priceFactor) : null,
+    rawTradingVolume: dto.tradingVolume ? BigInt(dto.tradingVolume) : null,
+    tradingVolume: dto.tradingVolume ? tokenUtils.convertTokensRawAmountToAmount(dto.tradingVolume, sizeFactor) : null,
     rawTradingVolume24h: dto.tradingVolume24h ? BigInt(dto.tradingVolume24h) : null,
     tradingVolume24h: dto.tradingVolume24h ? tokenUtils.convertTokensRawAmountToAmount(dto.tradingVolume24h, sizeFactor) : null,
     totalSupply: dto.totalSupply ? BigNumber(dto.totalSupply) : null,

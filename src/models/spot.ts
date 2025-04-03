@@ -171,6 +171,21 @@ export interface Market {
   bestBid: BigNumber | null;
 
   /**
+   * The raw trading volume in the all time as a bigint, or null if not available.
+   */
+  rawTradingVolume: bigint | null;
+
+  /**
+   * The trading volume in the all time as a BigNumber, or null if not available.
+   */
+  tradingVolume: BigNumber | null;
+
+  /**
+   * The trading volume in the all time in usd as a number, or null if not available.
+   */
+  tradingVolumeUsd: number | null;
+
+  /**
    * The raw trading volume in the last 24 hours as a bigint, or null if not available.
    */
   rawTradingVolume24h: bigint | null;
@@ -179,6 +194,11 @@ export interface Market {
    * The trading volume in the last 24 hours as a BigNumber, or null if not available.
    */
   tradingVolume24h: BigNumber | null;
+
+  /**
+   * The trading volume in the last 24 hours in usd as a number, or null if not available.
+   */
+  tradingVolume24hUsd: number | null;
 
   /**
    * The total supply of the market as a BigNumber, or null if not available.
@@ -472,6 +492,13 @@ export interface Trade {
   price: BigNumber;
 
   /**
+   * The token X price at the moment of the trade.
+   *
+   * @type {number}
+   */
+  priceUsd: number;
+
+  /**
    * The raw size of the trade as a bigint.
    *
    * @type {bigint}
@@ -607,6 +634,13 @@ export interface Fill {
   size: BigNumber;
 
   /**
+   * The volume of the fill in usd as a number.
+   *
+   * @type {number}
+   */
+  volumeUsd: number;
+
+  /**
    * The raw fee of the fill as a bigint.
    *
    * @type {bigint}
@@ -619,6 +653,13 @@ export interface Fill {
    * @type {BigNumber}
    */
   fee: BigNumber;
+
+  /**
+   * The fee of the fill in usd as a number.
+   *
+   * @type {number}
+   */
+  feeUsd: number;
 }
 
 export type FillUpdate = Fill;

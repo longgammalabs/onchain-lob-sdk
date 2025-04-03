@@ -53,9 +53,19 @@ export interface Token {
   isNative: boolean;
 
   /**
+   * Token's pyth oracle address
+   */
+  pythAddress: string | null;
+
+  /**
    * Token's price feed id
    */
   priceFeed: string | null;
+
+  /**
+   * Token's usd price
+   */
+  priceUsd: number | null;
 
   /**
    * Token's price feed decimals
@@ -71,6 +81,11 @@ export interface Token {
    * Description of the token
    */
   description: string;
+
+  /**
+   * Last time when token's price was updated
+   */
+  lastTouched: number | null;
 }
 
 export type TokenUpdate = Token;

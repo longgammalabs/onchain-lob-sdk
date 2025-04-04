@@ -1,6 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { parseUnits } from 'ethers';
-import * as _ from 'lodash'
 
 const MAX_PRICE_SCALING_FACTOR = 6;
 

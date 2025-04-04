@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { MarketOrderDetails, OrderbookLevel } from '../models';
 import { CalculateMarketDetailsSyncParams } from './params';
 import { ceil, floor } from 'lodash';
+import { getMinPriceScalingFactor } from '../utils/scalingUtils';
 
 export const defaultBuyMarketDetails: MarketOrderDetails['buy'] = {
   fee: 0,
@@ -138,19 +139,17 @@ export const calculateBuyMarketDetailsTokenXInput = (
 
   const worstPrice = new BigNumber(bestAsk)
     .times(new BigNumber(1).plus(new BigNumber(slippage).div(100)))
-    .dp(priceScalingFactor, BigNumber.ROUND_CEIL);
+    .dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_CEIL);
   const tokenYPayWithoutFee = tokenXReceive.times(worstPrice).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   const [tokenYPay, fee] = calculateValueWithFee(
     tokenYPayWithoutFee,
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
   const [estTokenYPay, estFee] = calculateValueWithFee(
     new BigNumber(estTokenYAmount),
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
@@ -158,8 +157,8 @@ export const calculateBuyMarketDetailsTokenXInput = (
     fee: fee.toNumber(),
     estFee: estFee.toNumber(),
     worstPrice: worstPrice.toNumber(),
-    estPrice: ceil(estPrice, priceScalingFactor),
-    estWorstPrice: ceil(estWorstPrice, priceScalingFactor),
+    estPrice: ceil(estPrice, getMinPriceScalingFactor(priceScalingFactor)),
+    estWorstPrice: ceil(estWorstPrice, getMinPriceScalingFactor(priceScalingFactor)),
     estSlippage,
     autoSlippage,
 
@@ -188,7 +187,6 @@ export const calculateBuyMarketDetailsTokenYInput = (
   const [tokenYWithoutFee, fee] = calculateValueAfterFee(
     tokenYPay,
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
@@ -205,7 +203,7 @@ export const calculateBuyMarketDetailsTokenYInput = (
 
   const worstPrice = new BigNumber(bestAsk)
     .times(new BigNumber(1).plus(new BigNumber(slippage).div(100)))
-    .dp(priceScalingFactor, BigNumber.ROUND_CEIL);
+    .dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_CEIL);
 
   const tokenXReceive = tokenYWithoutFee.div(worstPrice).dp(tokenXScalingFactor, BigNumber.ROUND_FLOOR);
 
@@ -215,8 +213,8 @@ export const calculateBuyMarketDetailsTokenYInput = (
     fee: fee.toNumber(),
     estFee: fee.toNumber(),
     worstPrice: worstPrice.toNumber(),
-    estPrice: ceil(estPrice, priceScalingFactor),
-    estWorstPrice: ceil(estWorstPrice, priceScalingFactor),
+    estPrice: ceil(estPrice, getMinPriceScalingFactor(priceScalingFactor)),
+    estWorstPrice: ceil(estWorstPrice, getMinPriceScalingFactor(priceScalingFactor)),
     estSlippage,
     autoSlippage,
 
@@ -256,19 +254,17 @@ export const calculateSellMarketDetailsTokenXInput = (
 
   const worstPrice = new BigNumber(bestBid)
     .times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
-    .dp(priceScalingFactor, BigNumber.ROUND_FLOOR);
+    .dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_FLOOR);
   const tokenYReceive = tokenXPay.times(worstPrice).dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
   const [tokenYReceiveWithoutFee, fee] = calculateValueAfterFee(
     tokenYReceive,
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
   const [estTokenYReceiveWithoutFee, estFee] = calculateValueAfterFee(
     new BigNumber(estTokenYAmount),
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
@@ -276,8 +272,8 @@ export const calculateSellMarketDetailsTokenXInput = (
     fee: fee.toNumber(),
     estFee: estFee.toNumber(),
     worstPrice: worstPrice.toNumber(),
-    estPrice: floor(estPrice, priceScalingFactor),
-    estWorstPrice: floor(estWorstPrice, priceScalingFactor),
+    estPrice: floor(estPrice, getMinPriceScalingFactor(priceScalingFactor)),
+    estWorstPrice: floor(estWorstPrice, getMinPriceScalingFactor(priceScalingFactor)),
     estSlippage,
     autoSlippage,
 
@@ -307,7 +303,6 @@ export const calculateSellMarketDetailsTokenYInput = (
   const [tokenYReceiveBeforeFee, fee] = calculateValueBeforeFee(
     tokenYReceive,
     feeRate,
-    tokenXScalingFactor + priceScalingFactor,
     tokenYScalingFactor
   );
 
@@ -324,7 +319,7 @@ export const calculateSellMarketDetailsTokenYInput = (
 
   const worstPrice = new BigNumber(bestBid)
     .times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
-    .dp(priceScalingFactor, BigNumber.ROUND_FLOOR);
+    .dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_FLOOR);
 
   const tokenXPay = tokenYReceiveBeforeFee.div(worstPrice).dp(tokenXScalingFactor, BigNumber.ROUND_CEIL);
   const estTokenXPay = new BigNumber(estTokenXAmount).dp(tokenXScalingFactor, BigNumber.ROUND_CEIL);
@@ -333,8 +328,8 @@ export const calculateSellMarketDetailsTokenYInput = (
     fee: fee.toNumber(),
     estFee: fee.toNumber(),
     worstPrice: worstPrice.toNumber(),
-    estPrice: floor(estPrice, priceScalingFactor),
-    estWorstPrice: floor(estWorstPrice, priceScalingFactor),
+    estPrice: floor(estPrice, getMinPriceScalingFactor(priceScalingFactor)),
+    estWorstPrice: floor(estWorstPrice, getMinPriceScalingFactor(priceScalingFactor)),
     estSlippage,
     autoSlippage,
 
@@ -404,33 +399,30 @@ export const calculateEstValuesFromTokenY = (tokenY: number, orderbookSide: Orde
 export const calculateValueWithFee = (
   value: BigNumber,
   feeRate: number,
-  feeDecimalPlaces: number,
-  valueDecimalPlaces: number
+  tokenYScalingFactor: number
 ): [BigNumber, BigNumber] => {
-  const fee = value.times(feeRate).dp(feeDecimalPlaces, BigNumber.ROUND_CEIL);
-  const valueWithFee = value.plus(fee).dp(valueDecimalPlaces, BigNumber.ROUND_CEIL);
+  const fee = value.times(feeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
+  const valueWithFee = value.plus(fee).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   return [valueWithFee, fee];
 };
 
 export const calculateValueAfterFee = (
   value: BigNumber,
   feeRate: number,
-  feeDecimalPlaces: number,
-  valueDecimalPlaces: number
+  tokenYScalingFactor: number
 ): [BigNumber, BigNumber] => {
-  const fee = value.times(feeRate).dp(feeDecimalPlaces, BigNumber.ROUND_CEIL);
-  const valueAfterFee = value.minus(fee).dp(valueDecimalPlaces, BigNumber.ROUND_FLOOR);
+  const fee = value.times(feeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
+  const valueAfterFee = value.minus(fee).dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
   return [valueAfterFee, fee];
 };
 
 export const calculateValueBeforeFee = (
   value: BigNumber,
   feeRate: number,
-  feeDecimalPlaces: number,
-  valueDecimalPlaces: number
+  tokenYScalingFactor: number,
 ): [BigNumber, BigNumber] => {
-  const valueBeforeFee = value.div(new BigNumber(1).minus(feeRate)).dp(valueDecimalPlaces, BigNumber.ROUND_CEIL);
-  const fee = valueBeforeFee.minus(value).dp(feeDecimalPlaces, BigNumber.ROUND_CEIL);
+  const valueBeforeFee = value.div(new BigNumber(1).minus(feeRate)).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
+  const fee = valueBeforeFee.minus(value).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   return [valueBeforeFee, fee];
 };
 

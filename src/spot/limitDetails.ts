@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { LimitOrderDetails } from '../models';
 import { CalculateLimitDetailsSyncParams } from './params';
 import { max } from 'lodash';
+import { getMinPriceScalingFactor } from '../utils/scalingUtils';
 
 export const defaultBuyLimitDetails: LimitOrderDetails['buy'] = {
   maxFee: 0,
@@ -89,10 +90,10 @@ export const calculateBuyLimitDetailsTokenXInput = (
   tokenYScalingFactor: number,
   maxFeeRate: number
 ): LimitOrderDetails['buy'] => {
-  const price = new BigNumber(priceInput).dp(priceScalingFactor, BigNumber.ROUND_DOWN);
+  const price = new BigNumber(priceInput).dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_DOWN);
   const tokenXReceive = new BigNumber(tokenXInput).dp(tokenXScalingFactor, BigNumber.ROUND_DOWN);
   const minTokenYPay = price.times(tokenXReceive).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
-  const maxFee = minTokenYPay.times(maxFeeRate).dp(tokenXScalingFactor + priceScalingFactor, BigNumber.ROUND_CEIL);
+  const maxFee = minTokenYPay.times(maxFeeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   const maxTokenYPay = minTokenYPay.plus(maxFee).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
 
   return {
@@ -112,13 +113,13 @@ export const calculateBuyLimitDetailsTokenYInput = (
   tokenYScalingFactor: number,
   maxFeeRate: number
 ): LimitOrderDetails['buy'] => {
-  const price = new BigNumber(priceInput).dp(priceScalingFactor, BigNumber.ROUND_DOWN);
+  const price = new BigNumber(priceInput).dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_DOWN);
   const maxTokenYPay = new BigNumber(tokenYInput).dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
   const minTokenYPay = maxTokenYPay
     .div(new BigNumber(1).plus(maxFeeRate))
     .dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   const tokenXReceive = minTokenYPay.div(price).dp(tokenXScalingFactor, BigNumber.ROUND_DOWN);
-  const maxFee = minTokenYPay.times(maxFeeRate).dp(tokenXScalingFactor + priceScalingFactor, BigNumber.ROUND_CEIL);
+  const maxFee = minTokenYPay.times(maxFeeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
 
   return {
     price: price.toNumber(),
@@ -137,10 +138,10 @@ export const calculateSellLimitDetailsTokenXInput = (
   tokenYScalingFactor: number,
   maxFeeRate: number
 ): LimitOrderDetails['sell'] => {
-  const price = new BigNumber(priceInput).dp(priceScalingFactor, BigNumber.ROUND_DOWN);
+  const price = new BigNumber(priceInput).dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_DOWN);
   const tokenXPay = new BigNumber(tokenXInput).dp(tokenXScalingFactor, BigNumber.ROUND_DOWN);
   const maxTokenYReceive = price.times(tokenXPay).dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
-  const maxFee = maxTokenYReceive.times(maxFeeRate).dp(tokenXScalingFactor + priceScalingFactor, BigNumber.ROUND_CEIL);
+  const maxFee = maxTokenYReceive.times(maxFeeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
   const minTokenYReceive = maxTokenYReceive.minus(maxFee).dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
 
   return {
@@ -160,13 +161,13 @@ export const calculateSellLimitDetailsTokenYInput = (
   tokenYScalingFactor: number,
   maxFeeRate: number
 ): LimitOrderDetails['sell'] => {
-  const price = new BigNumber(priceInput).dp(priceScalingFactor, BigNumber.ROUND_DOWN);
+  const price = new BigNumber(priceInput).dp(getMinPriceScalingFactor(priceScalingFactor), BigNumber.ROUND_DOWN);
   const minTokenYReceive = new BigNumber(tokenYInput).dp(tokenYScalingFactor, BigNumber.ROUND_DOWN);
   const maxTokenYReceive = minTokenYReceive
     .div(new BigNumber(1).minus(maxFeeRate))
     .dp(tokenYScalingFactor, BigNumber.ROUND_FLOOR);
   const tokenXPay = maxTokenYReceive.div(price).dp(tokenXScalingFactor, BigNumber.ROUND_UP);
-  const maxFee = maxTokenYReceive.times(maxFeeRate).dp(tokenXScalingFactor + priceScalingFactor, BigNumber.ROUND_CEIL);
+  const maxFee = maxTokenYReceive.times(maxFeeRate).dp(tokenYScalingFactor, BigNumber.ROUND_CEIL);
 
   return {
     price: price.toNumber(),

@@ -1,0 +1,16 @@
+import type { Token, Market, Orderbook, Trade, MarketUpdate, OrderbookUpdate, TradeUpdate, OrderUpdate, FillUpdate, Fill, OrderHistoryUpdate } from '../models';
+import type { TokenDto, MarketDto, OrderbookDto, TradeDto, FillDto } from '../services/onchainLobSpotService';
+import type { FillUpdateDto, MarketUpdateDto, OrderHistoryUpdateDto, OrderUpdateDto, OrderbookUpdateDto, TradeUpdateDto } from '../services/onchainLobSpotWebSocketService/dtos';
+export declare const mapTokenDtoToToken: (dto: TokenDto) => Token;
+export declare const mapMarketDtoToMarket: (dto: MarketDto, priceFactor: number, sizeFactor: number) => Market;
+export declare const mapOrderbookDtoToOrderbook: (dto: OrderbookDto, priceFactor: number, sizeFactor: number) => Orderbook;
+export declare const mapTradeDtoToTrade: (dto: TradeDto, priceFactor: number, sizeFactor: number) => Trade;
+export declare const mapOrderDtoToOrder: (dto: OrderUpdateDto, priceFactor: number, sizeFactor: number) => OrderUpdate;
+export declare const mapOrderHistoryDtoToOrderHistory: (dto: OrderHistoryUpdateDto, priceFactor: number, tokenXFactor: number, tokenYFactor: number) => OrderHistoryUpdate;
+export declare const mapFillDtoToFill: (dto: FillDto, priceFactor: number, tokenXFactor: number, tokenYFactor: number) => Fill;
+export declare const mapMarketUpdateDtoToMarketUpdate: (_marketId: string, dto: MarketUpdateDto, priceFactor: number, sizeFactor: number) => MarketUpdate;
+export declare const mapOrderbookUpdateDtoToOrderbookUpdate: (_marketId: string, dto: OrderbookUpdateDto, priceFactor: number, sizeFactor: number) => OrderbookUpdate;
+export declare const mapTradeUpdateDtoToTradeUpdate: (_marketId: string, dto: TradeUpdateDto, priceFactor: number, sizeFactor: number) => TradeUpdate;
+export declare const mapOrderUpdateDtoToOrderUpdate: (_marketId: string, dto: OrderUpdateDto, priceFactor: number, sizeFactor: number) => OrderUpdate;
+export declare const mapOrderHistoryUpdateDtoToOrderHistoryUpdate: (_marketId: string, dto: OrderHistoryUpdateDto, priceFactor: number, tokenXFactor: number, tokenYFactor: number) => OrderHistoryUpdate;
+export declare const mapFillUpdateDtoToFillUpdate: (_marketId: string, dto: FillUpdateDto, priceFactor: number, tokenXFactor: number, tokenYFactor: number) => FillUpdate;

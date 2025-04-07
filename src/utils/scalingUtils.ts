@@ -4,7 +4,7 @@ import { parseUnits } from 'ethers';
 const MAX_PRICE_SCALING_FACTOR = 6;
 
 export const getPriceDecimals = (price: BigNumber, priceScalingFactor: number) => {
-  const priceUnits = parseUnits(price.toString(), priceScalingFactor).toString();
+  const priceUnits = parseUnits(price.toFixed(priceScalingFactor), priceScalingFactor).toString();
   if (priceUnits.length <= MAX_PRICE_SCALING_FACTOR) {
     return priceScalingFactor;
   }

@@ -70,7 +70,7 @@ export interface FillUpdateDto {
   size: string;
   volumeUsd: number;
   fee: string;
-  feeUsd: number;
+  feeUsd: number | null;
 }
 
 export interface CandleUpdateDto {
@@ -94,7 +94,7 @@ export interface TradeUpdateDto {
   tradeId: string;
   direction: Direction;
   price: string;
-  priceUsd: number;
+  priceUsd: number | null;
   size: string;
   timestamp: number;
   txnHash: string;

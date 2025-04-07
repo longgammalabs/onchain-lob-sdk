@@ -494,9 +494,9 @@ export interface Trade {
   /**
    * The token X price at the moment of the trade.
    *
-   * @type {number}
+   * @type {number | null}
    */
-  priceUsd: number;
+  priceUsd: number | null;
 
   /**
    * The raw size of the trade as a bigint.
@@ -657,9 +657,9 @@ export interface Fill {
   /**
    * The fee of the fill in usd as a number.
    *
-   * @type {number}
+   * @type {number | null}
    */
-  feeUsd: number;
+  feeUsd: number | null;
 }
 
 export type FillUpdate = Fill;

@@ -61,7 +61,7 @@ export interface TradeDto {
   tradeId: string;
   direction: Direction;
   price: string;
-  priceUsd: number;
+  priceUsd: number | null;
   size: string;
   timestamp: number;
   txnHash: string;
@@ -83,7 +83,7 @@ export interface FillDto {
   size: string;
   volumeUsd: number;
   fee: string;
-  feeUsd: number;
+  feeUsd: number | null;
 }
 
 export interface TokenDto {

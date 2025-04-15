@@ -48,6 +48,12 @@ export const getWithdrawDetails = ({
     const tokenReceive = usdAmountReceive.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
     const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
 
+    console.log(lpAmountSpend);
+    console.log(usdAmountSpend);
+    console.log(usdAmountReceive);
+    console.log(feeAmountUSD);
+
+
     details = { ...details, lpSpend: lpAmountSpend, tokenReceive, fee: feeAmount };
   }
   else {

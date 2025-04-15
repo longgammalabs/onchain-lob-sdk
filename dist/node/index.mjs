@@ -6364,6 +6364,10 @@ var getWithdrawDetails = ({
     const feeAmountUSD = BigNumber9(usdAmountSpend).minus(usdAmountReceive);
     const tokenReceive = usdAmountReceive.div(tokenPriceUSD).dp(tokenDecimals, BigNumber9.ROUND_FLOOR);
     const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, BigNumber9.ROUND_FLOOR);
+    console.log(lpAmountSpend);
+    console.log(usdAmountSpend);
+    console.log(usdAmountReceive);
+    console.log(feeAmountUSD);
     details = { ...details, lpSpend: lpAmountSpend, tokenReceive, fee: feeAmount };
   } else {
     const amount = BigNumber9(tokenInput);

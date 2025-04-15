@@ -19,7 +19,7 @@ export const getWithdrawDetails = ({
   lpTokenDecimals,
 }: CalculateWithdrawDetailsSyncParams): WithdrawDetails => {
   const { tokenInput, lpInput } = inputs;
-  const maxFeeBps = fee.feeBps.plus(fee.taxBps).plus(fee.adminBurnLPFeeBps).plus(fee.adminMintLPFeeBps);
+  const maxFeeBps = fee.feeBps.plus(fee.taxBps).plus(fee.adminBurnLPFeeBps);
   let details: WithdrawDetails = { lpSpend: BigNumber(0), tokenReceive: BigNumber(0), fee: BigNumber(0), params: { minTokenGet: 0n, minUsdValue: 0n, burnLP: 0n } };
 
   const calculateFeeAmountUSD = (amountUSD: BigNumber) => {
@@ -39,16 +39,16 @@ export const getWithdrawDetails = ({
   };
 
   if (isLpTokenInput) {
-    const lpAmount = BigNumber(lpInput).dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
-    const tokenAmountUSDWithoutFee = lpAmount.times(totalValue).div(totalSupply).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
+    const lpAmountSpend = BigNumber(lpInput).dp(lpTokenDecimals, BigNumber.ROUND_FLOOR);
+    const usdAmountSpend = lpAmountSpend.times(totalValue).div(totalSupply).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
 
-    const tokenAmountUSD = tokenAmountUSDWithoutFee.div(BigNumber(1).minus(maxFeeBps));
+    const usdAmountReceive = usdAmountSpend.times(BigNumber(1).minus(maxFeeBps));
 
-    const feeAmountUSD = BigNumber(tokenAmountUSD).minus(tokenAmountUSDWithoutFee);
-    const tokenReceive = tokenAmountUSDWithoutFee.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
+    const feeAmountUSD = BigNumber(usdAmountSpend).minus(usdAmountReceive);
+    const tokenReceive = usdAmountReceive.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
     const feeAmount = feeAmountUSD.div(tokenPriceUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
 
-    details = { ...details, lpSpend: lpAmount, tokenReceive, fee: feeAmount };
+    details = { ...details, lpSpend: lpAmountSpend, tokenReceive, fee: feeAmount };
   }
   else {
     const amount = BigNumber(tokenInput);
@@ -56,7 +56,7 @@ export const getWithdrawDetails = ({
     const tokenAmountUSD = binarySearch(
       (x: BigNumber) => {
         const amountUSD = BigNumber(x);
-        const feeAmount = calculateFeeAmountUSD(amountUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR); ;
+        const feeAmount = calculateFeeAmountUSD(amountUSD).dp(tokenDecimals, BigNumber.ROUND_FLOOR);
         return amountUSD.minus(feeAmount).minus(tokenAmountUSDWithoutFee);
       },
       BigNumber(0),

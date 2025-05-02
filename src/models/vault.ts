@@ -26,6 +26,16 @@ export interface VaultTotalValues {
   totalUSDCostBasis: number;
 
   /**
+   * The total value of the vault in main token.
+   */
+  totalMainTokenValue: number;
+
+  /**
+   * The total basis for calculating pnl in main token.
+   */
+  totalMainTokenCostBasis: number;
+
+  /**
    * The price of the LP token in USD.
    */
   lpPrice: number;
@@ -48,6 +58,11 @@ export interface VaultTotalValues {
      * The vault's pnl performance in USD.
      */
     pnlPerformance: number;
+
+    /**
+     * The vault's pnl performance in main token.
+     */
+    mainTokenPnlPerformance: number;
 
     /**
      * The vault's max drawdown percentage.
@@ -178,6 +193,16 @@ export type VaultHistory = {
   lpPrice: number;
 
   /**
+   * The vault's pnl performance in main token.
+   */
+  pnlMainToken: number;
+
+  /**
+   * The vault's total value in main token.
+   */
+  totalMainTokenValue: number;
+
+  /**
    * The timestamp of the vault history.
    */
   time: number;
@@ -286,6 +311,16 @@ export type VaultConfig = {
    * The vault's market cap in BigNumber
    */
   marketCap: BigNumber;
+
+  /**
+   * Indicates if vault has main token
+   */
+  isMainTokenVault: boolean;
+
+  /**
+   * Vault's main token address. Null if vault is not main token vault
+   */
+  mainTokenAddress: string | null;
 
   /**
    * The vault's creation timestamp in milliseconds

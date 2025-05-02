@@ -22,6 +22,8 @@ export interface VaultConfigDto {
   vaultName: string;
   pythAddress: string;
   marketCap: string;
+  isMainTokenVault: boolean;
+  mainTokenAddress: string | null;
   creationTimestamp: number;
   isUserGenerated: boolean;
   lpToken: TokenDto;
@@ -61,6 +63,8 @@ export interface VaultHistoryDto {
   vaultAddress: string;
   pnl: number;
   totalUSDValue: number;
+  pnlMainToken: number;
+  totalMainTokenValue: number;
   lpPrice: number;
   time: number;
 }
@@ -69,11 +73,14 @@ export interface VaultTotalValuesDto {
   vaultAddress: string;
   totalUSDValue: number;
   totalUSDCostBasis: number;
+  totalMainTokenValue: number;
+  totalMainTokenCostBasis: number;
   lpPrice: number;
   leaderAddress: string;
   leaderUSDValue: number;
   vaultPerformance: {
     pnlPerformance: number;
+    mainTokenPnlPerformance: number;
     maxDrowdownPercentage: number;
     volume: number;
     profitShare: number;

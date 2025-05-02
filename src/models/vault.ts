@@ -313,6 +313,16 @@ export type VaultConfig = {
   marketCap: BigNumber;
 
   /**
+   * Indicates if vault has main token
+   */
+  isMainTokenVault: boolean;
+
+  /**
+   * Vault's main token address. Null if vault is not main token vault
+   */
+  mainTokenAddress: string | null;
+
+  /**
    * The vault's creation timestamp in milliseconds
    */
   creationTimestamp: number;

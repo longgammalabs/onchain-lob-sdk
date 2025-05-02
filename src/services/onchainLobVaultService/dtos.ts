@@ -22,6 +22,8 @@ export interface VaultConfigDto {
   vaultName: string;
   pythAddress: string;
   marketCap: string;
+  isMainTokenVault: boolean;
+  mainTokenAddress: string | null;
   creationTimestamp: number;
   isUserGenerated: boolean;
   lpToken: TokenDto;

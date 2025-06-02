@@ -141,13 +141,11 @@ export interface TokenUpdateDto {
   roundingDecimals: number;
   supportsPermit: boolean;
   iconUrl: string | null;
-  fromOg: boolean;
   isNative: boolean;
   pythAddress: string | null;
   priceFeed: string | null;
   priceFeedDecimals: number | null;
   priceUsd: number | null;
-  isUserGenerated: boolean;
   priority: number;
   source: string;
   description: string;

@@ -78,6 +78,16 @@ export interface Token {
   isUserGenerated: boolean;
 
   /**
+   * Token's priority when sorting
+   */
+  priority: number;
+
+  /**
+   * Token's source
+   */
+  source: string;
+
+  /**
    * Description of the token
    */
   description: string;

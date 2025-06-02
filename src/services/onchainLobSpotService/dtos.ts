@@ -102,6 +102,8 @@ export interface TokenDto {
   priceFeedDecimals: number | null;
   priceUsd: number | null;
   isUserGenerated: boolean;
+  priority: number;
+  source: string;
   description: string;
   lastTouched: number | null;
 }

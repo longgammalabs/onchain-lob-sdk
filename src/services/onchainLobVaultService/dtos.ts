@@ -66,6 +66,7 @@ export interface VaultHistoryDto {
   pnlMainToken: number;
   totalMainTokenValue: number;
   lpPrice: number;
+  lpPriceMainToken: number;
   time: number;
 }
 

@@ -198,6 +198,11 @@ export type VaultHistory = {
   pnlMainToken: number;
 
   /**
+   * The LP price value in main token.
+   */
+  lpPriceMainToken: number;
+
+  /**
    * The vault's total value in main token.
    */
   totalMainTokenValue: number;

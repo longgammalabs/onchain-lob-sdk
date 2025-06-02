@@ -26,6 +26,7 @@ export interface VaultHistoryUpdateDto {
   pnl: number;
   totalUSDValue: number;
   pnlMainToken: number;
+  lpPriceMainToken: number;
   totalMainTokenValue: number;
   lpPrice: number;
   time: number;

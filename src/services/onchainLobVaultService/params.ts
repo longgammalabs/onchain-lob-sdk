@@ -14,6 +14,7 @@ export interface GetVaultTotalValuesParams {
 
 export interface GetVaultDepositActionsParams {
   vault: string;
+  user?: string;
   limit?: number;
 }
 

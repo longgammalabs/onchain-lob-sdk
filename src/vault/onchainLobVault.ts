@@ -28,10 +28,12 @@ import { AddLiquidityVaultParams,
   SubscribeToVaultDepositorsParams,
   SubscribeToVaultHistoryParams,
   SubscribeToVaultTotalValuesParams,
+  SubscribeToVaultUserDepositActionsParams,
   UnsubscribeFromVaultDepositActionsParams,
   UnsubscribeFromVaultDepositorsParams,
   UnsubscribeFromVaultHistoryParams,
   UnsubscribeFromVaultTotalValuesParams,
+  UnsubscribeFromVaultUserDepositActionsParams,
   UnwrapNativeTokenVaultParams,
   WithdrawDetails,
   WrapNativeTokenVaultParams
@@ -140,6 +142,13 @@ interface OnchainLobVaultEvents {
   vaultDepositActionsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositActionUpdate[]]>;
 
   /**
+   * Emitted when a user's vault deposit actions changes.
+   * @event
+   * @type {PublicEventEmitter<readonly [data: VaultUserDepositActionUpdate[]]>;}
+   */
+  vaultUserDepositActionsUpdated: PublicEventEmitter<readonly [vaultId: string, isSnapshot: boolean, data: VaultDepositActionUpdate[]]>;
+
+  /**
    * Emitted when a vault depositors changes.
    * @event
    * @type {PublicEventEmitter<readonly [data: VaultDepositorUpdate[]]>;}
@@ -167,6 +176,7 @@ export class OnchainLobVault {
   readonly events: OnchainLobVaultEvents = {
     vaultTotalValuesUpdated: new EventEmitter(),
     vaultDepositActionsUpdated: new EventEmitter(),
+    vaultUserDepositActionsUpdated: new EventEmitter(),
     vaultDepositorsUpdated: new EventEmitter(),
     vaultHistoryUpdated: new EventEmitter(),
     subscriptionError: new EventEmitter(),
@@ -463,6 +473,22 @@ export class OnchainLobVault {
   }
 
   /**
+   * Subscribes to the user's vault deposit actions updates.
+   *
+   * @emits OnchainLobVault#events#vaultUserDepositActionsUpdated
+   */
+  subscribeToVaultUserDepositActions(params: SubscribeToVaultUserDepositActionsParams): void {
+    this.onchainLobWebSocketService.subscribeToVaultUserDepositActions(params);
+  }
+
+  /**
+   * Unsubscribes from the user's vault deposit actions updates.
+   */
+  unsubscribeFromVaultUserDepositActions(params: UnsubscribeFromVaultUserDepositActionsParams): void {
+    this.onchainLobWebSocketService.unsubscribeFromVaultUserDepositActions(params);
+  }
+
+  /**
    * Subscribes to the vault depositors updates.
    *
    * @emits OnchainLobVault#events#vaultDepositorsUpdated
@@ -530,6 +556,7 @@ export class OnchainLobVault {
   protected attachEvents(): void {
     this.onchainLobWebSocketService.events.vaultTotalValuesUpdated.addListener(this.onVaultTotalValuesUpdated);
     this.onchainLobWebSocketService.events.vaultDepositActionsUpdated.addListener(this.onVaultDepositActionsUpdated);
+    this.onchainLobWebSocketService.events.vaultUserDepositActionsUpdated.addListener(this.onVaultUserDepositActionsUpdated);
     this.onchainLobWebSocketService.events.vaultDepositorsUpdated.addListener(this.onVaultDepositorsUpdated);
     this.onchainLobWebSocketService.events.vaultHistoryUpdated.addListener(this.onVaultHistoryUpdated);
     this.onchainLobWebSocketService.events.subscriptionError.addListener(this.onSubscriptionError);
@@ -538,6 +565,7 @@ export class OnchainLobVault {
   protected detachEvents(): void {
     this.onchainLobWebSocketService.events.vaultTotalValuesUpdated.removeListener(this.onVaultTotalValuesUpdated);
     this.onchainLobWebSocketService.events.vaultDepositActionsUpdated.removeListener(this.onVaultDepositActionsUpdated);
+    this.onchainLobWebSocketService.events.vaultUserDepositActionsUpdated.removeListener(this.onVaultUserDepositActionsUpdated);
     this.onchainLobWebSocketService.events.vaultDepositorsUpdated.removeListener(this.onVaultDepositorsUpdated);
     this.onchainLobWebSocketService.events.vaultHistoryUpdated.removeListener(this.onVaultHistoryUpdated);
     this.onchainLobWebSocketService.events.subscriptionError.removeListener(this.onSubscriptionError);
@@ -570,6 +598,25 @@ export class OnchainLobVault {
         }
       );
       (this.events.vaultDepositActionsUpdated as ToEventEmitter<typeof this.events.vaultDepositActionsUpdated>).emit(vaultId, isSnapshot, depositActionUpdates);
+    }
+    catch (error) {
+      console.error(getErrorLogMessage(error));
+    }
+  };
+
+  protected onVaultUserDepositActionsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.vaultUserDepositActionsUpdated['addListener']>[0] = async (vaultId, isSnapshot, data) => {
+    try {
+      const vaultConfigs = await this.getCachedVaultConfigs();
+      const vaultConfig = vaultConfigs?.get(vaultId);
+      if (!vaultConfig)
+        return;
+      const depositActionUpdates = data.map(
+        depositActionDto => {
+          const token = vaultConfig.tokens.find(token => token.symbol === depositActionDto.tokenSymbol)!;
+          return mappers.mapVaultDepositActionDtoToVaultDepositAction(depositActionDto, token.decimals, vaultConfig.lpToken.decimals);
+        }
+      );
+      (this.events.vaultUserDepositActionsUpdated as ToEventEmitter<typeof this.events.vaultUserDepositActionsUpdated>).emit(vaultId, isSnapshot, depositActionUpdates);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));

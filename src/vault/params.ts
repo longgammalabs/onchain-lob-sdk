@@ -248,6 +248,12 @@ export interface SubscribeToVaultDepositActionsParams {
 }
 export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
 
+export interface SubscribeToVaultUserDepositActionsParams {
+  vault: string;
+  user: string;
+}
+export type UnsubscribeFromVaultUserDepositActionsParams = SubscribeToVaultUserDepositActionsParams;
+
 export interface SubscribeToVaultHistoryParams {
   vault: string;
 }
@@ -369,6 +375,15 @@ export interface GetVaultDepositActionsParams {
    * @type {string}
    */
   vault: string;
+
+  /**
+   * User's address
+   *
+   * @type {string}
+   * @optional
+   */
+  user?: string;
+
   /**
    * Number of deposit actions to retrieve
    *

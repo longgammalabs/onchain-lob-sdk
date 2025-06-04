@@ -10,14 +10,9 @@ export type UnsubscribeFromVaultDepositorsParams = SubscribeToVaultDepositorsPar
 
 export interface SubscribeToVaultDepositActionsParams {
   vault: string;
+  user?: string;
 }
 export type UnsubscribeFromVaultDepositActionsParams = SubscribeToVaultDepositActionsParams;
-
-export interface SubscribeToVaultUserDepositActionsParams {
-  vault: string;
-  user: string;
-}
-export type UnsubscribeFromVaultUserDepositActionsParams = SubscribeToVaultUserDepositActionsParams;
 
 export interface SubscribeToVaultHistoryParams {
   vault: string;

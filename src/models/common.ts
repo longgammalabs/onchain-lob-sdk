@@ -68,11 +68,6 @@ export interface Token {
   priceFeedDecimals: number | null;
 
   /**
-   * Token's priority when sorting
-   */
-  priority: number;
-
-  /**
    * Token's source
    */
   source: string;

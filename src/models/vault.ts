@@ -328,6 +328,17 @@ export type VaultConfig = {
   mainTokenAddress: string | null;
 
   /**
+   * Indicates if vault deprecated
+   */
+  isDeprecated: boolean;
+
+  /**
+   * List of tokens that can be deposited in the vault. Null if no restrictions
+   */
+  tokensAllowedToDeposit: string[] | null;
+  
+
+  /**
    * The vault's creation timestamp in milliseconds
    */
   creationTimestamp: number;

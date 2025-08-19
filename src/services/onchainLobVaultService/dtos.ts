@@ -24,6 +24,8 @@ export interface VaultConfigDto {
   marketCap: string;
   isMainTokenVault: boolean;
   mainTokenAddress: string | null;
+  isDeprecated: boolean;
+  tokensAllowedToDeposit: string[] | null;
   creationTimestamp: number;
   isUserGenerated: boolean;
   lpToken: TokenDto;

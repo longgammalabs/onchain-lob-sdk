@@ -2,6 +2,7 @@ export { OnchainLobSpotService } from './onchainLobSpotService';
 export type {
   OrderbookDto,
   OrderbookLevelDto,
+  ClobDepthDto,
   OrderDto,
   OrderHistoryDto,
   TradeDto,

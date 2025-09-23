@@ -4,9 +4,11 @@ import type {
   Market,
   OrderbookLevel,
   Orderbook,
+  ClobDepth,
   Trade,
   MarketUpdate,
   OrderbookUpdate,
+  ClobDepthUpdate,
   TradeUpdate,
   OrderUpdate,
   FillUpdate,
@@ -18,6 +20,7 @@ import type {
   MarketDto,
   OrderbookLevelDto,
   OrderbookDto,
+  ClobDepthDto,
   TradeDto,
   FillDto
 } from '../services/onchainLobSpotService';
@@ -27,11 +30,16 @@ import type {
   OrderHistoryUpdateDto,
   OrderUpdateDto,
   OrderbookUpdateDto,
-  TradeUpdateDto
+  TradeUpdateDto,
+  ClobDepthUpdateDto
 } from '../services/onchainLobSpotWebSocketService/dtos';
 import { tokenUtils } from '../utils';
 
 export const mapTokenDtoToToken = (dto: TokenDto): Token => {
+  return dto;
+};
+
+export const mapClobDepthDtoToClobDepth = (dto: ClobDepthDto): ClobDepth => {
   return dto;
 };
 
@@ -152,6 +160,11 @@ export const mapOrderbookUpdateDtoToOrderbookUpdate = (
   priceFactor: number,
   sizeFactor: number
 ): OrderbookUpdate => mapOrderbookDtoToOrderbook(dto, priceFactor, sizeFactor);
+
+export const mapClobDepthUpdateDtoToClobDepthUpdate = (
+  _marketId: string,
+  dto: ClobDepthUpdateDto,
+): ClobDepthUpdate => mapClobDepthDtoToClobDepth(dto);
 
 export const mapTradeUpdateDtoToTradeUpdate = (
   _marketId: string,

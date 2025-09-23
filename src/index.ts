@@ -26,6 +26,7 @@ export {
   type ClaimOrderSpotParams,
 
   type GetOrderbookParams,
+  type GetClobDepthParams,
   type GetOrdersParams,
   type GetTradesParams,
   type GetFillsParams,
@@ -74,6 +75,7 @@ export type {
   CandleResolution,
 
   Orderbook,
+  ClobDepth,
   Market,
   Order,
   OrderHistory,
@@ -84,6 +86,7 @@ export type {
 
   MarketUpdate,
   OrderbookUpdate,
+  ClobDepthUpdate,
   OrderUpdate,
   OrderHistoryUpdate,
   TradeUpdate,

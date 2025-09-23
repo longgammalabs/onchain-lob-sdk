@@ -15,6 +15,7 @@ import type {
   GetMarketParams,
   GetMarketsParams,
   GetOrderbookParams,
+  GetClobDepthParams,
   GetOrdersParams,
   GetTokensParams,
   GetTradesParams,
@@ -23,11 +24,13 @@ import type {
   SetClaimableStatusParams,
   SubscribeToMarketParams,
   SubscribeToOrderbookParams,
+  SubscribeToClobDepthParams,
   SubscribeToTradesParams,
   SubscribeToUserFillsParams,
   SubscribeToUserOrdersParams,
   UnsubscribeFromMarketParams,
   UnsubscribeFromOrderbookParams,
+  UnsubscribeFromClobDepthParams,
   UnsubscribeFromTradesParams,
   UnsubscribeFromUserFillsParams,
   UnsubscribeFromUserOrdersParams,
@@ -51,7 +54,7 @@ import type {
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
-import type { Market, FillUpdate, MarketUpdate, OrderUpdate, OrderbookUpdate, TradeUpdate, Orderbook, Order, Trade, Fill, Token, Candle, CandleUpdate, MarketOrderDetails, LimitOrderDetails, UserBalances, OrderHistoryUpdate, OrderHistory, UserDeposits } from '../models';
+import type { Market, FillUpdate, MarketUpdate, OrderUpdate, OrderbookUpdate, TradeUpdate, Orderbook, ClobDepthUpdate, ClobDepth, Order, Trade, Fill, Token, Candle, CandleUpdate, MarketOrderDetails, LimitOrderDetails, UserBalances, OrderHistoryUpdate, OrderHistory, UserDeposits } from '../models';
 import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../services';
 import { ALL_MARKETS_ID } from '../services/constants';
 import { getLimitDetails } from './limitDetails';
@@ -162,6 +165,13 @@ interface OnchainLobSpotEvents {
   orderbookUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderbookUpdate]>;
 
   /**
+   * Emitted when a market's clob depth is updated.
+   * @event
+   * @type {PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: ClobDepthUpdate]>}
+   */
+  clobDepthUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: ClobDepthUpdate]>;
+
+  /**
    * Emitted when a market's trades are updated.
    * @event
    * @type {PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: TradeUpdate[]]>}
@@ -220,6 +230,7 @@ export class OnchainLobSpot implements Disposable {
     subscriptionError: new EventEmitter(),
     marketUpdated: new EventEmitter(),
     orderbookUpdated: new EventEmitter(),
+    clobDepthUpdated: new EventEmitter(),
     tradesUpdated: new EventEmitter(),
     userOrdersUpdated: new EventEmitter(),
     userOrderHistoryUpdated: new EventEmitter(),
@@ -553,6 +564,22 @@ export class OnchainLobSpot implements Disposable {
   }
 
   /**
+   * Retrieves the clob depth for the specified market.
+   *
+   * @param {GetClobDepthParams} params - The parameters for retrieving the clob depth.
+   * @returns {Promise<ClobDepth>} A Promise that resolves to the clob depth.
+   */
+  async getClobDepth(params: GetClobDepthParams): Promise<ClobDepth> {
+    const [market, clobDepthDto] = await Promise.all([
+      this.ensureMarket(params),
+      this.onchainLobService.getClobDepth(params),
+    ]);
+    const clobDepth = this.mappers.mapClobDepthDtoToClobDepth(clobDepthDto);
+
+    return clobDepth;
+  }
+
+  /**
    * Retrieves the orders for the specified market.
    *
    * @param {GetOrdersParams} params - The parameters for retrieving the orders.
@@ -743,6 +770,25 @@ export class OnchainLobSpot implements Disposable {
   }
 
   /**
+   * Subscribes to the clob depth updates for the specified market.
+   *
+   * @param {SubscribeToClobDepthParams} params - The parameters for subscribing to the clob depth updates.
+   * @emits OnchainLobSpot#events#clobDepthUpdated
+   */
+  subscribeToClobDepth(params: SubscribeToClobDepthParams): void {
+    this.onchainLobWebSocketService.subscribeToClobDepth(params);
+  }
+
+  /**
+   * Unsubscribes from the clob depth updates for the specified market.
+   *
+   * @param {UnsubscribeFromClobDepthParams} params - The parameters for unsubscribing from the clob depth updates.
+   */
+  unsubscribeFromClobDepth(params: UnsubscribeFromClobDepthParams): void {
+    this.onchainLobWebSocketService.unsubscribeFromClobDepth(params);
+  }
+
+  /**
    * Subscribes to the trade updates for the specified market.
    *
    * @param {SubscribeToTradesParams} params - The parameters for subscribing to the trade updates.
@@ -878,6 +924,7 @@ export class OnchainLobSpot implements Disposable {
     this.onchainLobWebSocketService.events.marketUpdated.addListener(this.onMarketUpdated);
     this.onchainLobWebSocketService.events.allMarketsUpdated.addListener(this.onAllMarketsUpdated);
     this.onchainLobWebSocketService.events.orderbookUpdated.addListener(this.onOrderbookUpdated);
+    this.onchainLobWebSocketService.events.clobDepthUpdated.addListener(this.onClobDepthUpdated);
     this.onchainLobWebSocketService.events.tradesUpdated.addListener(this.onTradesUpdated);
     this.onchainLobWebSocketService.events.userOrdersUpdated.addListener(this.onUserOrdersUpdated);
     this.onchainLobWebSocketService.events.userOrderHistoryUpdated.addListener(this.onUserOrderHistoryUpdated);
@@ -889,6 +936,7 @@ export class OnchainLobSpot implements Disposable {
   protected detachEvents(): void {
     this.onchainLobWebSocketService.events.marketUpdated.removeListener(this.onMarketUpdated);
     this.onchainLobWebSocketService.events.orderbookUpdated.removeListener(this.onOrderbookUpdated);
+    this.onchainLobWebSocketService.events.clobDepthUpdated.removeListener(this.onClobDepthUpdated);
     this.onchainLobWebSocketService.events.tradesUpdated.removeListener(this.onTradesUpdated);
     this.onchainLobWebSocketService.events.userOrdersUpdated.removeListener(this.onUserOrdersUpdated);
     this.onchainLobWebSocketService.events.userOrderHistoryUpdated.removeListener(this.onUserOrderHistoryUpdated);
@@ -934,6 +982,22 @@ export class OnchainLobSpot implements Disposable {
       console.error(getErrorLogMessage(error));
     }
   };
+
+  protected onClobDepthUpdated: Parameters<typeof this.onchainLobWebSocketService.events.clobDepthUpdated['addListener']>[0] = async (marketId, isSnapshot, data) => {
+    try {
+      const markets = await this.getCachedMarkets();
+      const market = markets?.get(marketId);
+      if (!market)
+        return;
+      const clobDepthUpdate = this.mappers.mapClobDepthUpdateDtoToClobDepthUpdate(marketId, data);
+
+      (this.events.clobDepthUpdated as ToEventEmitter<typeof this.events.clobDepthUpdated>).emit(marketId, isSnapshot, clobDepthUpdate);
+    }
+    catch (error) {
+      console.error(getErrorLogMessage(error));
+    }
+  };
+
 
   protected onTradesUpdated: Parameters<typeof this.onchainLobWebSocketService.events.tradesUpdated['addListener']>[0] = async (marketId, isSnapshot, data) => {
     try {

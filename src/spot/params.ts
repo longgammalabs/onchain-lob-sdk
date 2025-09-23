@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import { CandleResolution, OrderTypeParam, TokenType, Direction, type OrderStatus, type Side, Market, Orderbook } from '../models';
+import { CandleResolution, OrderTypeParam, TokenType, Direction, type OrderStatus, type Side, Market, Orderbook, ClobDepth } from '../models';
 
 /**
  * Transaction parameters.
@@ -590,6 +590,27 @@ export interface GetOrderbookParams {
 }
 
 /**
+ * Parameters for retrieving the clob depth.
+ *
+ * @interface GetClobDepthParams
+ */
+export interface GetClobDepthParams {
+  /**
+   * Id of the requested market
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * Levels for each side
+   *
+   * @type {number}
+   * @optional
+   */
+  depth?: number;
+}
+
+/**
  * Parameters for retrieving the orders.
  *
  * @interface GetOrdersParams
@@ -791,7 +812,7 @@ export interface CalculateMarketDetailsSyncParams {
   market: Market;
   direction: Direction;
   inputToken: TokenType;
-  orderbook: Orderbook['levels'];
+  orderbook: ClobDepth;
   inputs: {
     tokenXInput: string;
     tokenYInput: string;
@@ -819,6 +840,11 @@ export interface SubscribeToOrderbookParams {
   aggregation: number;
 }
 export type UnsubscribeFromOrderbookParams = SubscribeToOrderbookParams;
+
+export interface SubscribeToClobDepthParams {
+  market: string;
+}
+export type UnsubscribeFromClobDepthParams = SubscribeToClobDepthParams;
 
 export interface SubscribeToOrdersParams {
   market?: string;

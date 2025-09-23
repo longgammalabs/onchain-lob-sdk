@@ -13,6 +13,7 @@ export type {
   ClaimOrderSpotParams,
 
   GetOrderbookParams,
+  GetClobDepthParams,
   GetOrdersParams,
   GetOrderHistoryParams,
   GetTradesParams,

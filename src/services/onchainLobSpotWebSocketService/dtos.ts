@@ -15,6 +15,12 @@ export interface OrderbookUpdateDto {
   };
 }
 
+export interface ClobDepthUpdateDto {
+  timestamp: number;
+  asks: [string, string][];
+  bids: [string, string][];
+}
+
 export interface OrderUpdateDto {
   orderId: string;
   market: {

@@ -1,5 +1,5 @@
-import type { CandleDto, FillDto, LimitDetailsDto, MarketDetailsDto, MarketDto, OrderDto, OrderHistoryDto, OrderbookDto, TokenDto, TradeDto, UserBalancesDto, UserDepositsDto } from './dtos';
-import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams, GetUserDepositsParams } from './params';
+import type { CandleDto, FillDto, LimitDetailsDto, MarketDetailsDto, MarketDto, OrderDto, OrderHistoryDto, OrderbookDto, TokenDto, TradeDto, UserBalancesDto, UserDepositsDto, ClobDepthDto } from './dtos';
+import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams, GetUserDepositsParams, GetClobDepthParams } from './params';
 import { guards } from '../../utils';
 import { RemoteService } from '../remoteService';
 import { ALL_MARKETS_ID } from '../constants';
@@ -11,6 +11,7 @@ import { ALL_MARKETS_ID } from '../constants';
 export class OnchainLobSpotService extends RemoteService {
   /**
    * Retrieves the orderbook for a given market.
+   * @deprecated Use getClobDepth instead for better performance and more detailed depth information.
    * @param params - The parameters for the orderbook request.
    * @returns The orderbook data.
    */
@@ -25,6 +26,24 @@ export class OnchainLobSpotService extends RemoteService {
 
     const queryParamsString = decodeURIComponent(queryParams.toString());
     const response = await this.fetch<OrderbookDto>(`/orderbook?${queryParamsString}`, 'json');
+
+    return response;
+  }
+
+  /**
+   * Retrieves the clob depth for a given market.
+   * @param params - The parameters for the clob depth request.
+   * @returns The clob depth data.
+   */
+  async getClobDepth(params: GetClobDepthParams): Promise<ClobDepthDto> {
+    const queryParams = new URLSearchParams({
+      market: params.market,
+    });
+    if (params.depth)
+      queryParams.append('depth', params.depth.toString());
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<ClobDepthDto>(`/clob-depth?${queryParamsString}`, 'json');
 
     return response;
   }

@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js';
-import { MarketOrderDetails, OrderbookLevel } from '../models';
+import { MarketOrderDetails, ClobDepth } from '../models';
 import { CalculateMarketDetailsSyncParams } from './params';
 import { ceil, floor } from 'lodash';
 import { getPriceDecimals } from '../utils/scalingUtils';
+import { formatUnits } from 'ethers';
 
 export const defaultBuyMarketDetails: MarketOrderDetails['buy'] = {
   fee: 0,
@@ -56,7 +57,7 @@ export const getMarketDetails = ({ market, orderbook, inputToken, inputs, direct
         Number(tokenXInput),
         slippage,
         market.bestAsk.toNumber(),
-        orderbook.asks.sort((a, b) => Number(a.rawPrice - b.rawPrice)),
+        orderbook.asks.sort((a, b) => Number(BigInt(a[0]) - BigInt(b[0]))),
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -69,7 +70,7 @@ export const getMarketDetails = ({ market, orderbook, inputToken, inputs, direct
         Number(tokenYInput),
         slippage,
         market.bestAsk.toNumber(),
-        orderbook.asks.sort((a, b) => Number(a.rawPrice - b.rawPrice)),
+        orderbook.asks.sort((a, b) => Number(BigInt(a[0]) - BigInt(b[0]))),
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -84,7 +85,7 @@ export const getMarketDetails = ({ market, orderbook, inputToken, inputs, direct
         Number(tokenXInput),
         slippage,
         market.bestBid.toNumber(),
-        orderbook.bids.sort((a, b) => Number(b.rawPrice - a.rawPrice)),
+        orderbook.bids.sort((a, b) => Number(BigInt(b[0]) - BigInt(a[0]))),
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -97,7 +98,7 @@ export const getMarketDetails = ({ market, orderbook, inputToken, inputs, direct
         Number(tokenYInput),
         slippage,
         market.bestBid.toNumber(),
-        orderbook.bids.sort((a, b) => Number(b.rawPrice - a.rawPrice)),
+        orderbook.bids.sort((a, b) => Number(BigInt(b[0]) - BigInt(a[0]))),
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -114,7 +115,7 @@ export const calculateBuyMarketDetailsTokenXInput = (
   tokenXInput: number,
   maxSlippage: number,
   bestAsk: number,
-  orderbookSide: OrderbookLevel[],
+  orderbookSide: [string, string][],
   tokenXScalingFactor: number,
   tokenYScalingFactor: number,
   priceScalingFactor: number,
@@ -129,7 +130,9 @@ export const calculateBuyMarketDetailsTokenXInput = (
   const { estPrice, estTokenYAmount, estWorstPrice, estSlippage } = calculateEstValuesFromTokenX(
     tokenXReceive.toNumber(),
     orderbookSide,
-    bestAsk
+    bestAsk,
+    priceScalingFactor,
+    tokenXScalingFactor
   );
 
   if (useAutoSlippage) {
@@ -174,7 +177,7 @@ export const calculateBuyMarketDetailsTokenYInput = (
   tokenYInput: number,
   maxSlippage: number,
   bestAsk: number,
-  orderbookSide: OrderbookLevel[],
+  orderbookSide: [string, string][],
   tokenXScalingFactor: number,
   tokenYScalingFactor: number,
   priceScalingFactor: number,
@@ -194,7 +197,9 @@ export const calculateBuyMarketDetailsTokenYInput = (
   const { estPrice, estSlippage, estTokenXAmount, estWorstPrice } = calculateEstValuesFromTokenY(
     tokenYWithoutFee.toNumber(),
     orderbookSide,
-    bestAsk
+    bestAsk,
+    priceScalingFactor,
+    tokenXScalingFactor
   );
 
   if (useAutoSlippage) {
@@ -230,7 +235,7 @@ export const calculateSellMarketDetailsTokenXInput = (
   tokenXInput: number,
   maxSlippage: number,
   bestBid: number,
-  orderbookSide: OrderbookLevel[],
+  orderbookSide: [string, string][],
   tokenXScalingFactor: number,
   tokenYScalingFactor: number,
   priceScalingFactor: number,
@@ -245,7 +250,9 @@ export const calculateSellMarketDetailsTokenXInput = (
   const { estPrice, estSlippage, estTokenYAmount, estWorstPrice } = calculateEstValuesFromTokenX(
     tokenXPay.toNumber(),
     orderbookSide,
-    bestBid
+    bestBid,
+    priceScalingFactor,
+    tokenXScalingFactor
   );
 
   if (useAutoSlippage) {
@@ -289,7 +296,7 @@ export const calculateSellMarketDetailsTokenYInput = (
   tokenYInput: number,
   maxSlippage: number,
   bestBid: number,
-  orderbookSide: OrderbookLevel[],
+  orderbookSide: [string, string][],
   tokenXScalingFactor: number,
   tokenYScalingFactor: number,
   priceScalingFactor: number,
@@ -310,7 +317,9 @@ export const calculateSellMarketDetailsTokenYInput = (
   const { estPrice, estTokenXAmount, estSlippage, estWorstPrice } = calculateEstValuesFromTokenY(
     tokenYReceiveBeforeFee.toNumber(),
     orderbookSide,
-    bestBid
+    bestBid,
+    priceScalingFactor,
+    tokenXScalingFactor
   );
 
   if (useAutoSlippage) {
@@ -341,14 +350,14 @@ export const calculateSellMarketDetailsTokenYInput = (
   };
 };
 
-export const calculateEstValuesFromTokenX = (tokenX: number, orderbookSide: OrderbookLevel[], initialPrice: number) => {
+export const calculateEstValuesFromTokenX = (tokenX: number, orderbookSide: [string, string][], initialPrice: number, priceScalingFactor: number, tokenXScalingFactor: number) => {
   let totalCost = new BigNumber(0);
   let tokenXLeft = new BigNumber(tokenX);
   let estWorstPrice = new BigNumber(0);
 
-  for (const level of orderbookSide) {
-    const price = new BigNumber(level.price);
-    const size = new BigNumber(level.size);
+  for (const [rawPrice, rawSize] of orderbookSide) {
+    const price = new BigNumber(formatUnits(rawPrice, priceScalingFactor));
+    const size = new BigNumber(formatUnits(rawSize, tokenXScalingFactor));
     const tradeQuantity = BigNumber.min(tokenXLeft, size);
     totalCost = totalCost.plus(tradeQuantity.times(price));
     tokenXLeft = tokenXLeft.minus(tradeQuantity);
@@ -369,14 +378,14 @@ export const calculateEstValuesFromTokenX = (tokenX: number, orderbookSide: Orde
   };
 };
 
-export const calculateEstValuesFromTokenY = (tokenY: number, orderbookSide: OrderbookLevel[], initialPrice: number) => {
+export const calculateEstValuesFromTokenY = (tokenY: number, orderbookSide: [string, string][], initialPrice: number, priceScalingFactor: number, tokenXScalingFactor: number) => {
   let totalQuantity = new BigNumber(0);
   let tokenYLeft = new BigNumber(tokenY);
   let estWorstPrice = new BigNumber(0);
 
-  for (const level of orderbookSide) {
-    const price = new BigNumber(level.price);
-    const size = new BigNumber(level.size);
+  for (const [rawPrice, rawSize] of orderbookSide) {
+    const price = new BigNumber(formatUnits(rawPrice, priceScalingFactor));
+    const size = new BigNumber(formatUnits(rawSize, tokenXScalingFactor));
     const tradeCost = BigNumber.min(tokenYLeft, size.times(price));
     totalQuantity = totalQuantity.plus(tradeCost.div(price));
     tokenYLeft = tokenYLeft.minus(tradeCost);

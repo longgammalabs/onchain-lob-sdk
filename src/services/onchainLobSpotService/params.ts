@@ -6,6 +6,11 @@ export interface GetOrderbookParams {
   limit?: number;
 }
 
+export interface GetClobDepthParams {
+  market: string;
+  depth?: number;
+}
+
 export interface GetOrdersParams {
   market: string;
   user: string;

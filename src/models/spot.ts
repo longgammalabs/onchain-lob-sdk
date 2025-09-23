@@ -300,6 +300,28 @@ export interface Orderbook {
 export type OrderbookUpdate = Orderbook;
 
 /**
+ * Represents the orderbook of a market at a specific point in time.
+ */
+export interface ClobDepth {
+  /**
+   * The timestamp of the orderbook snapshot.
+   */
+  timestamp: number;
+
+  /**
+   * The list of ask levels in the orderbook.
+   */
+  asks: [string, string][];
+
+  /**
+   * The list of bid levels in the orderbook.
+   */
+  bids: [string, string][];
+}
+
+export type ClobDepthUpdate = ClobDepth;
+
+/**
  * Represents an order in the Onchain LOB Spot market.
  */
 export interface Order {

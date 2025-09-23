@@ -11,6 +11,11 @@ export interface SubscribeToOrderbookParams {
 }
 export type UnsubscribeFromOrderbookParams = SubscribeToOrderbookParams;
 
+export interface SubscribeToClobDepthParams {
+  market: string;
+}
+export type UnsubscribeFromClobDepthParams = SubscribeToClobDepthParams;
+
 export interface SubscribeToTradesParams {
   market: string;
 }

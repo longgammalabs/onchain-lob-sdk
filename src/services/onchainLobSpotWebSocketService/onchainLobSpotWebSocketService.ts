@@ -6,11 +6,13 @@ import type {
   OrderUpdateDto,
   OrderHistoryUpdateDto,
   OrderbookUpdateDto,
+  ClobDepthUpdateDto,
   TradeUpdateDto
 } from './dtos';
 import type {
   SubscribeToMarketParams, UnsubscribeFromMarketParams,
   SubscribeToOrderbookParams, UnsubscribeFromOrderbookParams,
+  SubscribeToClobDepthParams, UnsubscribeFromClobDepthParams,
   SubscribeToTradesParams, UnsubscribeFromTradesParams,
   SubscribeToUserOrdersParams, UnsubscribeFromUserOrdersParams,
   SubscribeToUserOrderHistoryParams, UnsubscribeFromUserOrderHistoryParams,
@@ -31,6 +33,7 @@ interface OnchainLobSpotWebSocketServiceEvents {
   marketUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: MarketUpdateDto]>;
   allMarketsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: MarketUpdateDto[]]>;
   orderbookUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderbookUpdateDto]>;
+  clobDepthUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: ClobDepthUpdateDto]>;
   tradesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: TradeUpdateDto[]]>;
   userOrdersUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderUpdateDto[]]>;
   userOrderHistoryUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderHistoryUpdateDto[]]>;
@@ -53,6 +56,7 @@ export class OnchainLobSpotWebSocketService implements Disposable {
     allMarketsUpdated: new EventEmitter(),
     marketUpdated: new EventEmitter(),
     orderbookUpdated: new EventEmitter(),
+    clobDepthUpdated: new EventEmitter(),
     tradesUpdated: new EventEmitter(),
     userOrdersUpdated: new EventEmitter(),
     userOrderHistoryUpdated: new EventEmitter(),
@@ -123,6 +127,7 @@ export class OnchainLobSpotWebSocketService implements Disposable {
 
   /**
    * Subscribes to orderbook updates for a given market.
+   * @deprecated Use subscribeToClobDepth instead.
    * @param params - The parameters for the orderbook subscription.
    */
   subscribeToOrderbook(params: SubscribeToOrderbookParams) {
@@ -137,6 +142,7 @@ export class OnchainLobSpotWebSocketService implements Disposable {
 
   /**
    * Unsubscribes from orderbook updates for a given market.
+   * @deprecated Use unsubscribeFromClobDepth instead.
    * @param params - The parameters for the orderbook unsubscription.
    */
   unsubscribeFromOrderbook(params: UnsubscribeFromOrderbookParams) {
@@ -144,6 +150,30 @@ export class OnchainLobSpotWebSocketService implements Disposable {
       channel: 'orderbook',
       market: params.market,
       aggregation: params.aggregation,
+    });
+  }
+
+  /**
+   * Subscribes to clob depth updates for a given market.
+   * @param params - The parameters for the clob depth subscription.
+   */
+  subscribeToClobDepth(params: SubscribeToClobDepthParams) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+
+    this.onchainLobWebSocketClient.subscribe({
+      channel: 'clobDepth',
+      market: params.market
+    });
+  }
+
+  /**
+   * Unsubscribes from clob depth updates for a given market.
+   * @param params - The parameters for the clob depth unsubscription.
+   */
+  unsubscribeFromClobDepth(params: UnsubscribeFromClobDepthParams) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: 'clobDepth',
+      market: params.market
     });
   }
 
@@ -308,6 +338,9 @@ export class OnchainLobSpotWebSocketService implements Disposable {
           break;
         case 'orderbook':
           (this.events.orderbookUpdated as ToEventEmitter<typeof this.events.orderbookUpdated>).emit(message.id, message.isSnapshot, message.data as OrderbookUpdateDto);
+          break;
+        case 'clobDepth':
+          (this.events.clobDepthUpdated as ToEventEmitter<typeof this.events.clobDepthUpdated>).emit(message.id, message.isSnapshot, message.data as ClobDepthUpdateDto);
           break;
         case 'trades':
           (this.events.tradesUpdated as ToEventEmitter<typeof this.events.tradesUpdated>).emit(message.id, message.isSnapshot, message.data as TradeUpdateDto[]);

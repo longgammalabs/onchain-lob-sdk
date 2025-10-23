@@ -111,6 +111,7 @@ export interface MarketUpdateDto {
   name: string;
   symbol: string;
   orderbookAddress: string;
+  fastQuoterProxyAddress: string | null;
   aggregations: number[];
   tokenXScalingFactor: number;
   tokenYScalingFactor: number;

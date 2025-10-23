@@ -88,6 +88,11 @@ export interface Market {
   orderbookAddress: string;
 
   /**
+   * Address of the fast quoter proxy associated with the market, or null if fast quoter is not enabled for this market.
+   */
+  fastQuoterProxyAddress: string | null;
+
+  /**
    * Array of aggregation levels for the market.
    */
   aggregations: number[];

@@ -118,6 +118,7 @@ export interface MarketDto {
   baseToken: TokenDto;
   quoteToken: TokenDto;
   orderbookAddress: string;
+  fastQuoterProxyAddress: string | null;
   aggregations: number[];
   tokenXScalingFactor: number;
   tokenYScalingFactor: number;

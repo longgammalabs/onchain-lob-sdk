@@ -76,6 +76,16 @@ export interface ApproveSpotParams extends TransactionParams {
    * @type {BigNumber | bigint}
    */
   amount: BigNumber | bigint;
+  /**
+   * Indicates whether to use the fast quoter proxy if it's enabled for the market.
+   * If true, the fast quoter proxy will be used if it's enabled for the market.
+   * If false, the market contract will be used.
+   *
+   * @type {boolean}
+   * @optional
+   * @default true
+   */
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -293,6 +303,17 @@ interface PlaceOrderBaseParams extends TransactionParams {
    * @optional
    */
   transferExecutedTokens?: boolean;
+
+  /**
+   * Indicates whether to use the fast quoter proxy.
+   * If true, the fast quoter proxy will be used if it's enabled for the market.
+   * If false, the market contract will be used.
+   *
+   * @type {boolean}
+   * @optional
+   * @default true
+   */
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -381,21 +402,21 @@ type PermitParam = {
  *
  * @interface PlaceLimitOrderWithPermitSpotParams
  */
-export type PlaceLimitOrderWithPermitSpotParams = Omit<PlaceLimitOrderSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceLimitOrderWithPermitSpotParams = Omit<PlaceLimitOrderSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit and without a price on the spot market.
  *
  * @interface PlaceMarketOrderWithPermitSpotParams
  */
-export type PlaceMarketOrderWithPermitSpotParams = Omit<PlaceMarketOrderSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceMarketOrderWithPermitSpotParams = Omit<PlaceMarketOrderSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit and a price on the spot market.
  *
  * @interface PlaceMarketOrderWithPriceWithPermitSpotParams
  */
-export type PlaceMarketOrderWithPriceWithPermitSpotParams = Omit<PlaceMarketOrderWithPriceSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceMarketOrderWithPriceWithPermitSpotParams = Omit<PlaceMarketOrderWithPriceSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit on the spot market.

@@ -15,6 +15,7 @@ import type {
   PlaceOrderSpotParams,
   PlaceOrderWithPermitSpotParams,
   SetClaimableStatusParams,
+  SetProxyTraderAllowedSpotParams,
   UnwrapNativeTokenSpotParams,
   WithdrawSpotParams,
   WrapNativeTokenSpotParams
@@ -117,6 +118,27 @@ export class OnchainLobSpotMarketContract {
       tokenContract.approve!(
         executorAddress,
         amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
+
+    return tx;
+  }
+
+  async setProxyTraderAllowed(params: SetProxyTraderAllowedSpotParams): Promise<ContractTransactionResponse> {
+    if (!this.market.fastQuoterProxyAddress) {
+      throw Error('Fast quoter proxy is not enabled for this market');
+    }
+
+    const tx = await this.processContractMethodCall(
+      this.marketContract,
+      this.marketContract.setProxyTraderAllowed!(
+        this.market.fastQuoterProxyAddress,
+        params.allowed,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,

@@ -89,6 +89,27 @@ export interface ApproveSpotParams extends TransactionParams {
 }
 
 /**
+ * Parameters for setting proxy trader allowed for the spot market.
+ *
+ * @interface SetProxyTraderAllowedSpotParams
+ * @extends TransactionParams
+ */
+export interface SetProxyTraderAllowedSpotParams extends TransactionParams {
+  /**
+   * The market identifier.
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * Whether the proxy trader is allowed.
+   *
+   * @type {boolean}
+   */
+  allowed: boolean;
+}
+
+/**
  * Parameters for wrapping native tokens.
  *
  * @interface WrapNativeTokenSpotParams

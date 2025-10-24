@@ -50,7 +50,8 @@ import type {
   CalculateMarketDetailsSyncParams,
   GetUserDepositsParams,
   WrapNativeTokenSpotParams,
-  UnwrapNativeTokenSpotParams
+  UnwrapNativeTokenSpotParams,
+  SetProxyTraderAllowedSpotParams
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
@@ -299,6 +300,18 @@ export class OnchainLobSpot implements Disposable {
     const marketContract = await this.getSpotMarketContract(params);
 
     return marketContract.approveTokens(params);
+  }
+
+  /**
+  * Sets the proxy trader allowed for the corresponding market contract.
+  *
+  * @param {SetProxyTraderAllowedSpotParams} params - The parameters for setting the proxy trader allowed.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async setProxyTraderAllowed(params: SetProxyTraderAllowedSpotParams): Promise<ContractTransactionResponse> {
+    const marketContract = await this.getSpotMarketContract(params);
+
+    return marketContract.setProxyTraderAllowed(params);
   }
 
   /**

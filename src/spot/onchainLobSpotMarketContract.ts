@@ -138,7 +138,8 @@ export class OnchainLobSpotMarketContract {
       this.marketContract,
       this.marketContract.setProxyTraderAllowed!(
         this.market.fastQuoterProxyAddress,
-        params.allowed,
+        params.allowCreate,
+        params.allowCancel,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -472,10 +473,13 @@ export class OnchainLobSpotMarketContract {
   }
 
   async claimOrder(params: ClaimOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
+
     const expires = getExpires();
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.claimOrder!(
+      contract,
+      contract.claimOrder!(
         params.orderId,
         params.onlyClaim,
         params.transferExecutedTokens ?? this.transferExecutedTokensEnabled,

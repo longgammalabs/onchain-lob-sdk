@@ -1,698 +1,968 @@
 export const fastQuoterProxyAbi = [
   {
-    type: "constructor",
-    inputs: [
+    "type":"constructor",
+    "inputs":[
       {
-        name: "_lpManagerAddress",
-        type: "address",
-        internalType: "address",
+        "name":"_lpManagerAddress",
+        "type":"address",
+        "internalType":"address"
       },
       {
-        name: "_nativeTokenAddress",
-        type: "address",
-        internalType: "address",
+        "name":"_nativeTokenAddress",
+        "type":"address",
+        "internalType":"address"
       },
       {
-        name: "_lobId",
-        type: "uint8",
-        internalType: "uint8",
-      },
+        "name":"_lobId",
+        "type":"uint8",
+        "internalType":"uint8"
+      }
     ],
-    stateMutability: "nonpayable",
+    "stateMutability":"nonpayable"
   },
   {
-    type: "receive",
-    stateMutability: "payable",
-  },
-  {
-    type: "function",
-    name: "UPGRADE_INTERFACE_VERSION",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "string",
-        internalType: "string",
-      },
+    "type":"function",
+    "name":"UPGRADE_INTERFACE_VERSION",
+    "inputs":[
+      
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "acceptOwnership",
-    inputs: [],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "fastQuoterAddress",
-    inputs: [],
-    outputs: [
+    "outputs":[
       {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+        "name":"",
+        "type":"string",
+        "internalType":"string"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "initialize",
-    inputs: [
-      {
-        name: "_owner",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "_fastQuoterAddress",
-        type: "address",
-        internalType: "address",
-      },
+    "type":"function",
+    "name":"acceptOwnership",
+    "inputs":[
+      
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "lobAddress",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+    "outputs":[
+      
     ],
-    stateMutability: "view",
+    "stateMutability":"nonpayable"
   },
   {
-    type: "function",
-    name: "lobId",
-    inputs: [],
-    outputs: [
+    "type":"function",
+    "name":"claimOrder",
+    "inputs":[
       {
-        name: "",
-        type: "uint8",
-        internalType: "uint8",
+        "name":"trader",
+        "type":"address",
+        "internalType":"address"
       },
+      {
+        "name":"order_id",
+        "type":"uint64",
+        "internalType":"uint64"
+      },
+      {
+        "name":"only_claim",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"transfer_tokens",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"withdraw_as_native_eth",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "lpManagerAddress",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+    "outputs":[
+      
     ],
-    stateMutability: "view",
+    "stateMutability":"nonpayable"
   },
   {
-    type: "function",
-    name: "nativeTokenAddress",
-    inputs: [],
-    outputs: [
+    "type":"function",
+    "name":"claimOrder",
+    "inputs":[
       {
-        name: "",
-        type: "address",
-        internalType: "address",
+        "name":"order_id",
+        "type":"uint64",
+        "internalType":"uint64"
       },
+      {
+        "name":"only_claim",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"transfer_tokens",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "owner",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+    "outputs":[
+      
     ],
-    stateMutability: "view",
+    "stateMutability":"nonpayable"
   },
   {
-    type: "function",
-    name: "paused",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
+    "type":"function",
+    "name":"fastQuoterAddress",
+    "inputs":[
+      
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "pendingOwner",
-    inputs: [],
-    outputs: [
+    "outputs":[
       {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "placeMarketOrderWithTargetValue",
-    inputs: [
+    "type":"function",
+    "name":"initialize",
+    "inputs":[
       {
-        name: "isAsk",
-        type: "bool",
-        internalType: "bool",
+        "name":"_owner",
+        "type":"address",
+        "internalType":"address"
       },
       {
-        name: "target_token_y_value",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "price",
-        type: "uint72",
-        internalType: "uint72",
-      },
-      {
-        name: "max_commission",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "transfer_executed_tokens",
-        type: "bool",
-        internalType: "bool",
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256",
-      },
+        "name":"_fastQuoterAddress",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    outputs: [
-      {
-        name: "executed_shares",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "executed_value",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "aggressive_fee",
-        type: "uint128",
-        internalType: "uint128",
-      },
+    "outputs":[
+      
     ],
-    stateMutability: "payable",
+    "stateMutability":"nonpayable"
   },
   {
-    type: "function",
-    name: "placeOrder",
-    inputs: [
-      {
-        name: "isAsk",
-        type: "bool",
-        internalType: "bool",
-      },
-      {
-        name: "quantity",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "price",
-        type: "uint72",
-        internalType: "uint72",
-      },
-      {
-        name: "max_commission",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "market_only",
-        type: "bool",
-        internalType: "bool",
-      },
-      {
-        name: "post_only",
-        type: "bool",
-        internalType: "bool",
-      },
-      {
-        name: "transfer_executed_tokens",
-        type: "bool",
-        internalType: "bool",
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256",
-      },
+    "type":"function",
+    "name":"lobAddress",
+    "inputs":[
+      
     ],
-    outputs: [
+    "outputs":[
       {
-        name: "order_id",
-        type: "uint64",
-        internalType: "uint64",
-      },
-      {
-        name: "executed_shares",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "executed_value",
-        type: "uint128",
-        internalType: "uint128",
-      },
-      {
-        name: "aggressive_fee",
-        type: "uint128",
-        internalType: "uint128",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    stateMutability: "payable",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "proxiableUUID",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
+    "type":"function",
+    "name":"lobId",
+    "inputs":[
+      
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "renounceOwnership",
-    inputs: [],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "scalingFactorTokenX",
-    inputs: [],
-    outputs: [
+    "outputs":[
       {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+        "name":"",
+        "type":"uint8",
+        "internalType":"uint8"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "scalingFactorTokenY",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+    "type":"function",
+    "name":"lpManagerAddress",
+    "inputs":[
+      
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "setFastQuoterAddress",
-    inputs: [
+    "outputs":[
       {
-        name: "_fastQuoterAddress",
-        type: "address",
-        internalType: "address",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "tokenX",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+    "type":"function",
+    "name":"nativeTokenAddress",
+    "inputs":[
+      
     ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "tokenY",
-    inputs: [],
-    outputs: [
+    "outputs":[
       {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "transferOwnership",
-    inputs: [
-      {
-        name: "newOwner",
-        type: "address",
-        internalType: "address",
-      },
+    "type":"function",
+    "name":"owner",
+    "inputs":[
+      
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "upgradeToAndCall",
-    inputs: [
+    "outputs":[
       {
-        name: "newImplementation",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "data",
-        type: "bytes",
-        internalType: "bytes",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    outputs: [],
-    stateMutability: "payable",
+    "stateMutability":"view"
   },
   {
-    type: "function",
-    name: "ver",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+    "type":"function",
+    "name":"paused",
+    "inputs":[
+      
     ],
-    stateMutability: "pure",
-  },
-  {
-    type: "event",
-    name: "FastQuoterAddressChanged",
-    inputs: [
+    "outputs":[
       {
-        name: "oldFastQuoterAddress",
-        type: "address",
-        indexed: false,
-        internalType: "address",
-      },
-      {
-        name: "newFastQuoterAddress",
-        type: "address",
-        indexed: false,
-        internalType: "address",
-      },
+        "name":"",
+        "type":"bool",
+        "internalType":"bool"
+      }
     ],
-    anonymous: false,
+    "stateMutability":"view"
   },
   {
-    type: "event",
-    name: "Initialized",
-    inputs: [
-      {
-        name: "version",
-        type: "uint64",
-        indexed: false,
-        internalType: "uint64",
-      },
+    "type":"function",
+    "name":"pendingOwner",
+    "inputs":[
+      
     ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "OwnershipTransferStarted",
-    inputs: [
+    "outputs":[
       {
-        name: "previousOwner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "newOwner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
     ],
-    anonymous: false,
+    "stateMutability":"view"
   },
   {
-    type: "event",
-    name: "OwnershipTransferred",
-    inputs: [
+    "type":"function",
+    "name":"placeMarketOrderWithTargetValue",
+    "inputs":[
       {
-        name: "previousOwner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
+        "name":"isAsk",
+        "type":"bool",
+        "internalType":"bool"
       },
       {
-        name: "newOwner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
+        "name":"target_token_y_value",
+        "type":"uint128",
+        "internalType":"uint128"
       },
+      {
+        "name":"price",
+        "type":"uint72",
+        "internalType":"uint72"
+      },
+      {
+        "name":"max_commission",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"transfer_executed_tokens",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
     ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "Paused",
-    inputs: [
+    "outputs":[
       {
-        name: "account",
-        type: "address",
-        indexed: false,
-        internalType: "address",
+        "name":"executed_shares",
+        "type":"uint128",
+        "internalType":"uint128"
       },
+      {
+        "name":"executed_value",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"aggressive_fee",
+        "type":"uint128",
+        "internalType":"uint128"
+      }
     ],
-    anonymous: false,
+    "stateMutability":"payable"
   },
   {
-    type: "event",
-    name: "SwapExecuted",
-    inputs: [
+    "type":"function",
+    "name":"placeMarketOrderWithTargetValueByProxy",
+    "inputs":[
       {
-        name: "sender",
-        type: "address",
-        indexed: true,
-        internalType: "address",
+        "name":"isAsk",
+        "type":"bool",
+        "internalType":"bool"
       },
       {
-        name: "tokenIn",
-        type: "address",
-        indexed: false,
-        internalType: "address",
+        "name":"target_token_y_value",
+        "type":"uint128",
+        "internalType":"uint128"
       },
       {
-        name: "tokenOut",
-        type: "address",
-        indexed: false,
-        internalType: "address",
+        "name":"price",
+        "type":"uint72",
+        "internalType":"uint72"
       },
       {
-        name: "amountIn",
-        type: "uint256",
-        indexed: false,
-        internalType: "uint256",
+        "name":"max_commission",
+        "type":"uint128",
+        "internalType":"uint128"
       },
       {
-        name: "amountOut",
-        type: "uint256",
-        indexed: false,
-        internalType: "uint256",
+        "name":"transfer_executed_tokens",
+        "type":"bool",
+        "internalType":"bool"
       },
+      {
+        "name":"withdraw_as_native_eth",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"order_owner",
+        "type":"address",
+        "internalType":"address"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
     ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "Unpaused",
-    inputs: [
+    "outputs":[
       {
-        name: "account",
-        type: "address",
-        indexed: false,
-        internalType: "address",
+        "name":"executed_shares",
+        "type":"uint128",
+        "internalType":"uint128"
       },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "Upgraded",
-    inputs: [
       {
-        name: "implementation",
-        type: "address",
-        indexed: true,
-        internalType: "address",
+        "name":"executed_value",
+        "type":"uint128",
+        "internalType":"uint128"
       },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "error",
-    name: "AddressEmptyCode",
-    inputs: [
       {
-        name: "target",
-        type: "address",
-        internalType: "address",
-      },
+        "name":"aggressive_fee",
+        "type":"uint128",
+        "internalType":"uint128"
+      }
     ],
+    "stateMutability":"payable"
   },
   {
-    type: "error",
-    name: "ERC1967InvalidImplementation",
-    inputs: [
+    "type":"function",
+    "name":"placeOrder",
+    "inputs":[
       {
-        name: "implementation",
-        type: "address",
-        internalType: "address",
+        "name":"isAsk",
+        "type":"bool",
+        "internalType":"bool"
       },
-    ],
-  },
-  {
-    type: "error",
-    name: "ERC1967NonPayable",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "EnforcedPause",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "ExpectedPause",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "Expired",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "FailedCall",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "InvalidImplementation",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "InvalidInitialization",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "InvalidLPManager",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "NotInitializing",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "OwnableInvalidOwner",
-    inputs: [
       {
-        name: "owner",
-        type: "address",
-        internalType: "address",
+        "name":"quantity",
+        "type":"uint128",
+        "internalType":"uint128"
       },
-    ],
-  },
-  {
-    type: "error",
-    name: "OwnableUnauthorizedAccount",
-    inputs: [
       {
-        name: "account",
-        type: "address",
-        internalType: "address",
+        "name":"price",
+        "type":"uint72",
+        "internalType":"uint72"
       },
-    ],
-  },
-  {
-    type: "error",
-    name: "ReentrancyGuardReentrantCall",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "SafeERC20FailedOperation",
-    inputs: [
       {
-        name: "token",
-        type: "address",
-        internalType: "address",
+        "name":"max_commission",
+        "type":"uint128",
+        "internalType":"uint128"
       },
-    ],
-  },
-  {
-    type: "error",
-    name: "UUPSUnauthorizedCallContext",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "UUPSUnsupportedProxiableUUID",
-    inputs: [
       {
-        name: "slot",
-        type: "bytes32",
-        internalType: "bytes32",
+        "name":"market_only",
+        "type":"bool",
+        "internalType":"bool"
       },
+      {
+        "name":"post_only",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"transfer_executed_tokens",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
     ],
+    "outputs":[
+      {
+        "name":"order_id",
+        "type":"uint64",
+        "internalType":"uint64"
+      },
+      {
+        "name":"executed_shares",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"executed_value",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"aggressive_fee",
+        "type":"uint128",
+        "internalType":"uint128"
+      }
+    ],
+    "stateMutability":"payable"
   },
   {
-    type: "error",
-    name: "ZeroAddress",
-    inputs: [],
+    "type":"function",
+    "name":"placeOrderByProxy",
+    "inputs":[
+      {
+        "name":"isAsk",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"quantity",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"price",
+        "type":"uint72",
+        "internalType":"uint72"
+      },
+      {
+        "name":"max_commission",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"market_only",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"post_only",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"transfer_executed_tokens",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"withdraw_as_native_eth",
+        "type":"bool",
+        "internalType":"bool"
+      },
+      {
+        "name":"order_owner",
+        "type":"address",
+        "internalType":"address"
+      },
+      {
+        "name":"expires",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
+    ],
+    "outputs":[
+      {
+        "name":"order_id",
+        "type":"uint64",
+        "internalType":"uint64"
+      },
+      {
+        "name":"executed_shares",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"executed_value",
+        "type":"uint128",
+        "internalType":"uint128"
+      },
+      {
+        "name":"aggressive_fee",
+        "type":"uint128",
+        "internalType":"uint128"
+      }
+    ],
+    "stateMutability":"payable"
   },
+  {
+    "type":"function",
+    "name":"proxiableUUID",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"bytes32",
+        "internalType":"bytes32"
+      }
+    ],
+    "stateMutability":"view"
+  },
+  {
+    "type":"function",
+    "name":"renounceOwnership",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      
+    ],
+    "stateMutability":"nonpayable"
+  },
+  {
+    "type":"function",
+    "name":"scalingFactorTokenX",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
+    ],
+    "stateMutability":"view"
+  },
+  {
+    "type":"function",
+    "name":"scalingFactorTokenY",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
+    ],
+    "stateMutability":"view"
+  },
+  {
+    "type":"function",
+    "name":"setFastQuoterAddress",
+    "inputs":[
+      {
+        "name":"_fastQuoterAddress",
+        "type":"address",
+        "internalType":"address"
+      }
+    ],
+    "outputs":[
+      
+    ],
+    "stateMutability":"nonpayable"
+  },
+  {
+    "type":"function",
+    "name":"tokenX",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
+    ],
+    "stateMutability":"view"
+  },
+  {
+    "type":"function",
+    "name":"tokenY",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"address",
+        "internalType":"address"
+      }
+    ],
+    "stateMutability":"view"
+  },
+  {
+    "type":"function",
+    "name":"transferOwnership",
+    "inputs":[
+      {
+        "name":"newOwner",
+        "type":"address",
+        "internalType":"address"
+      }
+    ],
+    "outputs":[
+      
+    ],
+    "stateMutability":"nonpayable"
+  },
+  {
+    "type":"function",
+    "name":"upgradeToAndCall",
+    "inputs":[
+      {
+        "name":"newImplementation",
+        "type":"address",
+        "internalType":"address"
+      },
+      {
+        "name":"data",
+        "type":"bytes",
+        "internalType":"bytes"
+      }
+    ],
+    "outputs":[
+      
+    ],
+    "stateMutability":"payable"
+  },
+  {
+    "type":"function",
+    "name":"ver",
+    "inputs":[
+      
+    ],
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256",
+        "internalType":"uint256"
+      },
+      {
+        "name":"",
+        "type":"uint256",
+        "internalType":"uint256"
+      }
+    ],
+    "stateMutability":"pure"
+  },
+  {
+    "type":"event",
+    "name":"FastQuoterAddressChanged",
+    "inputs":[
+      {
+        "name":"oldFastQuoterAddress",
+        "type":"address",
+        "indexed":false,
+        "internalType":"address"
+      },
+      {
+        "name":"newFastQuoterAddress",
+        "type":"address",
+        "indexed":false,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"Initialized",
+    "inputs":[
+      {
+        "name":"version",
+        "type":"uint64",
+        "indexed":false,
+        "internalType":"uint64"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"OwnershipTransferStarted",
+    "inputs":[
+      {
+        "name":"previousOwner",
+        "type":"address",
+        "indexed":true,
+        "internalType":"address"
+      },
+      {
+        "name":"newOwner",
+        "type":"address",
+        "indexed":true,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"OwnershipTransferred",
+    "inputs":[
+      {
+        "name":"previousOwner",
+        "type":"address",
+        "indexed":true,
+        "internalType":"address"
+      },
+      {
+        "name":"newOwner",
+        "type":"address",
+        "indexed":true,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"Paused",
+    "inputs":[
+      {
+        "name":"account",
+        "type":"address",
+        "indexed":false,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"Unpaused",
+    "inputs":[
+      {
+        "name":"account",
+        "type":"address",
+        "indexed":false,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"event",
+    "name":"Upgraded",
+    "inputs":[
+      {
+        "name":"implementation",
+        "type":"address",
+        "indexed":true,
+        "internalType":"address"
+      }
+    ],
+    "anonymous":false
+  },
+  {
+    "type":"error",
+    "name":"AddressEmptyCode",
+    "inputs":[
+      {
+        "name":"target",
+        "type":"address",
+        "internalType":"address"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ERC1967InvalidImplementation",
+    "inputs":[
+      {
+        "name":"implementation",
+        "type":"address",
+        "internalType":"address"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ERC1967NonPayable",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"EnforcedPause",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ExpectedPause",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"Expired",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"FailedCall",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"Forbidden",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"InvalidImplementation",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"InvalidInitialization",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"InvalidLPManager",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"NotInitializing",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"OnlyPrivilegedSenderCanCancelOrders",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"OwnableInvalidOwner",
+    "inputs":[
+      {
+        "name":"owner",
+        "type":"address",
+        "internalType":"address"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"OwnableUnauthorizedAccount",
+    "inputs":[
+      {
+        "name":"account",
+        "type":"address",
+        "internalType":"address"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ReentrancyGuardReentrantCall",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"SafeERC20FailedOperation",
+    "inputs":[
+      {
+        "name":"token",
+        "type":"address",
+        "internalType":"address"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"TransferFailed",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"UUPSUnauthorizedCallContext",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"UUPSUnsupportedProxiableUUID",
+    "inputs":[
+      {
+        "name":"slot",
+        "type":"bytes32",
+        "internalType":"bytes32"
+      }
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ZeroAddress",
+    "inputs":[
+      
+    ]
+  },
+  {
+    "type":"error",
+    "name":"ZeroTokenTransferNotAllowed",
+    "inputs":[
+      
+    ]
+  }
 ] as const;

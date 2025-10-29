@@ -95,11 +95,17 @@ export interface SetProxyTraderAllowedSpotParams extends TransactionParams {
      */
     market: string;
     /**
-     * Whether the proxy trader is allowed.
+     * Whether the proxy trader is allowed to create orders.
      *
      * @type {boolean}
      */
-    allowed: boolean;
+    allowCreate: boolean;
+    /**
+     * Whether the proxy trader is allowed to cancel orders.
+     *
+     * @type {boolean}
+     */
+    allowCancel: boolean;
 }
 /**
  * Parameters for wrapping native tokens.
@@ -466,6 +472,16 @@ export interface ClaimOrderSpotParams extends TransactionParams {
      * @optional
      */
     transferExecutedTokens?: boolean;
+    /**
+     * Indicates whether to use the fast quoter proxy if it's enabled for the market.
+     * If true, the fast quoter proxy will be used if it's enabled for the market.
+     * If false, the market contract will be used.
+     *
+     * @type {boolean}
+     * @optional
+     * @default true
+     */
+    useFastQuoterProxyIfEnabled?: boolean;
 }
 /**
  * Parameters for batch claiming orders on the Onchain LOB spot market

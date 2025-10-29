@@ -15,9 +15,6 @@ export declare const fastQuoterProxyAbi: readonly [{
     }];
     readonly stateMutability: "nonpayable";
 }, {
-    readonly type: "receive";
-    readonly stateMutability: "payable";
-}, {
     readonly type: "function";
     readonly name: "UPGRADE_INTERFACE_VERSION";
     readonly inputs: readonly [];
@@ -31,6 +28,58 @@ export declare const fastQuoterProxyAbi: readonly [{
     readonly type: "function";
     readonly name: "acceptOwnership";
     readonly inputs: readonly [];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "claimOrder";
+    readonly inputs: readonly [{
+        readonly name: "trader";
+        readonly type: "address";
+        readonly internalType: "address";
+    }, {
+        readonly name: "order_id";
+        readonly type: "uint64";
+        readonly internalType: "uint64";
+    }, {
+        readonly name: "only_claim";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "transfer_tokens";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "withdraw_as_native_eth";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "expires";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "claimOrder";
+    readonly inputs: readonly [{
+        readonly name: "order_id";
+        readonly type: "uint64";
+        readonly internalType: "uint64";
+    }, {
+        readonly name: "only_claim";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "transfer_tokens";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "expires";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
 }, {
@@ -171,6 +220,56 @@ export declare const fastQuoterProxyAbi: readonly [{
     readonly stateMutability: "payable";
 }, {
     readonly type: "function";
+    readonly name: "placeMarketOrderWithTargetValueByProxy";
+    readonly inputs: readonly [{
+        readonly name: "isAsk";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "target_token_y_value";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "price";
+        readonly type: "uint72";
+        readonly internalType: "uint72";
+    }, {
+        readonly name: "max_commission";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "transfer_executed_tokens";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "withdraw_as_native_eth";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "order_owner";
+        readonly type: "address";
+        readonly internalType: "address";
+    }, {
+        readonly name: "expires";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "executed_shares";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "executed_value";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "aggressive_fee";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }];
+    readonly stateMutability: "payable";
+}, {
+    readonly type: "function";
     readonly name: "placeOrder";
     readonly inputs: readonly [{
         readonly name: "isAsk";
@@ -200,6 +299,68 @@ export declare const fastQuoterProxyAbi: readonly [{
         readonly name: "transfer_executed_tokens";
         readonly type: "bool";
         readonly internalType: "bool";
+    }, {
+        readonly name: "expires";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "order_id";
+        readonly type: "uint64";
+        readonly internalType: "uint64";
+    }, {
+        readonly name: "executed_shares";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "executed_value";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "aggressive_fee";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }];
+    readonly stateMutability: "payable";
+}, {
+    readonly type: "function";
+    readonly name: "placeOrderByProxy";
+    readonly inputs: readonly [{
+        readonly name: "isAsk";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "quantity";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "price";
+        readonly type: "uint72";
+        readonly internalType: "uint72";
+    }, {
+        readonly name: "max_commission";
+        readonly type: "uint128";
+        readonly internalType: "uint128";
+    }, {
+        readonly name: "market_only";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "post_only";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "transfer_executed_tokens";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "withdraw_as_native_eth";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "order_owner";
+        readonly type: "address";
+        readonly internalType: "address";
     }, {
         readonly name: "expires";
         readonly type: "uint256";
@@ -394,36 +555,6 @@ export declare const fastQuoterProxyAbi: readonly [{
     readonly anonymous: false;
 }, {
     readonly type: "event";
-    readonly name: "SwapExecuted";
-    readonly inputs: readonly [{
-        readonly name: "sender";
-        readonly type: "address";
-        readonly indexed: true;
-        readonly internalType: "address";
-    }, {
-        readonly name: "tokenIn";
-        readonly type: "address";
-        readonly indexed: false;
-        readonly internalType: "address";
-    }, {
-        readonly name: "tokenOut";
-        readonly type: "address";
-        readonly indexed: false;
-        readonly internalType: "address";
-    }, {
-        readonly name: "amountIn";
-        readonly type: "uint256";
-        readonly indexed: false;
-        readonly internalType: "uint256";
-    }, {
-        readonly name: "amountOut";
-        readonly type: "uint256";
-        readonly indexed: false;
-        readonly internalType: "uint256";
-    }];
-    readonly anonymous: false;
-}, {
-    readonly type: "event";
     readonly name: "Unpaused";
     readonly inputs: readonly [{
         readonly name: "account";
@@ -480,6 +611,10 @@ export declare const fastQuoterProxyAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
+    readonly name: "Forbidden";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
     readonly name: "InvalidImplementation";
     readonly inputs: readonly [];
 }, {
@@ -493,6 +628,10 @@ export declare const fastQuoterProxyAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "NotInitializing";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "OnlyPrivilegedSenderCanCancelOrders";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -524,6 +663,10 @@ export declare const fastQuoterProxyAbi: readonly [{
     }];
 }, {
     readonly type: "error";
+    readonly name: "TransferFailed";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
     readonly name: "UUPSUnauthorizedCallContext";
     readonly inputs: readonly [];
 }, {
@@ -537,5 +680,9 @@ export declare const fastQuoterProxyAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "ZeroAddress";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "ZeroTokenTransferNotAllowed";
     readonly inputs: readonly [];
 }];

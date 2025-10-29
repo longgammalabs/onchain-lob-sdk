@@ -439,6 +439,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchPlaceOrder(params: BatchPlaceOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const idsAsDirections: bigint[] = [];
     const sizeAmounts: bigint[] = [];
     const priceAmounts: bigint[] = [];
@@ -450,9 +451,10 @@ export class OnchainLobSpotMarketContract {
       priceAmounts.push(this.convertTokensAmountToRawAmountIfNeeded(orderParams.price, this.market.priceScalingFactor));
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(sizeAmounts, priceAmounts);
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder!(
+      contract,
+      contract.batchChangeOrder!(
         idsAsDirections,
         sizeAmounts,
         priceAmounts,
@@ -496,6 +498,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchClaim(params: BatchClaimOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const addresses: string[] = [];
     const orderIds: string[] = [];
     const expires = getExpires();
@@ -505,9 +508,11 @@ export class OnchainLobSpotMarketContract {
       orderIds.push(claimParams.orderId);
     }
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchClaim!(
+      contract,
+      contract.batchClaim!(
         addresses,
         orderIds,
         params.onlyClaim,
@@ -553,6 +558,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchChangeOrder(params: BatchChangeOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const orderIds: string[] = [];
     const newSizes: bigint[] = [];
     const newPrices: bigint[] = [];
@@ -565,9 +571,11 @@ export class OnchainLobSpotMarketContract {
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(newSizes, newPrices);
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder!(
+      contract,
+      contract.batchChangeOrder!(
         orderIds,
         newSizes,
         newPrices,

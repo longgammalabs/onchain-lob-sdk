@@ -439,6 +439,7 @@ export interface BatchPlaceOrderSpotParams extends TransactionParams {
         price: BigNumber | bigint;
     }>;
     transferExecutedTokens?: boolean;
+    useFastQuoterProxyIfEnabled?: boolean;
 }
 /**
  * Parameters for claiming an order on the Onchain LOB Spot market.
@@ -496,6 +497,7 @@ export interface BatchClaimOrderSpotParams extends TransactionParams {
         address: string;
     }>;
     onlyClaim: boolean;
+    useFastQuoterProxyIfEnabled?: boolean;
 }
 /**
  * Parameters for changing an existing order on the Onchain LOB Spot market.
@@ -566,6 +568,7 @@ export interface BatchChangeOrderSpotParams extends TransactionParams {
     }>;
     type: 'limit' | 'limit_post_only';
     transferExecutedTokens?: boolean;
+    useFastQuoterProxyIfEnabled?: boolean;
 }
 /**
  * Parameters for retrieving the order book.

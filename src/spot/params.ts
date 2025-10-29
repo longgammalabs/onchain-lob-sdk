@@ -476,6 +476,7 @@ export interface BatchPlaceOrderSpotParams extends TransactionParams {
     price: BigNumber | bigint;
   }>;
   transferExecutedTokens?: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 };
 
 /**
@@ -539,6 +540,7 @@ export interface BatchClaimOrderSpotParams extends TransactionParams {
     address: string;
   }>;
   onlyClaim: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -617,6 +619,7 @@ export interface BatchChangeOrderSpotParams extends TransactionParams {
   }>;
   type: 'limit' | 'limit_post_only';
   transferExecutedTokens?: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**

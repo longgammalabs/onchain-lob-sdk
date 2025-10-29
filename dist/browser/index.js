@@ -4744,6 +4744,83 @@ var fastQuoterProxyAbi = [
   },
   {
     "type": "function",
+    "name": "batchChangeOrder",
+    "inputs": [
+      {
+        "name": "order_ids",
+        "type": "uint64[]",
+        "internalType": "uint64[]"
+      },
+      {
+        "name": "quantities",
+        "type": "uint128[]",
+        "internalType": "uint128[]"
+      },
+      {
+        "name": "prices",
+        "type": "uint72[]",
+        "internalType": "uint72[]"
+      },
+      {
+        "name": "max_commission_per_order",
+        "type": "uint128",
+        "internalType": "uint128"
+      },
+      {
+        "name": "post_only",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "transfer_tokens",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "expires",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "new_order_ids",
+        "type": "uint64[]",
+        "internalType": "uint64[]"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "batchClaim",
+    "inputs": [
+      {
+        "name": "addresses",
+        "type": "address[]",
+        "internalType": "address[]"
+      },
+      {
+        "name": "order_ids",
+        "type": "uint64[]",
+        "internalType": "uint64[]"
+      },
+      {
+        "name": "only_claim",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "expires",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "claimOrder",
     "inputs": [
       {
@@ -5452,6 +5529,11 @@ var fastQuoterProxyAbi = [
   },
   {
     "type": "error",
+    "name": "ArrayLengthMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "ERC1967InvalidImplementation",
     "inputs": [
       {
@@ -5509,11 +5591,6 @@ var fastQuoterProxyAbi = [
   {
     "type": "error",
     "name": "NotInitializing",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "OnlyPrivilegedSenderCanCancelOrders",
     "inputs": []
   },
   {
@@ -5936,6 +6013,7 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
     return tx;
   }
   async batchPlaceOrder(params) {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === void 0 ? true : params.useFastQuoterProxyIfEnabled;
     const idsAsDirections = [];
     const sizeAmounts = [];
     const priceAmounts = [];
@@ -5946,9 +6024,10 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
       priceAmounts.push(this.convertTokensAmountToRawAmountIfNeeded(orderParams.price, this.market.priceScalingFactor));
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(sizeAmounts, priceAmounts);
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder(
+      contract,
+      contract.batchChangeOrder(
         idsAsDirections,
         sizeAmounts,
         priceAmounts,
@@ -5988,6 +6067,7 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
     return tx;
   }
   async batchClaim(params) {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === void 0 ? true : params.useFastQuoterProxyIfEnabled;
     const addresses = [];
     const orderIds = [];
     const expires = getExpires();
@@ -5995,9 +6075,10 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
       addresses.push(claimParams.address);
       orderIds.push(claimParams.orderId);
     }
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchClaim(
+      contract,
+      contract.batchClaim(
         addresses,
         orderIds,
         params.onlyClaim,
@@ -6038,6 +6119,7 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
     return tx;
   }
   async batchChangeOrder(params) {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === void 0 ? true : params.useFastQuoterProxyIfEnabled;
     const orderIds = [];
     const newSizes = [];
     const newPrices = [];
@@ -6048,9 +6130,10 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
       newPrices.push(this.convertTokensAmountToRawAmountIfNeeded(orderParams.newPrice, this.market.priceScalingFactor));
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(newSizes, newPrices);
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder(
+      contract,
+      contract.batchChangeOrder(
         orderIds,
         newSizes,
         newPrices,

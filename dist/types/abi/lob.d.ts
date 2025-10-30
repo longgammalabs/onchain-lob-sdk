@@ -327,24 +327,6 @@ export declare const lobAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
-    readonly name: "isProxyTraderAllowed";
-    readonly inputs: readonly [{
-        readonly name: "";
-        readonly type: "address";
-        readonly internalType: "address";
-    }, {
-        readonly name: "";
-        readonly type: "address";
-        readonly internalType: "address";
-    }];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "bool";
-        readonly internalType: "bool";
-    }];
-    readonly stateMutability: "view";
-}, {
-    readonly type: "function";
     readonly name: "marketMakerConfig";
     readonly inputs: readonly [];
     readonly outputs: readonly [{
@@ -633,6 +615,28 @@ export declare const lobAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
+    readonly name: "proxyTraderPermissions";
+    readonly inputs: readonly [{
+        readonly name: "";
+        readonly type: "address";
+        readonly internalType: "address";
+    }, {
+        readonly name: "";
+        readonly type: "address";
+        readonly internalType: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "allow_create";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "allow_cancel";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
     readonly name: "renounceOwnership";
     readonly inputs: readonly [];
     readonly outputs: readonly [];
@@ -663,13 +667,17 @@ export declare const lobAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
-    readonly name: "setProxyTraderAllowed";
+    readonly name: "setProxyTraderPermissions";
     readonly inputs: readonly [{
         readonly name: "proxy_trader";
         readonly type: "address";
         readonly internalType: "address";
     }, {
-        readonly name: "allowed";
+        readonly name: "allow_create";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "allow_cancel";
         readonly type: "bool";
         readonly internalType: "bool";
     }];
@@ -1056,7 +1064,7 @@ export declare const lobAbi: readonly [{
     readonly anonymous: false;
 }, {
     readonly type: "event";
-    readonly name: "ProxyTraderAllowedChanged";
+    readonly name: "ProxyTraderPermissionsChanged";
     readonly inputs: readonly [{
         readonly name: "owner";
         readonly type: "address";
@@ -1068,7 +1076,12 @@ export declare const lobAbi: readonly [{
         readonly indexed: true;
         readonly internalType: "address";
     }, {
-        readonly name: "allowed";
+        readonly name: "allow_create";
+        readonly type: "bool";
+        readonly indexed: false;
+        readonly internalType: "bool";
+    }, {
+        readonly name: "allow_cancel";
         readonly type: "bool";
         readonly indexed: false;
         readonly internalType: "bool";
@@ -1263,7 +1276,7 @@ export declare const lobAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
-    readonly name: "OnlyOwnerCanCancelOrders";
+    readonly name: "OnlyPrivilegedSenderCanCancelOrders";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";

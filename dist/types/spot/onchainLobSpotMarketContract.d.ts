@@ -1,5 +1,5 @@
 import { Contract, type Signer, ContractTransactionResponse } from 'ethers';
-import type { ApproveSpotParams, BatchChangeOrderSpotParams, BatchClaimOrderSpotParams, BatchPlaceOrderSpotParams, ChangeOrderSpotParams, ClaimOrderSpotParams, DepositSpotParams, PlaceMarketOrderWithTargetValueParams, PlaceMarketOrderWithTargetValueWithPermitParams, PlaceOrderSpotParams, PlaceOrderWithPermitSpotParams, SetClaimableStatusParams, SetProxyTraderAllowedSpotParams, UnwrapNativeTokenSpotParams, WithdrawSpotParams, WrapNativeTokenSpotParams } from './params';
+import type { ApproveSpotParams, BatchChangeOrderSpotParams, BatchClaimOrderSpotParams, BatchPlaceOrderSpotParams, ChangeOrderSpotParams, ClaimOrderSpotParams, DepositSpotParams, PlaceMarketOrderWithTargetValueParams, PlaceMarketOrderWithTargetValueWithPermitParams, PlaceOrderSpotParams, PlaceOrderWithPermitSpotParams, SetClaimableStatusParams, SetProxyTraderPermissionsSpotParams, UnwrapNativeTokenSpotParams, WithdrawSpotParams, WrapNativeTokenSpotParams } from './params';
 import type { Market, Token } from '../models';
 export interface OnchainLobSpotMarketContractOptions {
     market: Market;
@@ -34,7 +34,7 @@ export declare class OnchainLobSpotMarketContract {
     protected get chainId(): Promise<bigint>;
     constructor(options: Readonly<OnchainLobSpotMarketContractOptions>);
     approveTokens(params: ApproveSpotParams): Promise<ContractTransactionResponse>;
-    setProxyTraderAllowed(params: SetProxyTraderAllowedSpotParams): Promise<ContractTransactionResponse>;
+    setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse>;
     depositTokens(params: DepositSpotParams): Promise<ContractTransactionResponse>;
     withdrawTokens(params: WithdrawSpotParams): Promise<ContractTransactionResponse>;
     setClaimableStatus(params: SetClaimableStatusParams): Promise<ContractTransactionResponse>;

@@ -870,30 +870,6 @@ var lobAbi = [
   },
   {
     type: "function",
-    name: "isProxyTraderAllowed",
-    inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      }
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool"
-      }
-    ],
-    stateMutability: "view"
-  },
-  {
-    type: "function",
     name: "marketMakerConfig",
     inputs: [],
     outputs: [
@@ -1263,6 +1239,35 @@ var lobAbi = [
   },
   {
     type: "function",
+    name: "proxyTraderPermissions",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
     name: "renounceOwnership",
     inputs: [],
     outputs: [],
@@ -1301,7 +1306,7 @@ var lobAbi = [
   },
   {
     type: "function",
-    name: "setProxyTraderAllowed",
+    name: "setProxyTraderPermissions",
     inputs: [
       {
         name: "proxy_trader",
@@ -1309,7 +1314,12 @@ var lobAbi = [
         internalType: "address"
       },
       {
-        name: "allowed",
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
         type: "bool",
         internalType: "bool"
       }
@@ -1796,7 +1806,7 @@ var lobAbi = [
   },
   {
     type: "event",
-    name: "ProxyTraderAllowedChanged",
+    name: "ProxyTraderPermissionsChanged",
     inputs: [
       {
         name: "owner",
@@ -1811,7 +1821,13 @@ var lobAbi = [
         internalType: "address"
       },
       {
-        name: "allowed",
+        name: "allow_create",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
         type: "bool",
         indexed: false,
         internalType: "bool"
@@ -2058,7 +2074,7 @@ var lobAbi = [
   },
   {
     type: "error",
-    name: "OnlyOwnerCanCancelOrders",
+    name: "OnlyPrivilegedSenderCanCancelOrders",
     inputs: []
   },
   {
@@ -5733,13 +5749,13 @@ var _OnchainLobSpotMarketContract = class _OnchainLobSpotMarketContract {
     );
     return tx;
   }
-  async setProxyTraderAllowed(params) {
+  async setProxyTraderPermissions(params) {
     if (!this.market.fastQuoterProxyAddress) {
       throw Error("Fast quoter proxy is not enabled for this market");
     }
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.setProxyTraderAllowed(
+      this.marketContract.setProxyTraderPermissions(
         this.market.fastQuoterProxyAddress,
         params.allowCreate,
         params.allowCancel,
@@ -7901,14 +7917,14 @@ var OnchainLobSpot = class {
     return marketContract.approveTokens(params);
   }
   /**
-  * Sets the proxy trader allowed for the corresponding market contract.
+  * Sets the proxy trader permissions for the corresponding market contract.
   *
-  * @param {SetProxyTraderAllowedSpotParams} params - The parameters for setting the proxy trader allowed.
+  * @param {SetProxyTraderPermissionsSpotParams} params - The parameters for setting the proxy trader permissions.
   * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
   */
-  async setProxyTraderAllowed(params) {
+  async setProxyTraderPermissions(params) {
     const marketContract = await this.getSpotMarketContract(params);
-    return marketContract.setProxyTraderAllowed(params);
+    return marketContract.setProxyTraderPermissions(params);
   }
   /**
   * Wraps the specified amount of native tokens.

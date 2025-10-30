@@ -2,7 +2,7 @@ import type { ContractTransactionResponse } from 'ethers';
 import type { Signer } from 'ethers/providers';
 import { OnchainLobSpotMarketContract } from './onchainLobSpotMarketContract';
 import * as mappers from './mappers';
-import type { ApproveSpotParams, BatchChangeOrderSpotParams, BatchClaimOrderSpotParams, BatchPlaceOrderSpotParams, ChangeOrderSpotParams, ClaimOrderSpotParams, DepositSpotParams, GetFillsParams, GetMarketParams, GetMarketsParams, GetOrderbookParams, GetClobDepthParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetCandlesParams, PlaceOrderSpotParams, SetClaimableStatusParams, SubscribeToMarketParams, SubscribeToOrderbookParams, SubscribeToClobDepthParams, SubscribeToTradesParams, SubscribeToUserFillsParams, SubscribeToUserOrdersParams, UnsubscribeFromMarketParams, UnsubscribeFromOrderbookParams, UnsubscribeFromClobDepthParams, UnsubscribeFromTradesParams, UnsubscribeFromUserFillsParams, UnsubscribeFromUserOrdersParams, WithdrawSpotParams, SubscribeToCandlesParams, UnsubscribeFromCandlesParams, CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetUserBalancesParams, PlaceOrderWithPermitSpotParams, PlaceMarketOrderWithTargetValueParams, PlaceMarketOrderWithTargetValueWithPermitParams, GetOrderHistoryParams, UnsubscribeFromUserOrderHistoryParams, SubscribeToUserOrderHistoryParams, CalculateLimitDetailsSyncParams, CalculateMarketDetailsSyncParams, GetUserDepositsParams, WrapNativeTokenSpotParams, UnwrapNativeTokenSpotParams, SetProxyTraderAllowedSpotParams } from './params';
+import type { ApproveSpotParams, BatchChangeOrderSpotParams, BatchClaimOrderSpotParams, BatchPlaceOrderSpotParams, ChangeOrderSpotParams, ClaimOrderSpotParams, DepositSpotParams, GetFillsParams, GetMarketParams, GetMarketsParams, GetOrderbookParams, GetClobDepthParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetCandlesParams, PlaceOrderSpotParams, SetClaimableStatusParams, SubscribeToMarketParams, SubscribeToOrderbookParams, SubscribeToClobDepthParams, SubscribeToTradesParams, SubscribeToUserFillsParams, SubscribeToUserOrdersParams, UnsubscribeFromMarketParams, UnsubscribeFromOrderbookParams, UnsubscribeFromClobDepthParams, UnsubscribeFromTradesParams, UnsubscribeFromUserFillsParams, UnsubscribeFromUserOrdersParams, WithdrawSpotParams, SubscribeToCandlesParams, UnsubscribeFromCandlesParams, CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetUserBalancesParams, PlaceOrderWithPermitSpotParams, PlaceMarketOrderWithTargetValueParams, PlaceMarketOrderWithTargetValueWithPermitParams, GetOrderHistoryParams, UnsubscribeFromUserOrderHistoryParams, SubscribeToUserOrderHistoryParams, CalculateLimitDetailsSyncParams, CalculateMarketDetailsSyncParams, GetUserDepositsParams, WrapNativeTokenSpotParams, UnwrapNativeTokenSpotParams, SetProxyTraderPermissionsSpotParams } from './params';
 import { type PublicEventEmitter } from '../common';
 import type { Market, FillUpdate, MarketUpdate, OrderUpdate, OrderbookUpdate, TradeUpdate, Orderbook, ClobDepthUpdate, ClobDepth, Order, Trade, Fill, Token, Candle, CandleUpdate, MarketOrderDetails, LimitOrderDetails, UserBalances, OrderHistoryUpdate, OrderHistory, UserDeposits } from '../models';
 import { OnchainLobSpotService, OnchainLobSpotWebSocketService } from '../services';
@@ -195,12 +195,12 @@ export declare class OnchainLobSpot implements Disposable {
     */
     approveTokens(params: ApproveSpotParams): Promise<ContractTransactionResponse>;
     /**
-    * Sets the proxy trader allowed for the corresponding market contract.
+    * Sets the proxy trader permissions for the corresponding market contract.
     *
-    * @param {SetProxyTraderAllowedSpotParams} params - The parameters for setting the proxy trader allowed.
+    * @param {SetProxyTraderPermissionsSpotParams} params - The parameters for setting the proxy trader permissions.
     * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
     */
-    setProxyTraderAllowed(params: SetProxyTraderAllowedSpotParams): Promise<ContractTransactionResponse>;
+    setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse>;
     /**
     * Wraps the specified amount of native tokens.
     * You need to wrap the tokens before you can deposit.

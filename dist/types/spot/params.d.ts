@@ -82,12 +82,12 @@ export interface ApproveSpotParams extends TransactionParams {
     useFastQuoterProxyIfEnabled?: boolean;
 }
 /**
- * Parameters for setting proxy trader allowed for the spot market.
+ * Parameters for setting proxy trader permissions for the spot market.
  *
- * @interface SetProxyTraderAllowedSpotParams
+ * @interface SetProxyTraderPermissionsSpotParams
  * @extends TransactionParams
  */
-export interface SetProxyTraderAllowedSpotParams extends TransactionParams {
+export interface SetProxyTraderPermissionsSpotParams extends TransactionParams {
     /**
      * The market identifier.
      *

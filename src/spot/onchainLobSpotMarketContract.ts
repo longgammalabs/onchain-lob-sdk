@@ -15,7 +15,7 @@ import type {
   PlaceOrderSpotParams,
   PlaceOrderWithPermitSpotParams,
   SetClaimableStatusParams,
-  SetProxyTraderAllowedSpotParams,
+  SetProxyTraderPermissionsSpotParams,
   UnwrapNativeTokenSpotParams,
   WithdrawSpotParams,
   WrapNativeTokenSpotParams
@@ -129,14 +129,14 @@ export class OnchainLobSpotMarketContract {
     return tx;
   }
 
-  async setProxyTraderAllowed(params: SetProxyTraderAllowedSpotParams): Promise<ContractTransactionResponse> {
+  async setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse> {
     if (!this.market.fastQuoterProxyAddress) {
       throw Error('Fast quoter proxy is not enabled for this market');
     }
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.setProxyTraderAllowed!(
+      this.marketContract.setProxyTraderPermissions!(
         this.market.fastQuoterProxyAddress,
         params.allowCreate,
         params.allowCancel,

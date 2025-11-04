@@ -7447,20 +7447,21 @@ var AUTO_SLIPPAGE_MAX_PERCENT = 5;
 var getMarketDetails = ({ market, orderbook, inputToken, inputs, direction }) => {
   const { tokenXInput, tokenYInput, slippage, useAutoSlippage = false } = inputs;
   const details = { buy: defaultBuyMarketDetails, sell: defaultSellMarketDetails };
-  if (!market.bestAsk || !market.bestBid) {
-    return details;
-  }
   if (!Number(inputToken === "base" ? tokenXInput : tokenYInput)) {
     return details;
   }
   const feeRate = market.aggressiveFee + market.passiveOrderPayout;
+  const asks = orderbook.asks.sort((a, b) => Number(BigInt(a[0]) - BigInt(b[0])));
+  const bestAsk = asks[0]?.[0] ? Number(formatUnits2(asks[0][0], market.priceScalingFactor)) : 0;
+  const bids = orderbook.bids.sort((a, b) => Number(BigInt(b[0]) - BigInt(a[0])));
+  const bestBid = bids[0]?.[0] ? Number(formatUnits2(bids[0][0], market.priceScalingFactor)) : 0;
   if (direction === "buy") {
     if (inputToken === "base") {
       details.buy = calculateBuyMarketDetailsTokenXInput(
         Number(tokenXInput),
         slippage,
-        market.bestAsk.toNumber(),
-        orderbook.asks.sort((a, b) => Number(BigInt(a[0]) - BigInt(b[0]))),
+        bestAsk,
+        asks,
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -7471,8 +7472,8 @@ var getMarketDetails = ({ market, orderbook, inputToken, inputs, direction }) =>
       details.buy = calculateBuyMarketDetailsTokenYInput(
         Number(tokenYInput),
         slippage,
-        market.bestAsk.toNumber(),
-        orderbook.asks.sort((a, b) => Number(BigInt(a[0]) - BigInt(b[0]))),
+        bestAsk,
+        asks,
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -7485,8 +7486,8 @@ var getMarketDetails = ({ market, orderbook, inputToken, inputs, direction }) =>
       details.sell = calculateSellMarketDetailsTokenXInput(
         Number(tokenXInput),
         slippage,
-        market.bestBid.toNumber(),
-        orderbook.bids.sort((a, b) => Number(BigInt(b[0]) - BigInt(a[0]))),
+        bestBid,
+        bids,
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -7497,8 +7498,8 @@ var getMarketDetails = ({ market, orderbook, inputToken, inputs, direction }) =>
       details.sell = calculateSellMarketDetailsTokenYInput(
         Number(tokenYInput),
         slippage,
-        market.bestBid.toNumber(),
-        orderbook.bids.sort((a, b) => Number(BigInt(b[0]) - BigInt(a[0]))),
+        bestBid,
+        bids,
         market.tokenXScalingFactor,
         market.tokenYScalingFactor,
         market.priceScalingFactor,
@@ -7509,13 +7510,13 @@ var getMarketDetails = ({ market, orderbook, inputToken, inputs, direction }) =>
   }
   return details;
 };
-var calculateBuyMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestAsk, orderbookSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
+var calculateBuyMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestAsk, asksSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
   let autoSlippage = 0;
   let slippage = maxSlippage;
   const tokenXReceive = new BigNumber5(tokenXInput).dp(tokenXScalingFactor, BigNumber5.ROUND_FLOOR);
   const { estPrice, estTokenYAmount, estWorstPrice, estSlippage } = calculateEstValuesFromTokenX(
     tokenXReceive.toNumber(),
-    orderbookSide,
+    asksSide,
     bestAsk,
     priceScalingFactor,
     tokenXScalingFactor
@@ -7551,7 +7552,7 @@ var calculateBuyMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestAsk, o
     estTokenYPay: estTokenYPay.toNumber()
   };
 };
-var calculateBuyMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestAsk, orderbookSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
+var calculateBuyMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestAsk, asksSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
   let autoSlippage = 0;
   let slippage = maxSlippage;
   const tokenYPay = new BigNumber5(tokenYInput).dp(tokenYScalingFactor, BigNumber5.ROUND_FLOOR);
@@ -7562,7 +7563,7 @@ var calculateBuyMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestAsk, o
   );
   const { estPrice, estSlippage, estTokenXAmount, estWorstPrice } = calculateEstValuesFromTokenY(
     tokenYWithoutFee.toNumber(),
-    orderbookSide,
+    asksSide,
     bestAsk,
     priceScalingFactor,
     tokenXScalingFactor
@@ -7589,13 +7590,13 @@ var calculateBuyMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestAsk, o
     estTokenYPay: tokenYPay.toNumber()
   };
 };
-var calculateSellMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestBid, orderbookSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
+var calculateSellMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestBid, bidsSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
   let autoSlippage = 0;
   let slippage = maxSlippage;
   const tokenXPay = new BigNumber5(tokenXInput).dp(tokenXScalingFactor, BigNumber5.ROUND_FLOOR);
   const { estPrice, estSlippage, estTokenYAmount, estWorstPrice } = calculateEstValuesFromTokenX(
     tokenXPay.toNumber(),
-    orderbookSide,
+    bidsSide,
     bestBid,
     priceScalingFactor,
     tokenXScalingFactor
@@ -7631,7 +7632,7 @@ var calculateSellMarketDetailsTokenXInput = (tokenXInput, maxSlippage, bestBid, 
     estTokenYReceive: estTokenYReceiveWithoutFee.toNumber()
   };
 };
-var calculateSellMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestBid, orderbookSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
+var calculateSellMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestBid, bidsSide, tokenXScalingFactor, tokenYScalingFactor, priceScalingFactor, feeRate, useAutoSlippage) => {
   let autoSlippage = 0;
   let slippage = maxSlippage;
   const tokenYReceive = new BigNumber5(tokenYInput).dp(tokenYScalingFactor, BigNumber5.ROUND_FLOOR);
@@ -7642,7 +7643,7 @@ var calculateSellMarketDetailsTokenYInput = (tokenYInput, maxSlippage, bestBid, 
   );
   const { estPrice, estTokenXAmount, estSlippage, estWorstPrice } = calculateEstValuesFromTokenY(
     tokenYReceiveBeforeFee.toNumber(),
-    orderbookSide,
+    bidsSide,
     bestBid,
     priceScalingFactor,
     tokenXScalingFactor
@@ -8141,6 +8142,8 @@ var OnchainLobSpot = class {
   }
   /**
    * Retrieves the orderbook for the specified market.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `getClobDepth` instead.
    *
    * @param {GetOrderbookParams} params - The parameters for retrieving the orderbook.
    * @returns {Promise<Orderbook>} A Promise that resolves to the orderbook.
@@ -8322,6 +8325,8 @@ var OnchainLobSpot = class {
    * Subscribes to the orderbook updates for the specified market and aggregation level.
    *
    * @param {SubscribeToOrderbookParams} params - The parameters for subscribing to the orderbook updates.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `subscribeToClobDepth` instead.
    * @emits OnchainLobSpot#events#orderbookUpdated
    */
   subscribeToOrderbook(params) {
@@ -8329,6 +8334,8 @@ var OnchainLobSpot = class {
   }
   /**
    * Unsubscribes from the orderbook updates for the specified market and aggregation level.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `unsubscribeFromClobDepth` instead.
    *
    * @param {UnsubscribeFromOrderbookParams} params - The parameters for unsubscribing from the orderbook updates.
    */

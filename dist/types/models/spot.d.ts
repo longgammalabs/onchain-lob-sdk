@@ -130,18 +130,26 @@ export interface Market {
     price24h: BigNumber | null;
     /**
      * The raw best ask price as a bigint, or null if not available.
+     * @deprecated This field is deprecated and will be removed in a future version.
+     * To get the best ask price, use the ClobDepth object instead.
      */
     rawBestAsk: bigint | null;
     /**
      * The best ask price as a BigNumber, or null if not available.
+     * @deprecated This field is deprecated and will be removed in a future version.
+     * To get the best ask price, use the ClobDepth object instead.
      */
     bestAsk: BigNumber | null;
     /**
      * The raw best bid price as a bigint, or null if not available.
+     * @deprecated This field is deprecated and will be removed in a future version.
+     * To get the best bid price, use the ClobDepth object instead.
      */
     rawBestBid: bigint | null;
     /**
      * The best bid price as a BigNumber, or null if not available.
+     * @deprecated This field is deprecated and will be removed in a future version.
+     * To get the best bid price, use the ClobDepth object instead.
      */
     bestBid: BigNumber | null;
     /**
@@ -204,6 +212,9 @@ export interface Market {
 export type MarketUpdate = Market;
 /**
  * Represents a level in the orderbook with both raw and formatted values.
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `ClobDepth` instead, which provides orderbook data as `[string, string][]` tuples
+ * representing [price, size] pairs.
  */
 export interface OrderbookLevel {
     /**
@@ -225,6 +236,9 @@ export interface OrderbookLevel {
 }
 /**
  * Represents the orderbook of a market at a specific point in time.
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `ClobDepth` instead, which provides orderbook data as `[string, string][]` tuples
+ * representing [price, size] pairs.
  */
 export interface Orderbook {
     /**

@@ -626,6 +626,8 @@ export interface BatchChangeOrderSpotParams extends TransactionParams {
  * Parameters for retrieving the order book.
  *
  * @interface GetOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `GetClobDepthParams` instead.
  */
 export interface GetOrderbookParams {
   /**
@@ -897,10 +899,24 @@ export interface SubscribeToMarketParams {
 }
 export type UnsubscribeFromMarketParams = SubscribeToMarketParams;
 
+/**
+ * Parameters for subscribing to the orderbook updates for a specific market and aggregation level.
+ *
+ * @interface SubscribeToOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `SubscribeToClobDepthParams` instead.
+ */
 export interface SubscribeToOrderbookParams {
   market: string;
   aggregation: number;
 }
+/**
+ * Parameters for unsubscribing from the orderbook updates for a specific market and aggregation level.
+ *
+ * @interface UnsubscribeFromOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `UnsubscribeFromClobDepthParams` instead.
+ */
 export type UnsubscribeFromOrderbookParams = SubscribeToOrderbookParams;
 
 export interface SubscribeToClobDepthParams {

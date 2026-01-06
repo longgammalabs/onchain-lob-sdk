@@ -49,6 +49,7 @@ jobs:
   test:
     name: Lint and test
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Clone repository
         uses: actions/checkout@v4

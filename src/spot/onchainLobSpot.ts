@@ -50,7 +50,8 @@ import type {
   CalculateMarketDetailsSyncParams,
   GetUserDepositsParams,
   WrapNativeTokenSpotParams,
-  UnwrapNativeTokenSpotParams
+  UnwrapNativeTokenSpotParams,
+  SetProxyTraderPermissionsSpotParams
 } from './params';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import { getErrorLogMessage } from '../logging';
@@ -159,6 +160,8 @@ interface OnchainLobSpotEvents {
 
   /**
    * Emitted when a market's orderbook is updated.
+   * @deprecated This event is deprecated and will be removed in a future version.
+   * Use `clobDepthUpdated` instead.
    * @event
    * @type {PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderbookUpdate]>}
    */
@@ -299,6 +302,18 @@ export class OnchainLobSpot implements Disposable {
     const marketContract = await this.getSpotMarketContract(params);
 
     return marketContract.approveTokens(params);
+  }
+
+  /**
+  * Sets the proxy trader permissions for the corresponding market contract.
+  *
+  * @param {SetProxyTraderPermissionsSpotParams} params - The parameters for setting the proxy trader permissions.
+  * @return {Promise<ContractTransactionResponse>} A Promise that resolves to the transaction response.
+  */
+  async setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse> {
+    const marketContract = await this.getSpotMarketContract(params);
+
+    return marketContract.setProxyTraderPermissions(params);
   }
 
   /**
@@ -549,6 +564,8 @@ export class OnchainLobSpot implements Disposable {
 
   /**
    * Retrieves the orderbook for the specified market.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `getClobDepth` instead.
    *
    * @param {GetOrderbookParams} params - The parameters for retrieving the orderbook.
    * @returns {Promise<Orderbook>} A Promise that resolves to the orderbook.
@@ -754,6 +771,8 @@ export class OnchainLobSpot implements Disposable {
    * Subscribes to the orderbook updates for the specified market and aggregation level.
    *
    * @param {SubscribeToOrderbookParams} params - The parameters for subscribing to the orderbook updates.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `subscribeToClobDepth` instead.
    * @emits OnchainLobSpot#events#orderbookUpdated
    */
   subscribeToOrderbook(params: SubscribeToOrderbookParams): void {
@@ -762,6 +781,8 @@ export class OnchainLobSpot implements Disposable {
 
   /**
    * Unsubscribes from the orderbook updates for the specified market and aggregation level.
+   * @deprecated This method is deprecated and will be removed in a future version.
+   * Use `unsubscribeFromClobDepth` instead.
    *
    * @param {UnsubscribeFromOrderbookParams} params - The parameters for unsubscribing from the orderbook updates.
    */

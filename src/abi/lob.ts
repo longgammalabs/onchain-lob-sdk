@@ -1,542 +1,1711 @@
 export const lobAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
-  { type: 'receive', stateMutability: 'payable' },
   {
-    type: 'function',
-    name: 'UPGRADE_INTERFACE_VERSION',
-    inputs: [],
-    outputs: [{ name: '', type: 'string', internalType: 'string' }],
-    stateMutability: 'view',
-  },
-  { type: 'function', name: 'acceptOwnership', inputs: [], outputs: [], stateMutability: 'nonpayable' },
-  {
-    type: 'function',
-    name: 'batchChangeOrder',
+    type: "constructor",
     inputs: [
-      { name: 'order_ids', type: 'uint64[]', internalType: 'uint64[]' },
-      { name: 'quantities', type: 'uint128[]', internalType: 'uint128[]' },
-      { name: 'prices', type: 'uint72[]', internalType: 'uint72[]' },
-      { name: 'max_commission_per_order', type: 'uint128', internalType: 'uint128' },
-      { name: 'post_only', type: 'bool', internalType: 'bool' },
-      { name: 'transfer_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
+      {
+        name: "_watch_dog",
+        type: "address",
+        internalType: "address"
+      }
     ],
-    outputs: [{ name: 'new_order_ids', type: 'uint64[]', internalType: 'uint64[]' }],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable"
   },
   {
-    type: 'function',
-    name: 'batchClaim',
-    inputs: [
-      { name: 'addresses', type: 'address[]', internalType: 'address[]' },
-      { name: 'order_ids', type: 'uint64[]', internalType: 'uint64[]' },
-      { name: 'only_claim', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    type: "receive",
+    stateMutability: "payable"
   },
   {
-    type: 'function',
-    name: 'changeMarketMaker',
-    inputs: [
-      { name: '_marketmaker', type: 'address', internalType: 'address' },
-      { name: '_should_invoke_on_trade', type: 'bool', internalType: 'bool' },
-      { name: '_admin_commission_rate', type: 'uint64', internalType: 'uint64' },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'changeOrder',
-    inputs: [
-      { name: 'old_order_id', type: 'uint64', internalType: 'uint64' },
-      { name: 'new_quantity', type: 'uint128', internalType: 'uint128' },
-      { name: 'new_price', type: 'uint72', internalType: 'uint72' },
-      { name: 'max_commission', type: 'uint128', internalType: 'uint128' },
-      { name: 'post_only', type: 'bool', internalType: 'bool' },
-      { name: 'transfer_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [{ name: 'order_id', type: 'uint64', internalType: 'uint64' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'changePauser',
-    inputs: [{ name: 'pauser_', type: 'address', internalType: 'address' }],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'claimOrder',
-    inputs: [
-      { name: 'order_id', type: 'uint64', internalType: 'uint64' },
-      { name: 'only_claim', type: 'bool', internalType: 'bool' },
-      { name: 'transfer_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'depositTokens',
-    inputs: [
-      { name: 'token_x_amount', type: 'uint128', internalType: 'uint128' },
-      { name: 'token_y_amount', type: 'uint128', internalType: 'uint128' },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'depositTokens',
-    inputs: [
-      { name: 'token_x_amount', type: 'uint128', internalType: 'uint128' },
-      { name: 'token_y_amount', type: 'uint128', internalType: 'uint128' },
-      { name: 'v_x', type: 'uint8', internalType: 'uint8' },
-      { name: 'r_x', type: 'bytes32', internalType: 'bytes32' },
-      { name: 's_x', type: 'bytes32', internalType: 'bytes32' },
-      { name: 'v_y', type: 'uint8', internalType: 'uint8' },
-      { name: 'r_y', type: 'bytes32', internalType: 'bytes32' },
-      { name: 's_y', type: 'bytes32', internalType: 'bytes32' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'getAccumulatedFees',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getConfig',
+    type: "function",
+    name: "UPGRADE_INTERFACE_VERSION",
     inputs: [],
     outputs: [
-      { name: '_scaling_factor_token_x', type: 'uint256', internalType: 'uint256' },
-      { name: '_scaling_factor_token_y', type: 'uint256', internalType: 'uint256' },
-      { name: '_token_x', type: 'address', internalType: 'address' },
-      { name: '_token_y', type: 'address', internalType: 'address' },
-      { name: '_supports_native_eth', type: 'bool', internalType: 'bool' },
-      { name: '_is_token_x_weth', type: 'bool', internalType: 'bool' },
-      { name: '_ask_trie', type: 'address', internalType: 'address' },
-      { name: '_bid_trie', type: 'address', internalType: 'address' },
-      { name: '_admin_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_total_aggressive_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_total_passive_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_passive_order_payout_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_should_invoke_on_trade', type: 'bool', internalType: 'bool' },
+      {
+        name: "",
+        type: "string",
+        internalType: "string"
+      }
     ],
-    stateMutability: 'view',
+    stateMutability: "view"
   },
   {
-    type: 'function',
-    name: 'getTraderBalance',
-    inputs: [{ name: 'address_', type: 'address', internalType: 'address' }],
-    outputs: [
-      { name: '', type: 'uint128', internalType: 'uint128' },
-      { name: '', type: 'uint128', internalType: 'uint128' },
-      { name: '', type: 'bool', internalType: 'bool' },
-    ],
-    stateMutability: 'view',
+    type: "function",
+    name: "acceptOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'function',
-    name: 'initialize',
+    type: "function",
+    name: "allowedTraders",
     inputs: [
-      { name: '_trie_factory', type: 'address', internalType: 'address' },
-      { name: '_tokenXAddress', type: 'address', internalType: 'address' },
-      { name: '_tokenYAddress', type: 'address', internalType: 'address' },
-      { name: '_supports_native_eth', type: 'bool', internalType: 'bool' },
-      { name: '_is_token_x_weth', type: 'bool', internalType: 'bool' },
-      { name: 'scaling_token_x', type: 'uint256', internalType: 'uint256' },
-      { name: 'scaling_token_y', type: 'uint256', internalType: 'uint256' },
-      { name: '_administrator', type: 'address', internalType: 'address' },
-      { name: '_marketmaker', type: 'address', internalType: 'address' },
-      { name: '_pauser', type: 'address', internalType: 'address' },
-      { name: '_should_invoke_on_trade', type: 'bool', internalType: 'bool' },
-      { name: '_admin_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_total_aggressive_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_total_passive_commission_rate', type: 'uint64', internalType: 'uint64' },
-      { name: '_passive_order_payout_rate', type: 'uint64', internalType: 'uint64' },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "batchExecute",
+    inputs: [
+      {
+        name: "data",
+        type: "bytes[]",
+        internalType: "bytes[]"
+      }
+    ],
+    outputs: [
+      {
+        name: "results",
+        type: "bytes[]",
+        internalType: "bytes[]"
+      }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "changeFeesReceiver",
+    inputs: [
+      {
+        name: "fees_receiver",
+        type: "address",
+        internalType: "address"
+      }
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable"
   },
   {
-    type: 'function',
-    name: 'marketmaker_config',
-    inputs: [],
-    outputs: [
-      { name: 'marketmaker', type: 'address', internalType: 'address' },
-      { name: 'should_invoke_on_trade', type: 'bool', internalType: 'bool' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'nonce',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint64', internalType: 'uint64' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'owner',
-    inputs: [],
-    outputs: [{ name: '', type: 'address', internalType: 'address' }],
-    stateMutability: 'view',
-  },
-  { type: 'function', name: 'pause', inputs: [], outputs: [], stateMutability: 'nonpayable' },
-  {
-    type: 'function',
-    name: 'paused',
-    inputs: [],
-    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'pauser',
-    inputs: [],
-    outputs: [{ name: '', type: 'address', internalType: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'pendingOwner',
-    inputs: [],
-    outputs: [{ name: '', type: 'address', internalType: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'placeMarketOrderWithTargetValue',
+    type: "function",
+    name: "changeMarketMaker",
     inputs: [
-      { name: 'isAsk', type: 'bool', internalType: 'bool' },
-      { name: 'target_token_y_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'price', type: 'uint72', internalType: 'uint72' },
-      { name: 'max_commission', type: 'uint128', internalType: 'uint128' },
-      { name: 'amount_to_approve', type: 'uint128', internalType: 'uint128' },
-      { name: 'transfer_executed_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-      { name: 'v', type: 'uint8', internalType: 'uint8' },
-      { name: 'r', type: 'bytes32', internalType: 'bytes32' },
-      { name: 's', type: 'bytes32', internalType: 'bytes32' },
-    ],
-    outputs: [
-      { name: 'executed_shares', type: 'uint128', internalType: 'uint128' },
-      { name: 'executed_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'aggressive_fee', type: 'uint128', internalType: 'uint128' },
-    ],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'placeMarketOrderWithTargetValue',
-    inputs: [
-      { name: 'isAsk', type: 'bool', internalType: 'bool' },
-      { name: 'target_token_y_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'price', type: 'uint72', internalType: 'uint72' },
-      { name: 'max_commission', type: 'uint128', internalType: 'uint128' },
-      { name: 'transfer_executed_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [
-      { name: 'executed_shares', type: 'uint128', internalType: 'uint128' },
-      { name: 'executed_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'aggressive_fee', type: 'uint128', internalType: 'uint128' },
-    ],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'placeOrder',
-    inputs: [
-      { name: 'isAsk', type: 'bool', internalType: 'bool' },
-      { name: 'quantity', type: 'uint128', internalType: 'uint128' },
-      { name: 'price', type: 'uint72', internalType: 'uint72' },
-      { name: 'max_commission', type: 'uint128', internalType: 'uint128' },
-      { name: 'amount_to_approve', type: 'uint128', internalType: 'uint128' },
-      { name: 'market_only', type: 'bool', internalType: 'bool' },
-      { name: 'post_only', type: 'bool', internalType: 'bool' },
-      { name: 'transfer_executed_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-      { name: 'v', type: 'uint8', internalType: 'uint8' },
-      { name: 'r', type: 'bytes32', internalType: 'bytes32' },
-      { name: 's', type: 'bytes32', internalType: 'bytes32' },
-    ],
-    outputs: [
-      { name: 'order_id', type: 'uint64', internalType: 'uint64' },
-      { name: 'executed_shares', type: 'uint128', internalType: 'uint128' },
-      { name: 'executed_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'aggressive_fee', type: 'uint128', internalType: 'uint128' },
-    ],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'placeOrder',
-    inputs: [
-      { name: 'isAsk', type: 'bool', internalType: 'bool' },
-      { name: 'quantity', type: 'uint128', internalType: 'uint128' },
-      { name: 'price', type: 'uint72', internalType: 'uint72' },
-      { name: 'max_commission', type: 'uint128', internalType: 'uint128' },
-      { name: 'market_only', type: 'bool', internalType: 'bool' },
-      { name: 'post_only', type: 'bool', internalType: 'bool' },
-      { name: 'transfer_executed_tokens', type: 'bool', internalType: 'bool' },
-      { name: 'expires', type: 'uint256', internalType: 'uint256' },
-    ],
-    outputs: [
-      { name: 'order_id', type: 'uint64', internalType: 'uint64' },
-      { name: 'executed_shares', type: 'uint128', internalType: 'uint128' },
-      { name: 'executed_value', type: 'uint128', internalType: 'uint128' },
-      { name: 'aggressive_fee', type: 'uint128', internalType: 'uint128' },
-    ],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'proxiableUUID',
-    inputs: [],
-    outputs: [{ name: '', type: 'bytes32', internalType: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  { type: 'function', name: 'renounceOwnership', inputs: [], outputs: [], stateMutability: 'nonpayable' },
-  {
-    type: 'function',
-    name: 'setClaimableStatus',
-    inputs: [{ name: 'status', type: 'bool', internalType: 'bool' }],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  { type: 'function', name: 'transferFees', inputs: [], outputs: [], stateMutability: 'nonpayable' },
-  {
-    type: 'function',
-    name: 'transferOwnership',
-    inputs: [{ name: 'newOwner', type: 'address', internalType: 'address' }],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  { type: 'function', name: 'unpause', inputs: [], outputs: [], stateMutability: 'nonpayable' },
-  {
-    type: 'function',
-    name: 'upgradeToAndCall',
-    inputs: [
-      { name: 'newImplementation', type: 'address', internalType: 'address' },
-      { name: 'data', type: 'bytes', internalType: 'bytes' },
+      {
+        name: "_marketmaker",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_should_invoke_on_trade",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_admin_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      }
     ],
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: "nonpayable"
   },
   {
-    type: 'function',
-    name: 'withdrawTokens',
+    type: "function",
+    name: "changePauser",
     inputs: [
-      { name: 'withdraw_all', type: 'bool', internalType: 'bool' },
-      { name: 'token_x_amount', type: 'uint128', internalType: 'uint128' },
-      { name: 'token_y_amount', type: 'uint128', internalType: 'uint128' },
+      {
+        name: "pauser_",
+        type: "address",
+        internalType: "address"
+      }
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable"
   },
   {
-    type: 'event',
-    name: 'ClaimableStatusChanged',
+    type: "function",
+    name: "claimOrder",
     inputs: [
-      { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'status', type: 'bool', indexed: false, internalType: 'bool' },
+      {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "order_id",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "only_claim",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "transfer_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
     ],
-    anonymous: false,
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'event',
-    name: 'Deposited',
+    type: "function",
+    name: "depositTokens",
     inputs: [
-      { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'token_x', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'token_y', type: 'uint128', indexed: false, internalType: 'uint128' },
+      {
+        name: "token_x_amount",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "token_y_amount",
+        type: "uint128",
+        internalType: "uint128"
+      }
     ],
-    anonymous: false,
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'event',
-    name: 'Initialized',
-    inputs: [{ name: 'version', type: 'uint64', indexed: false, internalType: 'uint64' }],
-    anonymous: false,
+    type: "function",
+    name: "feesReceiver",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
   },
   {
-    type: 'event',
-    name: 'MarketMakerChanged',
+    type: "function",
+    name: "getAccumulatedFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "token_amount",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "raw_fees",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getBidAskConsumerAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getConfig",
+    inputs: [],
+    outputs: [
+      {
+        name: "_scaling_factor_token_x",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "_scaling_factor_token_y",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "_token_x",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_token_y",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_supports_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_is_token_x_weth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_ask_trie",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_bid_trie",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_admin_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_total_aggressive_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_total_passive_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_passive_order_payout_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_should_invoke_on_trade",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getTraderConfig",
     inputs: [
-      { name: 'new_marketmaker', type: 'address', indexed: false, internalType: 'address' },
-      { name: 'old_marketmaker', type: 'address', indexed: false, internalType: 'address' },
+      {
+        name: "address_",
+        type: "address",
+        internalType: "address"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
   },
   {
-    type: 'event',
-    name: 'OrderClaimed',
+    type: "function",
+    name: "getWatchDogAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "initialize",
     inputs: [
-      { name: 'order_id', type: 'uint64', indexed: false, internalType: 'uint64' },
-      { name: 'order_shares_remaining', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'token_x_sent', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'token_y_sent', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'passive_payout', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'only_claim', type: 'bool', indexed: false, internalType: 'bool' },
+      {
+        name: "_trie_factory",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_tokenXAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_tokenYAddress",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_supports_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_is_token_x_weth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "scaling_token_x",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "scaling_token_y",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "_administrator",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_marketmaker",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_pauser",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "_should_invoke_on_trade",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "_admin_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_total_aggressive_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_total_passive_commission_rate",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "_passive_order_payout_rate",
+        type: "uint64",
+        internalType: "uint64"
+      }
     ],
-    anonymous: false,
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'event',
-    name: 'OrderPlaced',
+    type: "function",
+    name: "marketMakerConfig",
+    inputs: [],
+    outputs: [
+      {
+        name: "marketmaker",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "should_invoke_on_trade",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "nonce",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "owner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "pause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "paused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "pauser",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "pendingOwner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "placeMarketOrderWithTargetValue",
     inputs: [
-      { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'order_id', type: 'uint64', indexed: false, internalType: 'uint64' },
-      { name: 'isAsk', type: 'bool', indexed: true, internalType: 'bool' },
-      { name: 'quantity', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'price', type: 'uint72', indexed: false, internalType: 'uint72' },
-      { name: 'passive_shares', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'passive_fee', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'aggressive_shares', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'aggressive_value', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'aggressive_fee', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'market_only', type: 'bool', indexed: false, internalType: 'bool' },
-      { name: 'post_only', type: 'bool', indexed: false, internalType: 'bool' },
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "target_token_y_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "max_commission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "transfer_executed_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "executed_shares",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "executed_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_fee",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "payable"
   },
   {
-    type: 'event',
-    name: 'OwnershipTransferStarted',
+    type: "function",
+    name: "placeMarketOrderWithTargetValueByProxy",
     inputs: [
-      { name: 'previousOwner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'newOwner', type: 'address', indexed: true, internalType: 'address' },
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "target_token_y_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "max_commission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "transfer_executed_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "executed_shares",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "executed_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_fee",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "payable"
   },
   {
-    type: 'event',
-    name: 'OwnershipTransferred',
+    type: "function",
+    name: "placeOrder",
     inputs: [
-      { name: 'previousOwner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'newOwner', type: 'address', indexed: true, internalType: 'address' },
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "max_commission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "market_only",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "post_only",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "transfer_executed_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "order_id",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "executed_shares",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "executed_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_fee",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "payable"
   },
   {
-    type: 'event',
-    name: 'Paused',
-    inputs: [{ name: 'account', type: 'address', indexed: false, internalType: 'address' }],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'PauserChanged',
+    type: "function",
+    name: "placeOrderByProxy",
     inputs: [
-      { name: 'new_pauser', type: 'address', indexed: false, internalType: 'address' },
-      { name: 'old_pauser', type: 'address', indexed: false, internalType: 'address' },
+      {
+        name: "isAsk",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        internalType: "uint72"
+      },
+      {
+        name: "max_commission",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "market_only",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "post_only",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "transfer_executed_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "order_id",
+        type: "uint64",
+        internalType: "uint64"
+      },
+      {
+        name: "executed_shares",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "executed_value",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_fee",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "payable"
   },
   {
-    type: 'event',
-    name: 'Unpaused',
-    inputs: [{ name: 'account', type: 'address', indexed: false, internalType: 'address' }],
-    anonymous: false,
+    type: "function",
+    name: "proxiableUUID",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    stateMutability: "view"
   },
   {
-    type: 'event',
-    name: 'Upgraded',
-    inputs: [{ name: 'implementation', type: 'address', indexed: true, internalType: 'address' }],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Withdrawn',
+    type: "function",
+    name: "proxyTraderPermissions",
     inputs: [
-      { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'token_x', type: 'uint128', indexed: false, internalType: 'uint128' },
-      { name: 'token_y', type: 'uint128', indexed: false, internalType: 'uint128' },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
     ],
-    anonymous: false,
+    outputs: [
+      {
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
   },
   {
-    type: 'error',
-    name: 'AddressEmptyCode',
-    inputs: [{ name: 'target', type: 'address', internalType: 'address' }],
+    type: "function",
+    name: "renounceOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'error',
-    name: 'AddressInsufficientBalance',
-    inputs: [{ name: 'account', type: 'address', internalType: 'address' }],
-  },
-  { type: 'error', name: 'AddressIsZero', inputs: [] },
-  { type: 'error', name: 'ArrayLengthMismatch', inputs: [] },
-  { type: 'error', name: 'ClaimNotAllowed', inputs: [] },
-  {
-    type: 'error',
-    name: 'ERC1967InvalidImplementation',
-    inputs: [{ name: 'implementation', type: 'address', internalType: 'address' }],
-  },
-  { type: 'error', name: 'ERC1967NonPayable', inputs: [] },
-  { type: 'error', name: 'EnforcedPause', inputs: [] },
-  { type: 'error', name: 'ExcessiveSignificantFigures', inputs: [] },
-  { type: 'error', name: 'ExpectedPause', inputs: [] },
-  { type: 'error', name: 'Expired', inputs: [] },
-  { type: 'error', name: 'FailedInnerCall', inputs: [] },
-  { type: 'error', name: 'Forbidden', inputs: [] },
-  { type: 'error', name: 'InsufficientTokenXBalance', inputs: [] },
-  { type: 'error', name: 'InsufficientTokenYBalance', inputs: [] },
-  { type: 'error', name: 'InvalidCommissionRate', inputs: [] },
-  { type: 'error', name: 'InvalidFloatingPointRepresentation', inputs: [] },
-  { type: 'error', name: 'InvalidInitialization', inputs: [] },
-  { type: 'error', name: 'InvalidMarketMaker', inputs: [] },
-  { type: 'error', name: 'InvalidPriceRange', inputs: [] },
-  { type: 'error', name: 'InvalidTransfer', inputs: [] },
-  { type: 'error', name: 'MarketOnlyAndPostOnlyFlagsConflict', inputs: [] },
-  { type: 'error', name: 'MaxCommissionFailure', inputs: [] },
-  { type: 'error', name: 'NativeETHDisabled', inputs: [] },
-  { type: 'error', name: 'NonceExhaustedFailure', inputs: [] },
-  { type: 'error', name: 'NotInitializing', inputs: [] },
-  { type: 'error', name: 'OnlyOwnerCanCancelOrders', inputs: [] },
-  {
-    type: 'error',
-    name: 'OwnableInvalidOwner',
-    inputs: [{ name: 'owner', type: 'address', internalType: 'address' }],
-  },
-  {
-    type: 'error',
-    name: 'OwnableUnauthorizedAccount',
-    inputs: [{ name: 'account', type: 'address', internalType: 'address' }],
-  },
-  { type: 'error', name: 'ReentrancyGuardReentrantCall', inputs: [] },
-  {
-    type: 'error',
-    name: 'SafeCastOverflowedUintDowncast',
+    type: "function",
+    name: "setAllowedTrader",
     inputs: [
-      { name: 'bits', type: 'uint8', internalType: 'uint8' },
-      { name: 'value', type: 'uint256', internalType: 'uint256' },
+      {
+        name: "trader",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "isAllowed",
+        type: "bool",
+        internalType: "bool"
+      }
     ],
+    outputs: [],
+    stateMutability: "nonpayable"
   },
   {
-    type: 'error',
-    name: 'SafeERC20FailedOperation',
-    inputs: [{ name: 'token', type: 'address', internalType: 'address' }],
+    type: "function",
+    name: "setBidAskConsumer",
+    inputs: [
+      {
+        name: "consumerAddress",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
   },
-  { type: 'error', name: 'TransferFailed', inputs: [] },
-  { type: 'error', name: 'UUPSUnauthorizedCallContext', inputs: [] },
   {
-    type: 'error',
-    name: 'UUPSUnsupportedProxiableUUID',
-    inputs: [{ name: 'slot', type: 'bytes32', internalType: 'bytes32' }],
+    type: "function",
+    name: "setProxyTraderPermissions",
+    inputs: [
+      {
+        name: "proxy_trader",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
   },
-  { type: 'error', name: 'ZeroTokenTransferNotAllowed', inputs: [] },
+  {
+    type: "function",
+    name: "setTraderConfig",
+    inputs: [
+      {
+        name: "is_claimable",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "transfer_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "setTraderFilterEnabled",
+    inputs: [
+      {
+        name: "_enabled",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "traderBalances",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "token_x",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "token_y",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "traderFilterEnabled",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "transferFees",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "transferOwnership",
+    inputs: [
+      {
+        name: "newOwner",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "tryPermitEIP2612",
+    inputs: [
+      {
+        name: "is_token_x",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "v",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "r",
+        type: "bytes32",
+        internalType: "bytes32"
+      },
+      {
+        name: "s",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "unpause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "upgradeToAndCall",
+    inputs: [
+      {
+        name: "newImplementation",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes"
+      }
+    ],
+    outputs: [],
+    stateMutability: "payable"
+  },
+  {
+    type: "function",
+    name: "withdrawTokens",
+    inputs: [
+      {
+        name: "withdraw_all",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "token_x_amount",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "token_y_amount",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "event",
+    name: "AllowedTraderChanged",
+    inputs: [
+      {
+        name: "trader",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "isAllowed",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Deposited",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "token_x",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "token_y",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "FeesReceiverChanged",
+    inputs: [
+      {
+        name: "new_fees_receiver",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "old_fees_receiver",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Initialized",
+    inputs: [
+      {
+        name: "version",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "MarketMakerChanged",
+    inputs: [
+      {
+        name: "new_marketmaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "old_marketmaker",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OrderClaimed",
+    inputs: [
+      {
+        name: "order_id",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      },
+      {
+        name: "order_shares_remaining",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "token_x_sent",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "token_y_sent",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "passive_payout",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "only_claim",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OrderPlaced",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "initiator",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "order_id",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64"
+      },
+      {
+        name: "isAsk",
+        type: "bool",
+        indexed: true,
+        internalType: "bool"
+      },
+      {
+        name: "quantity",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "price",
+        type: "uint72",
+        indexed: false,
+        internalType: "uint72"
+      },
+      {
+        name: "passive_shares",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "passive_fee",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_shares",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_value",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "aggressive_fee",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "market_only",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "post_only",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OwnershipTransferStarted",
+    inputs: [
+      {
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "OwnershipTransferred",
+    inputs: [
+      {
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Paused",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "PauserChanged",
+    inputs: [
+      {
+        name: "new_pauser",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "old_pauser",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "ProxyTraderPermissionsChanged",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "proxy_trader",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "allow_create",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "TraderConfigChanged",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "claimable",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "transfer_tokens",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "TraderFilterEnabledUpdated",
+    inputs: [
+      {
+        name: "enabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Unpaused",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Upgraded",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "Withdrawn",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "token_x",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      },
+      {
+        name: "token_y",
+        type: "uint128",
+        indexed: false,
+        internalType: "uint128"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "error",
+    name: "AddressEmptyCode",
+    inputs: [
+      {
+        name: "target",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "AddressIsZero",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ChainIsUnstableForTrades",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ClaimNotAllowed",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ERC1967InvalidImplementation",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "ERC1967NonPayable",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "EnforcedPause",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ExcessiveSignificantFigures",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "ExpectedPause",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "Expired",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "FailedCall",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "Forbidden",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientTokenXBalance",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InsufficientTokenYBalance",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidCommissionRate",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidFloatingPointRepresentation",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidInitialization",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidMarketMaker",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidPriceRange",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "InvalidTransfer",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "MarketOnlyAndPostOnlyFlagsConflict",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "MaxCommissionFailure",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NativeETHDisabled",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NonceExhaustedFailure",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NotATrader",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "NotInitializing",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "OnlyPrivilegedSenderCanCancelOrders",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "OwnableInvalidOwner",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "OwnableUnauthorizedAccount",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "ReentrancyGuardReentrantCall",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "SafeCastOverflowedUintDowncast",
+    inputs: [
+      {
+        name: "bits",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "SafeERC20FailedOperation",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "UUPSUnauthorizedCallContext",
+    inputs: []
+  },
+  {
+    type: "error",
+    name: "UUPSUnsupportedProxiableUUID",
+    inputs: [
+      {
+        name: "slot",
+        type: "bytes32",
+        internalType: "bytes32"
+      }
+    ]
+  },
+  {
+    type: "error",
+    name: "ZeroTokenTransferNotAllowed",
+    inputs: []
+  }
 ] as const;

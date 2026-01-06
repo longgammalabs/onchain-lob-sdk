@@ -76,6 +76,43 @@ export interface ApproveSpotParams extends TransactionParams {
    * @type {BigNumber | bigint}
    */
   amount: BigNumber | bigint;
+  /**
+   * Indicates whether to use the fast quoter proxy if it's enabled for the market.
+   * If true, the fast quoter proxy will be used if it's enabled for the market.
+   * If false, the market contract will be used.
+   *
+   * @type {boolean}
+   * @optional
+   * @default true
+   */
+  useFastQuoterProxyIfEnabled?: boolean;
+}
+
+/**
+ * Parameters for setting proxy trader permissions for the spot market.
+ *
+ * @interface SetProxyTraderPermissionsSpotParams
+ * @extends TransactionParams
+ */
+export interface SetProxyTraderPermissionsSpotParams extends TransactionParams {
+  /**
+   * The market identifier.
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * Whether the proxy trader is allowed to create orders.
+   *
+   * @type {boolean}
+   */
+  allowCreate: boolean;
+  /**
+   * Whether the proxy trader is allowed to cancel orders.
+   *
+   * @type {boolean}
+   */
+  allowCancel: boolean;
 }
 
 /**
@@ -293,6 +330,17 @@ interface PlaceOrderBaseParams extends TransactionParams {
    * @optional
    */
   transferExecutedTokens?: boolean;
+
+  /**
+   * Indicates whether to use the fast quoter proxy.
+   * If true, the fast quoter proxy will be used if it's enabled for the market.
+   * If false, the market contract will be used.
+   *
+   * @type {boolean}
+   * @optional
+   * @default true
+   */
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -381,21 +429,21 @@ type PermitParam = {
  *
  * @interface PlaceLimitOrderWithPermitSpotParams
  */
-export type PlaceLimitOrderWithPermitSpotParams = Omit<PlaceLimitOrderSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceLimitOrderWithPermitSpotParams = Omit<PlaceLimitOrderSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit and without a price on the spot market.
  *
  * @interface PlaceMarketOrderWithPermitSpotParams
  */
-export type PlaceMarketOrderWithPermitSpotParams = Omit<PlaceMarketOrderSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceMarketOrderWithPermitSpotParams = Omit<PlaceMarketOrderSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit and a price on the spot market.
  *
  * @interface PlaceMarketOrderWithPriceWithPermitSpotParams
  */
-export type PlaceMarketOrderWithPriceWithPermitSpotParams = Omit<PlaceMarketOrderWithPriceSpotParams, 'nativeTokenToSend'> & PermitParam;
+export type PlaceMarketOrderWithPriceWithPermitSpotParams = Omit<PlaceMarketOrderWithPriceSpotParams, 'nativeTokenToSend' | 'useFastQuoterProxyIfEnabled'> & PermitParam;
 
 /**
  * Parameters for placing an order with a permit on the spot market.
@@ -428,6 +476,7 @@ export interface BatchPlaceOrderSpotParams extends TransactionParams {
     price: BigNumber | bigint;
   }>;
   transferExecutedTokens?: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 };
 
 /**
@@ -465,6 +514,17 @@ export interface ClaimOrderSpotParams extends TransactionParams {
    * @optional
    */
   transferExecutedTokens?: boolean;
+
+  /**
+   * Indicates whether to use the fast quoter proxy if it's enabled for the market.
+   * If true, the fast quoter proxy will be used if it's enabled for the market.
+   * If false, the market contract will be used.
+   *
+   * @type {boolean}
+   * @optional
+   * @default true
+   */
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -480,6 +540,7 @@ export interface BatchClaimOrderSpotParams extends TransactionParams {
     address: string;
   }>;
   onlyClaim: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
@@ -558,12 +619,15 @@ export interface BatchChangeOrderSpotParams extends TransactionParams {
   }>;
   type: 'limit' | 'limit_post_only';
   transferExecutedTokens?: boolean;
+  useFastQuoterProxyIfEnabled?: boolean;
 }
 
 /**
  * Parameters for retrieving the order book.
  *
  * @interface GetOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `GetClobDepthParams` instead.
  */
 export interface GetOrderbookParams {
   /**
@@ -835,10 +899,24 @@ export interface SubscribeToMarketParams {
 }
 export type UnsubscribeFromMarketParams = SubscribeToMarketParams;
 
+/**
+ * Parameters for subscribing to the orderbook updates for a specific market and aggregation level.
+ *
+ * @interface SubscribeToOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `SubscribeToClobDepthParams` instead.
+ */
 export interface SubscribeToOrderbookParams {
   market: string;
   aggregation: number;
 }
+/**
+ * Parameters for unsubscribing from the orderbook updates for a specific market and aggregation level.
+ *
+ * @interface UnsubscribeFromOrderbookParams
+ * @deprecated This interface is deprecated and will be removed in a future version.
+ * Use `UnsubscribeFromClobDepthParams` instead.
+ */
 export type UnsubscribeFromOrderbookParams = SubscribeToOrderbookParams;
 
 export interface SubscribeToClobDepthParams {

@@ -1,31 +1,44 @@
-import { useState } from 'react';
-import './App.css';
-import { WalletConnect } from './WalletConnect';
-import { PlaceOrder } from './PlaceOrder';
-import { Orderbook } from './Orderbook';
-import { Box, Divider, Typography, AppBar, Tabs, Tab, Button } from '@mui/material';
-import UserOrdersUpdates from './UserOrdersUpdates';
-import { ClientAddressContext, OnchainLobClientContext, defaultOnchainLobClient } from './clientContext';
-import ApproveToken from './ApproveToken';
-import OrderbookUpdates from './OrderbookUpdates';
-import AllMarketsUpdates from './AllMarketUpdates';
-import CalculateOrderDetails from './CalculateOrderDetails';
-import CandleUpdates from './CandleUpdates';
-import UserBalances from './UserBalances';
-import UserOrderHistoryUpdates from './UserOrderHistoryUpdates';
-import ClaimOrder from './ClaimOrder';
-import TradeUpdates from './TradeUpdates';
-import Timetx from './Timetx';
-import UserDeposits from './UserDeposits';
-import WrapUnwrapNativeToken from './WrapNativeToken';
-import VaultConfigDisplay from './VaultConfigDisplay';
-import VaultTotalValuesDisplayUpdates from './VaultTotalValuesDisplayUpdates';
-import VaultValueHistoryUpdates from './VaultValueHistoryUpdates';
+import { useState } from "react";
+import "./App.css";
+import { WalletConnect } from "./WalletConnect";
+import { PlaceOrder } from "./PlaceOrder";
+import { Orderbook } from "./Orderbook";
+import {
+  Box,
+  Divider,
+  Typography,
+  AppBar,
+  Tabs,
+  Tab,
+  Button,
+} from "@mui/material";
+import UserOrdersUpdates from "./UserOrdersUpdates";
+import {
+  ClientAddressContext,
+  OnchainLobClientContext,
+  defaultOnchainLobClient,
+} from "./clientContext";
+import ApproveToken from "./ApproveToken";
+import OrderbookUpdates from "./OrderbookUpdates";
+import AllMarketsUpdates from "./AllMarketUpdates";
+import CalculateOrderDetails from "./CalculateOrderDetails";
+import CandleUpdates from "./CandleUpdates";
+import UserBalances from "./UserBalances";
+import UserOrderHistoryUpdates from "./UserOrderHistoryUpdates";
+import ClaimOrder from "./ClaimOrder";
+import TradeUpdates from "./TradeUpdates";
+import Timetx from "./Timetx";
+import UserDeposits from "./UserDeposits";
+import WrapUnwrapNativeToken from "./WrapNativeToken";
+import VaultConfigDisplay from "./VaultConfigDisplay";
+import VaultTotalValuesDisplayUpdates from "./VaultTotalValuesDisplayUpdates";
+import VaultValueHistoryUpdates from "./VaultValueHistoryUpdates";
+import UserOpenOrders from "./UserOpenOrders";
 
 function App() {
-  const [address, setAddress] = useState<string>('');
+  const [address, setAddress] = useState<string>("");
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [selectedPage, setSelectedPage] = useState<string>('ContractAPI');
+  const [selectedPage, setSelectedPage] = useState<string>("ContractAPI");
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
@@ -34,53 +47,49 @@ function App() {
   return (
     <OnchainLobClientContext.Provider value={defaultOnchainLobClient}>
       <ClientAddressContext.Provider value={address}>
-        <AppBar position="static" sx={{ backgroundColor: 'white' }}>
+        <AppBar position="static" sx={{ backgroundColor: "white" }}>
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab
               label="Orderbook"
               sx={{
-                color: tabIndex === 0 ? 'primary.main' : 'text.secondary',
-                fontWeight: tabIndex === 0 ? 'bold' : 'normal',
+                color: tabIndex === 0 ? "primary.main" : "text.secondary",
+                fontWeight: tabIndex === 0 ? "bold" : "normal",
               }}
             />
             <Tab
               label="Vault"
               sx={{
-                color: tabIndex === 1 ? 'primary.main' : 'text.secondary',
-                fontWeight: tabIndex === 1 ? 'bold' : 'normal',
+                color: tabIndex === 1 ? "primary.main" : "text.secondary",
+                fontWeight: tabIndex === 1 ? "bold" : "normal",
               }}
             />
           </Tabs>
         </AppBar>
         {tabIndex === 0 && (
           <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" gap={2}>
-            <Box p={1} sx={{ gridColumn: '1 / 2' }}>
+            <Box p={1} sx={{ gridColumn: "1 / 2" }}>
               <Typography variant="h6">Contract API</Typography>
               <Divider />
-              {address !== ''
-                ? (
-                  <>
-                    <Typography>
-                      User address is
-                      {' '}
-                      { address }
-                    </Typography>
-                    <Timetx />
-                    <Divider />
-                    <ApproveToken />
-                    <Divider />
-                    <WrapUnwrapNativeToken />
-                    <Divider />
-                    <PlaceOrder />
-                    <Divider />
-                    <ClaimOrder />
-                  </>
-                )
-                : (
-                  <WalletConnect setAddress={(address: string) => setAddress(address)} />
-                )}
+              {address !== "" ? (
+                <>
+                  <Typography>User address is {address}</Typography>
+                  <Timetx />
+                  <Divider />
+                  <ApproveToken />
+                  <Divider />
+                  <WrapUnwrapNativeToken />
+                  <Divider />
+                  <PlaceOrder />
+                  <Divider />
+                  <ClaimOrder />
+                </>
+              ) : (
+                <WalletConnect
+                  setAddress={(address: string) => setAddress(address)}
+                />
+              )}
             </Box>
-            <Box p={1} sx={{ gridColumn: '2 / 3' }}>
+            <Box p={1} sx={{ gridColumn: "2 / 3" }}>
               <Typography variant="h6">HTTP API</Typography>
               <Divider />
               <Orderbook />
@@ -89,9 +98,11 @@ function App() {
               <Divider />
               <UserDeposits />
               <Divider />
+              <UserOpenOrders />
+              <Divider />
               <CalculateOrderDetails />
             </Box>
-            <Box p={1} sx={{ gridColumn: '3 / 4' }}>
+            <Box p={1} sx={{ gridColumn: "3 / 4" }}>
               <Typography variant="h6">WebSocket</Typography>
               <Divider />
               <UserOrdersUpdates />
@@ -110,20 +121,33 @@ function App() {
         )}
         {tabIndex === 1 && (
           <Box p={2}>
-            { address ? `User address is ${address}` : <WalletConnect setAddress={(address: string) => setAddress(address)} /> }
+            {address ? (
+              `User address is ${address}`
+            ) : (
+              <WalletConnect
+                setAddress={(address: string) => setAddress(address)}
+              />
+            )}
             <Box>
               <Divider />
               <Box>
-                <Button onClick={() => setSelectedPage('ContractAPI')}>Contract API</Button>
-                <Button onClick={() => setSelectedPage('HTTP API')}>HTTP API</Button>
-                <Button onClick={() => setSelectedPage('Sockets API')}>Sockets API</Button>
+                <Button onClick={() => setSelectedPage("ContractAPI")}>
+                  Contract API
+                </Button>
+                <Button onClick={() => setSelectedPage("HTTP API")}>
+                  HTTP API
+                </Button>
+                <Button onClick={() => setSelectedPage("Sockets API")}>
+                  Sockets API
+                </Button>
               </Box>
               <Divider />
-              {selectedPage === 'ContractAPI' && (
+              {selectedPage === "ContractAPI" && (
                 <Box>
                   <Typography variant="subtitle1">ContractAPI</Typography>
                   <Typography variant="body2">
-                    This section provides access to the ContractAPI, allowing you to interact with smart contracts directly.
+                    This section provides access to the ContractAPI, allowing
+                    you to interact with smart contracts directly.
                   </Typography>
                   <Divider />
                   <Divider />
@@ -132,22 +156,24 @@ function App() {
                   {/* <WithdrawVault /> */}
                 </Box>
               )}
-              {selectedPage === 'HTTP API' && (
+              {selectedPage === "HTTP API" && (
                 <Box>
                   <Typography variant="subtitle1">HTTP API</Typography>
                   <Typography variant="body2">
-                    This section provides access to the HTTP API, enabling you to perform RESTful operations.
+                    This section provides access to the HTTP API, enabling you
+                    to perform RESTful operations.
                   </Typography>
                   <Divider />
                   <VaultConfigDisplay />
                   <Divider />
                 </Box>
               )}
-              {selectedPage === 'Sockets API' && (
+              {selectedPage === "Sockets API" && (
                 <Box>
                   <Typography variant="subtitle1">Sockets API</Typography>
                   <Typography variant="body2">
-                    This section provides access to the Sockets API, allowing real-time data streaming and updates.
+                    This section provides access to the Sockets API, allowing
+                    real-time data streaming and updates.
                   </Typography>
                   <Divider />
                   <VaultTotalValuesDisplayUpdates />

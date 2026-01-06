@@ -15,11 +15,12 @@ import type {
   PlaceOrderSpotParams,
   PlaceOrderWithPermitSpotParams,
   SetClaimableStatusParams,
+  SetProxyTraderPermissionsSpotParams,
   UnwrapNativeTokenSpotParams,
   WithdrawSpotParams,
   WrapNativeTokenSpotParams
 } from './params';
-import { erc20Abi, lobAbi, erc20PermitAbi, erc20WethAbi } from '../abi';
+import { erc20Abi, lobAbi, erc20PermitAbi, erc20WethAbi, fastQuoterProxyAbi } from '../abi';
 import type { Market, Token } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -57,6 +58,7 @@ export class OnchainLobSpotMarketContract {
 
   protected readonly signer: Signer;
   protected readonly marketContract: Contract;
+  protected readonly fastQuoterProxyContract: Contract | null;
   protected readonly baseTokenContract: Contract;
   protected readonly quoteTokenContract: Contract;
   private _chainId: bigint | undefined;
@@ -80,6 +82,7 @@ export class OnchainLobSpotMarketContract {
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
     this.marketContract = new Contract(this.market.orderbookAddress, lobAbi, options.signer);
+    this.fastQuoterProxyContract = this.market.fastQuoterProxyAddress ? new Contract(this.market.fastQuoterProxyAddress, fastQuoterProxyAbi, options.signer) : null;
     this.baseTokenContract = new Contract(
       this.market.baseToken.contractAddress,
       this.market.supportsNativeToken && this.market.isNativeTokenX ? erc20WethAbi : this.market.baseToken.supportsPermit ? erc20PermitAbi : erc20Abi,
@@ -93,6 +96,8 @@ export class OnchainLobSpotMarketContract {
   }
 
   async approveTokens(params: ApproveSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
+
     let token: Token;
     let tokenContract: Contract;
 
@@ -105,12 +110,36 @@ export class OnchainLobSpotMarketContract {
       tokenContract = this.quoteTokenContract;
     }
 
+    const executorAddress = useFastQuoterProxy && this.market.fastQuoterProxyAddress ? this.market.fastQuoterProxyAddress : this.market.orderbookAddress;
+
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const tx = await this.processContractMethodCall(
       tokenContract,
       tokenContract.approve!(
-        params.market,
+        executorAddress,
         amount,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+        }
+      ));
+
+    return tx;
+  }
+
+  async setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse> {
+    if (!this.market.fastQuoterProxyAddress) {
+      throw Error('Fast quoter proxy is not enabled for this market');
+    }
+
+    const tx = await this.processContractMethodCall(
+      this.marketContract,
+      this.marketContract.setProxyTraderPermissions!(
+        this.market.fastQuoterProxyAddress,
+        params.allowCreate,
+        params.allowCancel,
         {
           gasLimit: params.gasLimit,
           nonce: params.nonce,
@@ -193,6 +222,8 @@ export class OnchainLobSpotMarketContract {
   }
 
   async placeOrder(params: PlaceOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
+
     if (params.nativeTokenToSend !== undefined && this.market.supportsNativeToken
       && !((params.side === 'ask' && this.market.isNativeTokenX) || (params.side !== 'ask' && !this.market.isNativeTokenX))) {
       throw Error('Token to send is not native.');
@@ -213,9 +244,11 @@ export class OnchainLobSpotMarketContract {
       : this.convertTokensAmountToRawAmountIfNeeded(params.nativeTokenToSend,
         params.side === 'ask' ? this.market.baseToken.decimals : this.market.quoteToken.decimals);
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.placeOrder!(
+      contract,
+      contract.placeOrder!(
         params.side === 'ask',
         sizeAmount,
         priceAmount,
@@ -299,6 +332,8 @@ export class OnchainLobSpotMarketContract {
   }
 
   async placeMarketOrderWithTargetValue(params: PlaceMarketOrderWithTargetValueParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
+
     if (params.nativeTokenToSend !== undefined && this.market.supportsNativeToken
       && !((params.side === 'ask' && this.market.isNativeTokenX) || (params.side !== 'ask' && !this.market.isNativeTokenX))) {
       throw Error('Token to send is not native.');
@@ -319,9 +354,11 @@ export class OnchainLobSpotMarketContract {
       : this.convertTokensAmountToRawAmountIfNeeded(params.nativeTokenToSend,
         params.side === 'ask' ? this.market.baseToken.decimals : this.market.quoteToken.decimals);
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.placeMarketOrderWithTargetValue!(
+      contract,
+      contract.placeMarketOrderWithTargetValue!(
         params.side === 'ask',
         targetTokenYValue,
         priceAmount,
@@ -402,6 +439,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchPlaceOrder(params: BatchPlaceOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const idsAsDirections: bigint[] = [];
     const sizeAmounts: bigint[] = [];
     const priceAmounts: bigint[] = [];
@@ -413,9 +451,10 @@ export class OnchainLobSpotMarketContract {
       priceAmounts.push(this.convertTokensAmountToRawAmountIfNeeded(orderParams.price, this.market.priceScalingFactor));
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(sizeAmounts, priceAmounts);
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder!(
+      contract,
+      contract.batchChangeOrder!(
         idsAsDirections,
         sizeAmounts,
         priceAmounts,
@@ -436,10 +475,13 @@ export class OnchainLobSpotMarketContract {
   }
 
   async claimOrder(params: ClaimOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
+
     const expires = getExpires();
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.claimOrder!(
+      contract,
+      contract.claimOrder!(
         params.orderId,
         params.onlyClaim,
         params.transferExecutedTokens ?? this.transferExecutedTokensEnabled,
@@ -456,6 +498,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchClaim(params: BatchClaimOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const addresses: string[] = [];
     const orderIds: string[] = [];
     const expires = getExpires();
@@ -465,9 +508,11 @@ export class OnchainLobSpotMarketContract {
       orderIds.push(claimParams.orderId);
     }
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchClaim!(
+      contract,
+      contract.batchClaim!(
         addresses,
         orderIds,
         params.onlyClaim,
@@ -513,6 +558,7 @@ export class OnchainLobSpotMarketContract {
   }
 
   async batchChangeOrder(params: BatchChangeOrderSpotParams): Promise<ContractTransactionResponse> {
+    const useFastQuoterProxy = params.useFastQuoterProxyIfEnabled === undefined ? true : params.useFastQuoterProxyIfEnabled;
     const orderIds: string[] = [];
     const newSizes: bigint[] = [];
     const newPrices: bigint[] = [];
@@ -525,9 +571,11 @@ export class OnchainLobSpotMarketContract {
     }
     const maxCommissionPerOrder = this.calculateMaxCommissionPerOrder(newSizes, newPrices);
 
+    const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
+
     const tx = await this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.batchChangeOrder!(
+      contract,
+      contract.batchChangeOrder!(
         orderIds,
         newSizes,
         newPrices,

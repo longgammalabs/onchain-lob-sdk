@@ -4,6 +4,16 @@
 
 The `OnchainLobSpot` class is designed for interacting with the Onchain LOB Spot API. It provides methods for retrieving market information, subscribing to market updates, placing orders, managing user orders and fills, and more.
 
+### Deprecated Methods and Fields
+
+Some methods and fields in this SDK are marked as deprecated and will be removed in a future version:
+
+- **Orderbook methods**: `getOrderbook()`, `subscribeToOrderbook()`, `unsubscribeFromOrderbook()` - Use `getClobDepth()`, `subscribeToClobDepth()`, and `unsubscribeFromClobDepth()` instead.
+- **Orderbook event**: `orderbookUpdated` - Use `clobDepthUpdated` instead.
+- **Market fields**: `rawBestAsk`, `bestAsk`, `rawBestBid`, `bestBid` - Use `getClobDepth()` or `subscribeToClobDepth()` to get orderbook data instead.
+
+The `ClobDepth` interface provides a more efficient and simpler data structure for orderbook data, using `[string, string][]` tuples for price and size pairs instead of complex objects.
+
 ## Common contract transaction parameters
 
 The following parameters are common across contract transaction methods:
@@ -24,6 +34,21 @@ Approves the specified amount of tokens for the corresponding market contract.
 - `market`: The market identifier.
 - `token`: The token to be approved.
 - `amount`: The amount of tokens to approve. If `bigint` is provided, then the token's contract unit is used. If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, tokens will be approved for the fast quoter proxy address instead of the market contract address.
+
+## setProxyTraderPermissions
+
+```typescript
+async setProxyTraderPermissions({ market, allowCreate, allowCancel }: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse>
+```
+
+Sets the proxy trader permissions for the corresponding market contract. This method allows you to grant or revoke permissions for the fast quoter proxy to create and cancel orders on your behalf.
+
+- `market`: The market identifier.
+- `allowCreate`: Whether the proxy trader is allowed to create orders.
+- `allowCancel`: Whether the proxy trader is allowed to cancel orders.
+
+**Note**: This method requires that the market has a fast quoter proxy enabled. If the market doesn't have a fast quoter proxy, this method will throw an error.
 
 ## wrapNativeTokens
 
@@ -101,6 +126,7 @@ It can place limit or market order and use native token if market supports it.
 - `maxCommission`:  The upper bound of commission to pay.
 - `nativeTokenToSend`: The amount of native token to send.
 - `useNativeToken`: Use native token for the transaction instead of the wrapped token.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 ### Type parameter value
 
@@ -146,6 +172,7 @@ Places a market order with a target value of the quote token in the correspondin
 - `targetValue`: The quote token value to spend.
 - `maxCommission`: The upper bound of commission to pay.
 - `nativeTokenToSend`: The amount of native token to send. Use native token for the transaction instead of the wrapped token.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 This method allows placing a market order by specifying the target value of the quote token, which is useful for executing orders based on a specific value rather than base token quantity.
 
@@ -179,6 +206,7 @@ Claims an order or fully cancels it in the corresponding market contract.
 - `market`: The market identifier.
 - `orderId`: The unique identifier of the order to be claimed.
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the claim will be executed through the fast quoter proxy contract instead of the market contract.
 
 ## changeOrder
 
@@ -195,6 +223,7 @@ Changes an existing order in the corresponding market contract.
 - `type`: The type of the order (e.g., limit, limit_post_only).
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
 - `maxCommission`: The upper bound of commission to pay.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 ## batchPlaceOrder
 
@@ -211,6 +240,7 @@ Places multiple orders in the corresponding market contract.
   - `size`: the size of the order.
   - `price`: the price of the order.
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 This method does not support sending native token. Approve the wrapped token that is specified in the market object.
 
@@ -227,6 +257,7 @@ Claims or cancels specified orders.
   - `orderId`: the id of the order to claim or cancel.
   - `address`: the owner of the order.
 - `onlyClaim`: Whether to claim or cancel orders (`true` to claim).
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 ## batchChangeOrder
 
@@ -243,6 +274,7 @@ Changes multiple orders in the corresponding market contract.
   - `newSize`: the new size of the order.
   - `newPrice`: the new price of the order.
 - `transferExecutedTokens`: Whether to transfer executed tokens automatically.
+- `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 This method cancels existing orders and places new ones. The new orders will each have new order ids.
 
@@ -255,6 +287,13 @@ async getMarket({ market }: GetMarketParams): Promise<Market | undefined>
 Retrieves the market information for the specified market.
 
 - `market`: The market identifier.
+
+**Note on deprecated fields**: The `Market` object contains the following deprecated fields that will be removed in a future version:
+
+- `rawBestAsk` / `bestAsk`: Use `getClobDepth()` or `subscribeToClobDepth()` and access `clobDepth.asks[0]?.[0]` for the best ask price.
+- `rawBestBid` / `bestBid`: Use `getClobDepth()` or `subscribeToClobDepth()` and access `clobDepth.bids[0]?.[0]` for the best bid price.
+
+These fields are deprecated because orderbook data should be retrieved from the `ClobDepth` object, which provides more accurate and up-to-date information.
 
 ## getMarkets
 
@@ -282,11 +321,49 @@ Retrieves the tokens.
 async getOrderbook({ market, aggregation, limit }: GetOrderbookParams): Promise<Orderbook>
 ```
 
+**⚠️ Deprecated**: This method is deprecated and will be removed in a future version. Use `getClobDepth` instead for better performance and more detailed depth information.
+
 Retrieves the orderbook for the specified market.
 
 - `market`: The market identifier.
 - `aggregation`: Optional level of price aggregation.
 - `limit`: Optional limit on the number of orders to retrieve.
+
+## getClobDepth
+
+```typescript
+async getClobDepth({ market, depth }: GetClobDepthParams): Promise<ClobDepth>
+```
+
+Retrieves the orderbook depth (ClobDepth) for the specified market. This is the recommended method for getting orderbook data as it provides better performance and a simpler data structure.
+
+The `ClobDepth` object contains:
+
+- `timestamp`: The timestamp of the orderbook snapshot.
+- `asks`: An array of `[string, string][]` tuples representing ask levels, where each tuple is `[price, size]`.
+- `bids`: An array of `[string, string][]` tuples representing bid levels, where each tuple is `[price, size]`.
+
+Unlike the deprecated `Orderbook` interface, `ClobDepth` uses string tuples for price and size, making it more efficient and easier to work with.
+
+- `market`: The market identifier.
+- `depth`: Optional limit on the number of levels to retrieve for each side (asks and bids).
+
+**Example:**
+
+```typescript
+const clobDepth = await onchainLobClient.spot.getClobDepth({
+  market: '<orderbookAddress>',
+  depth: 10
+});
+
+// Access best ask price
+const bestAskPrice = clobDepth.asks[0]?.[0]; // string
+const bestAskSize = clobDepth.asks[0]?.[1]; // string
+
+// Access best bid price
+const bestBidPrice = clobDepth.bids[0]?.[0]; // string
+const bestBidSize = clobDepth.bids[0]?.[1]; // string
+```
 
 ## getOrders
 
@@ -354,7 +431,8 @@ Retrieves the candles for the specified market and resolution.
 The `OnchainLobSpot.events` property defines various events that you can listen to for real-time updates. These events include:
 
 - `marketUpdated`: Triggered when there is an update in the market.
-- `orderbookUpdated`: Triggered when there is an update in the order book.
+- `orderbookUpdated`: ⚠️ **Deprecated** - This event is deprecated and will be removed in a future version. Use `clobDepthUpdated` instead.
+- `clobDepthUpdated`: Triggered when there is an update in the orderbook depth. This is the recommended event for orderbook updates.
 - `tradesUpdated`: Triggered when a new trade occurs.
 - `userFillUpdated`: Triggered when a fill is updated.
 - `userOrderUpdated`: Triggered when an order is updated.
@@ -363,7 +441,7 @@ The `OnchainLobSpot.events` property defines various events that you can listen 
 - `allMarketsUpdated`: Triggered when there is an update across any market.
 - `subscriptionError`: Triggered when there is an error related to a subscription.
 
-You can add event listeners to these events to handle real-time data as it comes in. Events start coming after ypu subscribe to them with certain methods
+You can add event listeners to these events to handle real-time data as it comes in. Events start coming after you subscribe to them with certain methods.
 
 ## OnchainLobSpot Subscription Methods
 
@@ -411,6 +489,8 @@ Unsubscribes from updates for all markets.
 subscribeToOrderbook({ market, aggregation }: { market: string, aggregation: number }): void
 ```
 
+**⚠️ Deprecated**: This method is deprecated and will be removed in a future version. Use `subscribeToClobDepth` instead.
+
 Subscribes to orderbook updates for a specific market.
 
 ### unsubscribeFromOrderbook
@@ -419,7 +499,53 @@ Subscribes to orderbook updates for a specific market.
 unsubscribeFromOrderbook({ market, aggregation }: { market: string, aggregation: number }): void
 ```
 
+**⚠️ Deprecated**: This method is deprecated and will be removed in a future version. Use `unsubscribeFromClobDepth` instead.
+
 Unsubscribes from orderbook updates for a specific market.
+
+## ClobDepth Subscriptions
+
+### subscribeToClobDepth
+
+```typescript
+subscribeToClobDepth({ market, depth }: { market: string, depth?: number }): void
+```
+
+Subscribes to orderbook depth updates for a specific market. This is the recommended method for subscribing to orderbook updates.
+
+- `market`: The market identifier.
+- `depth`: Optional limit on the number of levels to retrieve for each side.
+
+**Example:**
+
+```typescript
+// Subscribe to clob depth updates
+onchainLobClient.spot.subscribeToClobDepth({
+  market: '<orderbookAddress>',
+  depth: 10
+});
+
+// Listen to updates
+onchainLobClient.spot.events.clobDepthUpdated.addListener((marketId, isSnapshot, clobDepth) => {
+  console.log('ClobDepth updated:', {
+    marketId,
+    isSnapshot,
+    bestAsk: clobDepth.asks[0]?.[0],
+    bestBid: clobDepth.bids[0]?.[0]
+  });
+});
+```
+
+### unsubscribeFromClobDepth
+
+```typescript
+unsubscribeFromClobDepth({ market, depth }: { market: string, depth?: number }): void
+```
+
+Unsubscribes from orderbook depth updates for a specific market.
+
+- `market`: The market identifier.
+- `depth`: Optional depth parameter (must match the one used in `subscribeToClobDepth`).
 
 ## Trade Subscriptions
 
@@ -613,7 +739,24 @@ tx = await onchainLobClient.spot.placeOrder({
 console.log(tx.hash);
 ```
 
+### getClobDepth
+
+Returns snapshot of the orderbook depth. This is the recommended method for getting orderbook data.
+
+```ts
+const clobDepth = await onchainLobClient.spot.getClobDepth({
+  market: '<orderbookAddress>', // The address of the orderbook
+  depth: 10, // Levels for each side [optional]
+});
+
+// Access orderbook data
+console.log('Best ask:', clobDepth.asks[0]); // ['price', 'size']
+console.log('Best bid:', clobDepth.bids[0]); // ['price', 'size']
+```
+
 ### getOrderbook
+
+**⚠️ Deprecated**: Use `getClobDepth` instead.
 
 Returns snapshot of the orderbook.
 

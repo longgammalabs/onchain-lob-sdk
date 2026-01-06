@@ -3,6 +3,7 @@ export { OnchainLobSpotMarketContract, type OnchainLobSpotMarketContractOptions 
 
 export type {
   ApproveSpotParams,
+  SetProxyTraderPermissionsSpotParams,
   DepositSpotParams,
   WithdrawSpotParams,
   PlaceOrderSpotParams,

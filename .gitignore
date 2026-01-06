@@ -1,5 +1,4 @@
 **/node_modules/
-dist
 **/build/
 **/temp/
 coverage/
@@ -8,3 +7,4 @@ coverage/
 .env.local
 .DS_Store
 .env
+dist

@@ -15,6 +15,7 @@ export interface VaultListItemDto {
   userDepositUsd: number;
   creationTimestamp: number;
   isUserGenerated: boolean;
+  isDeprecated: boolean;
 }
 
 export interface VaultConfigDto {

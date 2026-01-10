@@ -20,7 +20,7 @@ import type {
   WithdrawSpotParams,
   WrapNativeTokenSpotParams
 } from './params';
-import { erc20Abi, lobAbi, erc20PermitAbi, erc20WethAbi, fastQuoterProxyAbi } from '../abi';
+import { erc20Abi, lobAbi, lobV2Abi, erc20PermitAbi, erc20WethAbi, fastQuoterProxyAbi } from '../abi';
 import type { Market, Token } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -81,7 +81,7 @@ export class OnchainLobSpotMarketContract {
     this.fastWaitTransactionInterval = options.fastWaitTransactionInterval ?? OnchainLobSpotMarketContract.defaultFastWaitTransactionInterval;
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
-    this.marketContract = new Contract(this.market.orderbookAddress, lobAbi, options.signer);
+    this.marketContract = new Contract(this.market.orderbookAddress, this.market.fastQuoterProxyAddress ? lobV2Abi : lobAbi, options.signer);
     this.fastQuoterProxyContract = this.market.fastQuoterProxyAddress ? new Contract(this.market.fastQuoterProxyAddress, fastQuoterProxyAbi, options.signer) : null;
     this.baseTokenContract = new Contract(
       this.market.baseToken.contractAddress,

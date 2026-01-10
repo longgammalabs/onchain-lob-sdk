@@ -1,7 +1,13 @@
-export const lobAbi = [
+export const lobV2Abi = [
   {
     type: "constructor",
-    inputs: [],
+    inputs: [
+      {
+        name: "_watch_dog",
+        type: "address",
+        internalType: "address"
+      }
+    ],
     stateMutability: "nonpayable"
   },
   {
@@ -30,76 +36,50 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "batchChangeOrder",
+    name: "allowedTraders",
     inputs: [
       {
-        name: "order_ids",
-        type: "uint64[]",
-        internalType: "uint64[]"
-      },
-      {
-        name: "quantities",
-        type: "uint128[]",
-        internalType: "uint128[]"
-      },
-      {
-        name: "prices",
-        type: "uint72[]",
-        internalType: "uint72[]"
-      },
-      {
-        name: "max_commission_per_order",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "post_only",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "transfer_tokens",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
+        name: "",
+        type: "address",
+        internalType: "address"
       }
     ],
     outputs: [
       {
-        name: "new_order_ids",
-        type: "uint64[]",
-        internalType: "uint64[]"
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "batchExecute",
+    inputs: [
+      {
+        name: "data",
+        type: "bytes[]",
+        internalType: "bytes[]"
+      }
+    ],
+    outputs: [
+      {
+        name: "results",
+        type: "bytes[]",
+        internalType: "bytes[]"
       }
     ],
     stateMutability: "nonpayable"
   },
   {
     type: "function",
-    name: "batchClaim",
+    name: "changeFeesReceiver",
     inputs: [
       {
-        name: "addresses",
-        type: "address[]",
-        internalType: "address[]"
-      },
-      {
-        name: "order_ids",
-        type: "uint64[]",
-        internalType: "uint64[]"
-      },
-      {
-        name: "only_claim",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
+        name: "fees_receiver",
+        type: "address",
+        internalType: "address"
       }
     ],
     outputs: [],
@@ -130,55 +110,6 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "changeOrder",
-    inputs: [
-      {
-        name: "old_order_id",
-        type: "uint64",
-        internalType: "uint64"
-      },
-      {
-        name: "new_quantity",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "new_price",
-        type: "uint72",
-        internalType: "uint72"
-      },
-      {
-        name: "max_commission",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "post_only",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "transfer_tokens",
-        type: "bool",
-        internalType: "bool"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
-      }
-    ],
-    outputs: [
-      {
-        name: "order_id",
-        type: "uint64",
-        internalType: "uint64"
-      }
-    ],
-    stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
     name: "changePauser",
     inputs: [
       {
@@ -195,6 +126,11 @@ export const lobAbi = [
     name: "claimOrder",
     inputs: [
       {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
+      },
+      {
         name: "order_id",
         type: "uint64",
         internalType: "uint64"
@@ -210,6 +146,11 @@ export const lobAbi = [
         internalType: "bool"
       },
       {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
         name: "expires",
         type: "uint256",
         internalType: "uint256"
@@ -238,56 +179,16 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "depositTokens",
-    inputs: [
+    name: "feesReceiver",
+    inputs: [],
+    outputs: [
       {
-        name: "token_x_amount",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "token_y_amount",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "v_x",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "r_x",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "s_x",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "v_y",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "r_y",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "s_y",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "expires",
-        type: "uint256",
-        internalType: "uint256"
+        name: "",
+        type: "address",
+        internalType: "address"
       }
     ],
-    outputs: [],
-    stateMutability: "nonpayable"
+    stateMutability: "view"
   },
   {
     type: "function",
@@ -295,9 +196,27 @@ export const lobAbi = [
     inputs: [],
     outputs: [
       {
-        name: "",
+        name: "token_amount",
         type: "uint256",
         internalType: "uint256"
+      },
+      {
+        name: "raw_fees",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getBidAskConsumerAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
       }
     ],
     stateMutability: "view"
@@ -377,7 +296,7 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "getTraderBalance",
+    name: "getTraderConfig",
     inputs: [
       {
         name: "address_",
@@ -388,18 +307,31 @@ export const lobAbi = [
     outputs: [
       {
         name: "",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
-        name: "",
-        type: "uint128",
-        internalType: "uint128"
+        type: "bool",
+        internalType: "bool"
       },
       {
         name: "",
         type: "bool",
         internalType: "bool"
+      },
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getWatchDogAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
       }
     ],
     stateMutability: "view"
@@ -489,7 +421,7 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "marketmaker_config",
+    name: "marketMakerConfig",
     inputs: [],
     outputs: [
       {
@@ -602,11 +534,6 @@ export const lobAbi = [
         internalType: "uint128"
       },
       {
-        name: "amount_to_approve",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
         name: "transfer_executed_tokens",
         type: "bool",
         internalType: "bool"
@@ -615,21 +542,6 @@ export const lobAbi = [
         name: "expires",
         type: "uint256",
         internalType: "uint256"
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32"
       }
     ],
     outputs: [
@@ -653,7 +565,7 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "placeMarketOrderWithTargetValue",
+    name: "placeMarketOrderWithTargetValueByProxy",
     inputs: [
       {
         name: "isAsk",
@@ -679,6 +591,16 @@ export const lobAbi = [
         name: "transfer_executed_tokens",
         type: "bool",
         internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
       },
       {
         name: "expires",
@@ -730,11 +652,6 @@ export const lobAbi = [
         internalType: "uint128"
       },
       {
-        name: "amount_to_approve",
-        type: "uint128",
-        internalType: "uint128"
-      },
-      {
         name: "market_only",
         type: "bool",
         internalType: "bool"
@@ -753,21 +670,6 @@ export const lobAbi = [
         name: "expires",
         type: "uint256",
         internalType: "uint256"
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8"
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32"
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32"
       }
     ],
     outputs: [
@@ -796,7 +698,7 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "placeOrder",
+    name: "placeOrderByProxy",
     inputs: [
       {
         name: "isAsk",
@@ -832,6 +734,16 @@ export const lobAbi = [
         name: "transfer_executed_tokens",
         type: "bool",
         internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "order_owner",
+        type: "address",
+        internalType: "address"
       },
       {
         name: "expires",
@@ -878,6 +790,35 @@ export const lobAbi = [
   },
   {
     type: "function",
+    name: "proxyTraderPermissions",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
     name: "renounceOwnership",
     inputs: [],
     outputs: [],
@@ -885,16 +826,130 @@ export const lobAbi = [
   },
   {
     type: "function",
-    name: "setClaimableStatus",
+    name: "setAllowedTrader",
     inputs: [
       {
-        name: "status",
+        name: "trader",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "isAllowed",
         type: "bool",
         internalType: "bool"
       }
     ],
     outputs: [],
     stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "setBidAskConsumer",
+    inputs: [
+      {
+        name: "consumerAddress",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "setProxyTraderPermissions",
+    inputs: [
+      {
+        name: "proxy_trader",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "allow_create",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "setTraderConfig",
+    inputs: [
+      {
+        name: "is_claimable",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "transfer_tokens",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "setTraderFilterEnabled",
+    inputs: [
+      {
+        name: "_enabled",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "traderBalances",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "token_x",
+        type: "uint128",
+        internalType: "uint128"
+      },
+      {
+        name: "token_y",
+        type: "uint128",
+        internalType: "uint128"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "traderFilterEnabled",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
   },
   {
     type: "function",
@@ -911,6 +966,44 @@ export const lobAbi = [
         name: "newOwner",
         type: "address",
         internalType: "address"
+      }
+    ],
+    outputs: [],
+    stateMutability: "nonpayable"
+  },
+  {
+    type: "function",
+    name: "tryPermitEIP2612",
+    inputs: [
+      {
+        name: "is_token_x",
+        type: "bool",
+        internalType: "bool"
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "expires",
+        type: "uint256",
+        internalType: "uint256"
+      },
+      {
+        name: "v",
+        type: "uint8",
+        internalType: "uint8"
+      },
+      {
+        name: "r",
+        type: "bytes32",
+        internalType: "bytes32"
+      },
+      {
+        name: "s",
+        type: "bytes32",
+        internalType: "bytes32"
       }
     ],
     outputs: [],
@@ -959,6 +1052,11 @@ export const lobAbi = [
         name: "token_y_amount",
         type: "uint128",
         internalType: "uint128"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        internalType: "bool"
       }
     ],
     outputs: [],
@@ -966,16 +1064,16 @@ export const lobAbi = [
   },
   {
     type: "event",
-    name: "ClaimableStatusChanged",
+    name: "AllowedTraderChanged",
     inputs: [
       {
-        name: "owner",
+        name: "trader",
         type: "address",
         indexed: true,
         internalType: "address"
       },
       {
-        name: "status",
+        name: "isAllowed",
         type: "bool",
         indexed: false,
         internalType: "bool"
@@ -1004,6 +1102,25 @@ export const lobAbi = [
         type: "uint128",
         indexed: false,
         internalType: "uint128"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "FeesReceiverChanged",
+    inputs: [
+      {
+        name: "new_fees_receiver",
+        type: "address",
+        indexed: false,
+        internalType: "address"
+      },
+      {
+        name: "old_fees_receiver",
+        type: "address",
+        indexed: false,
+        internalType: "address"
       }
     ],
     anonymous: false
@@ -1089,6 +1206,12 @@ export const lobAbi = [
     inputs: [
       {
         name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "initiator",
         type: "address",
         indexed: true,
         internalType: "address"
@@ -1234,6 +1357,81 @@ export const lobAbi = [
   },
   {
     type: "event",
+    name: "ProxyTraderPermissionsChanged",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "proxy_trader",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "allow_create",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "allow_cancel",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "TraderConfigChanged",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address"
+      },
+      {
+        name: "claimable",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "transfer_tokens",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      },
+      {
+        name: "withdraw_as_native_eth",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
+    name: "TraderFilterEnabledUpdated",
+    inputs: [
+      {
+        name: "enabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool"
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: "event",
     name: "Unpaused",
     inputs: [
       {
@@ -1296,23 +1494,12 @@ export const lobAbi = [
   },
   {
     type: "error",
-    name: "AddressInsufficientBalance",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        internalType: "address"
-      }
-    ]
-  },
-  {
-    type: "error",
     name: "AddressIsZero",
     inputs: []
   },
   {
     type: "error",
-    name: "ArrayLengthMismatch",
+    name: "ChainIsUnstableForTrades",
     inputs: []
   },
   {
@@ -1358,7 +1545,7 @@ export const lobAbi = [
   },
   {
     type: "error",
-    name: "FailedInnerCall",
+    name: "FailedCall",
     inputs: []
   },
   {
@@ -1428,12 +1615,17 @@ export const lobAbi = [
   },
   {
     type: "error",
+    name: "NotATrader",
+    inputs: []
+  },
+  {
+    type: "error",
     name: "NotInitializing",
     inputs: []
   },
   {
     type: "error",
-    name: "OnlyOwnerCanCancelOrders",
+    name: "OnlyPrivilegedSenderCanCancelOrders",
     inputs: []
   },
   {

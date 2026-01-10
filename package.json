@@ -1,6 +1,6 @@
 {
   "name": "onchain-lob-sdk",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "license": "MIT",
   "engines": {
     "node": ">=20"

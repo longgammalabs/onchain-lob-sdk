@@ -163,6 +163,12 @@ export class OnchainLobVaultContract {
     const minLpMinted = this.convertTokensAmountToRawAmountIfNeeded(params.minLpMinted, this.vault.lpToken.decimals);
     const expires = getExpires();
 
+    const perFeedFeeRaw = this.convertTokensAmountToRawAmountIfNeeded(
+      params.perFeedFee ?? 1n,
+      18
+    );
+    const totalFee = perFeedFeeRaw * BigInt(priceUpdateFeedIds.length);
+
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.addLiquidity!(
@@ -173,7 +179,7 @@ export class OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
-          value: priceUpdateFeedIds.length,
+          value: totalFee,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,
@@ -205,6 +211,12 @@ export class OnchainLobVaultContract {
     const minTokenGet = this.convertTokensAmountToRawAmountIfNeeded(params.minTokenGet, token.decimals);
     const expires = getExpires();
 
+    const perFeedFeeRaw = this.convertTokensAmountToRawAmountIfNeeded(
+      params.perFeedFee ?? 1n,
+      18
+    );
+    const totalFee = perFeedFeeRaw * BigInt(priceUpdateFeedIds.length);
+
     const tx = await this.processContractMethodCall(
       this.vaultContract,
       this.vaultContract.removeLiquidity!(
@@ -215,7 +227,7 @@ export class OnchainLobVaultContract {
         expires,
         priceUpdateData,
         {
-          value: priceUpdateFeedIds.length,
+          value: totalFee,
           gasLimit: params.gasLimit,
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,

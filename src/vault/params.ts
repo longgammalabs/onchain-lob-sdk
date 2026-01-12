@@ -183,6 +183,17 @@ export interface AddLiquidityVaultParams extends TransactionParams {
      * @type {BigNumber | bigint}
      */
   minLpMinted: BigNumber | bigint;
+
+  /**
+   * The fee to update one price feed. Will be multiplied by the number of price feeds to update.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   * @optional
+   * @default 1n
+   */
+  perFeedFee?: BigNumber | bigint;
 }
 
 /**
@@ -231,6 +242,17 @@ export interface RemoveLiquidityVaultParams extends TransactionParams {
      * @type {BigNumber | bigint}
      */
   minTokenGet: BigNumber | bigint;
+
+  /**
+   * The fee to update one price feed. Will be multiplied by the number of price feeds to update.
+   * If `bigint` is provided, then the token's contract unit is used.
+   * If `BigNumber` is provided, then the scaled unit with the token's decimals is used.
+   *
+   * @type {BigNumber | bigint}
+   * @optional
+   * @default 1n
+   */
+  perFeedFee?: BigNumber | bigint;
 }
 
 export interface SubscribeToVaultTotalValuesParams {

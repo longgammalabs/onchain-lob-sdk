@@ -1,0 +1,64 @@
+import { Contract, type Signer, ContractTransactionResponse } from 'ethers';
+import type { CustomSignTransaction } from '../onchainLobClient';
+import type { ApproveSpotParams, BatchChangeOrderSpotParams, BatchClaimOrderSpotParams, BatchPlaceOrderSpotParams, ChangeOrderSpotParams, ClaimOrderSpotParams, DepositSpotParams, PlaceMarketOrderWithTargetValueParams, PlaceMarketOrderWithTargetValueWithPermitParams, PlaceOrderSpotParams, PlaceOrderWithPermitSpotParams, SetClaimableStatusParams, SetProxyTraderPermissionsSpotParams, UnwrapNativeTokenSpotParams, WithdrawSpotParams, WrapNativeTokenSpotParams } from './params';
+import type { Market, Token } from '../models';
+export interface OnchainLobSpotMarketContractOptions {
+    market: Market;
+    signer: Signer;
+    transferExecutedTokensEnabled?: boolean;
+    autoWaitTransaction?: boolean;
+    fastWaitTransaction?: boolean;
+    fastWaitTransactionInterval?: number;
+    fastWaitTransactionTimeout?: number;
+    syncSendRawTransaction?: boolean;
+    customSignTransaction?: CustomSignTransaction;
+}
+type ReadonlyMarket = Readonly<Omit<Market, 'baseToken' | 'quoteToken'>> & Readonly<{
+    baseToken: Readonly<Token>;
+    quoteToken: Readonly<Token>;
+}>;
+export declare class OnchainLobSpotMarketContract {
+    static readonly defaultTransferExecutedTokensEnabled = true;
+    static readonly defaultAutoWaitTransaction = true;
+    static readonly defaultFastWaitTransaction = false;
+    static readonly defaultFastWaitTransactionInterval = 100;
+    readonly market: ReadonlyMarket;
+    transferExecutedTokensEnabled: boolean;
+    autoWaitTransaction: boolean;
+    fastWaitTransaction: boolean;
+    fastWaitTransactionInterval: number;
+    fastWaitTransactionTimeout?: number;
+    syncSendRawTransaction: boolean;
+    customSignTransaction?: CustomSignTransaction;
+    protected readonly signer: Signer;
+    protected readonly marketContract: Contract;
+    protected readonly fastQuoterProxyContract: Contract | null;
+    protected readonly baseTokenContract: Contract;
+    protected readonly quoteTokenContract: Contract;
+    private _chainId;
+    protected get chainId(): Promise<bigint>;
+    constructor(options: Readonly<OnchainLobSpotMarketContractOptions>);
+    approveTokens(params: ApproveSpotParams): Promise<ContractTransactionResponse>;
+    setProxyTraderPermissions(params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse>;
+    depositTokens(params: DepositSpotParams): Promise<ContractTransactionResponse>;
+    withdrawTokens(params: WithdrawSpotParams): Promise<ContractTransactionResponse>;
+    setClaimableStatus(params: SetClaimableStatusParams): Promise<ContractTransactionResponse>;
+    placeOrder(params: PlaceOrderSpotParams): Promise<ContractTransactionResponse>;
+    placeOrderWithPermit(params: PlaceOrderWithPermitSpotParams): Promise<ContractTransactionResponse>;
+    placeMarketOrderWithTargetValue(params: PlaceMarketOrderWithTargetValueParams): Promise<ContractTransactionResponse>;
+    placeMarketOrderWithTargetValueWithPermit(params: PlaceMarketOrderWithTargetValueWithPermitParams): Promise<ContractTransactionResponse>;
+    batchPlaceOrder(params: BatchPlaceOrderSpotParams): Promise<ContractTransactionResponse>;
+    claimOrder(params: ClaimOrderSpotParams): Promise<ContractTransactionResponse>;
+    batchClaim(params: BatchClaimOrderSpotParams): Promise<ContractTransactionResponse>;
+    changeOrder(params: ChangeOrderSpotParams): Promise<ContractTransactionResponse>;
+    batchChangeOrder(params: BatchChangeOrderSpotParams): Promise<ContractTransactionResponse>;
+    wrapNativeToken(params: WrapNativeTokenSpotParams): Promise<ContractTransactionResponse>;
+    unwrapNativeToken(params: UnwrapNativeTokenSpotParams): Promise<ContractTransactionResponse>;
+    protected processContractMethodCall(contract: Contract, method: any, args: any[]): Promise<ContractTransactionResponse>;
+    protected processContractMethodCallSync(contract: Contract, method: any, args: any[]): Promise<ContractTransactionResponse>;
+    private convertTokensAmountToRawAmountIfNeeded;
+    private calculateMaxCommission;
+    private calculateMaxCommissionPerOrder;
+    private signPermit;
+}
+export {};

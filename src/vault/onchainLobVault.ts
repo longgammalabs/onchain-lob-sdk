@@ -1,4 +1,5 @@
 import { Signer } from 'ethers/providers';
+import type { CustomSignTransaction } from '../onchainLobClient';
 import { EventEmitter, type PublicEventEmitter, type ToEventEmitter } from '../common';
 import type { VaultConfig, VaultTotalValuesUpdate,
   VaultHistoryUpdate,
@@ -112,6 +113,30 @@ export interface OnchainLobVaultOptions {
    * @optional
    */
   fastWaitTransactionTimeout?: number;
+
+  /**
+   * Whether to use eth_sendRawTransactionSync for sending transactions.
+   * This sends transactions synchronously and returns the receipt immediately (~50ms),
+   * instead of waiting for block inclusion (~500ms+).
+   *
+   * Requires a signer that supports signTransaction() (e.g. ethers.Wallet).
+   * For browser wallets (MetaMask, etc.) that don't support signTransaction,
+   * the SDK will silently fall back to the standard transaction flow.
+   *
+   * @type {boolean}
+   * @optional
+   */
+  syncSendRawTransaction?: boolean;
+
+  /**
+   * A custom function for signing transactions.
+   * Use this when the signer does not support signTransaction() natively
+   * (e.g. Privy embedded wallets via useSignTransaction hook).
+   *
+   * @type {CustomSignTransaction}
+   * @optional
+   */
+  customSignTransaction?: CustomSignTransaction;
 }
 
 /**
@@ -182,6 +207,8 @@ export class OnchainLobVault {
    * Note: "Wait" means that the client will wait until the transaction confirmation is received.
    */
   autoWaitTransaction: boolean | undefined;
+  syncSendRawTransaction: boolean | undefined;
+  customSignTransaction: CustomSignTransaction | undefined;
 
   protected signer: Signer | null;
 
@@ -195,6 +222,8 @@ export class OnchainLobVault {
   constructor(options: Readonly<OnchainLobVaultOptions>) {
     this.signer = options.signer;
     this.autoWaitTransaction = options.autoWaitTransaction;
+    this.syncSendRawTransaction = options.syncSendRawTransaction;
+    this.customSignTransaction = options.customSignTransaction;
     this.onchainLobService = new OnchainLobVaultService(options.apiBaseUrl);
     this.onchainLobWebSocketService = new OnchainLobVaultWebSocketService(options.webSocketApiBaseUrl);
     this.mappers = mappers;
@@ -208,8 +237,12 @@ export class OnchainLobVault {
    * @param {Signer | null} signer - The new signer to be set. For only http/ws operations, you can set this to null.
    * @returns {OnchainLobVault} Returns the OnchainLobVault instance for method chaining.
    */
-  setSigner(signer: Signer | null): OnchainLobVault {
+  setSigner(signer: Signer | null, options?: { customSignTransaction?: CustomSignTransaction }): OnchainLobVault {
     this.signer = signer;
+    if (options?.customSignTransaction !== undefined) {
+      this.customSignTransaction = options.customSignTransaction;
+    }
+    this.vaultContracts = new Map();
     return this;
   }
 
@@ -520,6 +553,8 @@ export class OnchainLobVault {
         vault: vaultConfig,
         signer: this.signer,
         autoWaitTransaction: this.autoWaitTransaction,
+        syncSendRawTransaction: this.syncSendRawTransaction,
+        customSignTransaction: this.customSignTransaction,
       });
       this.vaultContracts.set(params.vault, vaultContract);
     }

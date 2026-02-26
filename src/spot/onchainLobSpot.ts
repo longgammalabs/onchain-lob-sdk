@@ -1,6 +1,7 @@
 import type { ContractTransactionResponse } from 'ethers';
 import type { Signer } from 'ethers/providers';
 
+import type { CustomSignTransaction } from '../onchainLobClient';
 import { OnchainLobSpotMarketContract } from './onchainLobSpotMarketContract';
 import * as mappers from './mappers';
 import type {
@@ -138,6 +139,30 @@ export interface OnchainLobSpotOptions {
    * @optional
    */
   fastWaitTransactionTimeout?: number;
+
+  /**
+   * Whether to use eth_sendRawTransactionSync for sending transactions.
+   * This sends transactions synchronously and returns the receipt immediately (~50ms),
+   * instead of waiting for block inclusion (~500ms+).
+   *
+   * Requires a signer that supports signTransaction() (e.g. ethers.Wallet).
+   * For browser wallets (MetaMask, etc.) that don't support signTransaction,
+   * the SDK will silently fall back to the standard transaction flow.
+   *
+   * @type {boolean}
+   * @optional
+   */
+  syncSendRawTransaction?: boolean;
+
+  /**
+   * A custom function for signing transactions.
+   * Use this when the signer does not support signTransaction() natively
+   * (e.g. Privy embedded wallets via useSignTransaction hook).
+   *
+   * @type {CustomSignTransaction}
+   * @optional
+   */
+  customSignTransaction?: CustomSignTransaction;
 }
 
 /**
@@ -259,6 +284,8 @@ export class OnchainLobSpot implements Disposable {
    * Note: "Wait" means that the client will wait until the transaction confirmation is received.
    */
   autoWaitTransaction: boolean | undefined;
+  syncSendRawTransaction: boolean | undefined;
+  customSignTransaction: CustomSignTransaction | undefined;
 
   protected signer: Signer | null;
   protected readonly onchainLobService: OnchainLobSpotService;
@@ -272,6 +299,8 @@ export class OnchainLobSpot implements Disposable {
     this.signer = options.signer;
     this.transferExecutedTokensEnabled = options.transferExecutedTokensEnabled;
     this.autoWaitTransaction = options.autoWaitTransaction;
+    this.syncSendRawTransaction = options.syncSendRawTransaction;
+    this.customSignTransaction = options.customSignTransaction;
     this.onchainLobService = new OnchainLobSpotService(options.apiBaseUrl);
     this.onchainLobWebSocketService = new OnchainLobSpotWebSocketService(options.webSocketApiBaseUrl, options.webSocketConnectImmediately);
     this.mappers = mappers;
@@ -285,8 +314,11 @@ export class OnchainLobSpot implements Disposable {
    * @param {Signer | null} signer - The new signer to be set. For only http/ws operations, you can set this to null.
    * @returns {OnchainLobSpot} Returns the OnchainLobSpot instance for method chaining.
    */
-  setSigner(signer: Signer | null): OnchainLobSpot {
+  setSigner(signer: Signer | null, options?: { customSignTransaction?: CustomSignTransaction }): OnchainLobSpot {
     this.signer = signer;
+    if (options?.customSignTransaction !== undefined) {
+      this.customSignTransaction = options.customSignTransaction;
+    }
     this.marketContracts = new Map();
     return this;
   }
@@ -934,6 +966,8 @@ export class OnchainLobSpot implements Disposable {
         signer: this.signer,
         transferExecutedTokensEnabled: this.transferExecutedTokensEnabled,
         autoWaitTransaction: this.autoWaitTransaction,
+        syncSendRawTransaction: this.syncSendRawTransaction,
+        customSignTransaction: this.customSignTransaction,
       });
       this.marketContracts.set(params.market, marketContract);
     }

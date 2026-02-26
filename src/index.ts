@@ -8,7 +8,8 @@ export {
 export {
   OnchainLobClient,
 
-  type OnchainLobClientOptions
+  type OnchainLobClientOptions,
+  type CustomSignTransaction
 } from './onchainLobClient';
 
 export {
@@ -16,18 +17,26 @@ export {
 
   type OnchainLobSpotOptions,
   type ApproveSpotParams,
+  type SetProxyTraderPermissionsSpotParams,
+  type WrapNativeTokenSpotParams,
+  type UnwrapNativeTokenSpotParams,
   type DepositSpotParams,
   type WithdrawSpotParams,
+  type SetClaimableStatusParams,
   type PlaceOrderSpotParams,
   type PlaceOrderWithPermitSpotParams,
   type PlaceMarketOrderWithTargetValueParams,
   type PlaceMarketOrderWithTargetValueWithPermitParams,
+  type BatchPlaceOrderSpotParams,
   type ChangeOrderSpotParams,
+  type BatchChangeOrderSpotParams,
   type ClaimOrderSpotParams,
+  type BatchClaimOrderSpotParams,
 
   type GetOrderbookParams,
   type GetClobDepthParams,
   type GetOrdersParams,
+  type GetOrderHistoryParams,
   type GetTradesParams,
   type GetFillsParams,
   type GetTokensParams,

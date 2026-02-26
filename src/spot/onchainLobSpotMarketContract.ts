@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
-import { Contract, type Signer, ContractTransactionResponse, Signature } from 'ethers';
+import { Contract, type Signer, ContractTransactionResponse, Signature, Transaction, TransactionResponse } from 'ethers';
 
+import type { CustomSignTransaction } from '../onchainLobClient';
 import { TransactionFailedError } from './errors';
 import type {
   ApproveSpotParams,
@@ -33,6 +34,8 @@ export interface OnchainLobSpotMarketContractOptions {
   fastWaitTransaction?: boolean;
   fastWaitTransactionInterval?: number;
   fastWaitTransactionTimeout?: number;
+  syncSendRawTransaction?: boolean;
+  customSignTransaction?: CustomSignTransaction;
 }
 
 const DEFAULT_MAX_COMMISSION = 340282366920938463463374607431768211455n; // 2^128 - 1
@@ -55,6 +58,8 @@ export class OnchainLobSpotMarketContract {
   fastWaitTransaction: boolean;
   fastWaitTransactionInterval: number;
   fastWaitTransactionTimeout?: number;
+  syncSendRawTransaction: boolean;
+  customSignTransaction?: CustomSignTransaction;
 
   protected readonly signer: Signer;
   protected readonly marketContract: Contract;
@@ -80,6 +85,8 @@ export class OnchainLobSpotMarketContract {
     this.fastWaitTransaction = options.fastWaitTransaction ?? OnchainLobSpotMarketContract.defaultFastWaitTransaction;
     this.fastWaitTransactionInterval = options.fastWaitTransactionInterval ?? OnchainLobSpotMarketContract.defaultFastWaitTransactionInterval;
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
+    this.syncSendRawTransaction = options.syncSendRawTransaction ?? false;
+    this.customSignTransaction = options.customSignTransaction;
 
     this.marketContract = new Contract(this.market.orderbookAddress, this.market.fastQuoterProxyAddress ? lobV2Abi : lobAbi, options.signer);
     this.fastQuoterProxyContract = this.market.fastQuoterProxyAddress ? new Contract(this.market.fastQuoterProxyAddress, fastQuoterProxyAbi, options.signer) : null;
@@ -115,7 +122,8 @@ export class OnchainLobSpotMarketContract {
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const tx = await this.processContractMethodCall(
       tokenContract,
-      tokenContract.approve!(
+      tokenContract.approve!,
+      [
         executorAddress,
         amount,
         {
@@ -124,7 +132,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      ));
+      ]);
 
     return tx;
   }
@@ -136,7 +144,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.setProxyTraderPermissions!(
+      this.marketContract.setProxyTraderPermissions!,
+      [
         this.market.fastQuoterProxyAddress,
         params.allowCreate,
         params.allowCancel,
@@ -146,7 +155,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      ));
+      ]);
 
     return tx;
   }
@@ -157,7 +166,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.depositTokens!(
+      this.marketContract.depositTokens!,
+      [
         baseTokenAmount,
         quoteTokenAmount,
         {
@@ -166,7 +176,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -188,7 +198,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.withdrawTokens!(
+      this.marketContract.withdrawTokens!,
+      [
         withdrawAll,
         baseTokenAmount,
         quoteTokenAmount,
@@ -198,7 +209,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -207,7 +218,8 @@ export class OnchainLobSpotMarketContract {
   async setClaimableStatus(params: SetClaimableStatusParams): Promise<ContractTransactionResponse> {
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.setClaimableStatus!(
+      this.marketContract.setClaimableStatus!,
+      [
         params.status,
         {
           gasLimit: params.gasLimit,
@@ -215,7 +227,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -248,7 +260,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       contract,
-      contract.placeOrder!(
+      contract.placeOrder!,
+      [
         params.side === 'ask',
         sizeAmount,
         priceAmount,
@@ -264,7 +277,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -306,7 +319,8 @@ export class OnchainLobSpotMarketContract {
     const { v, r, s } = await this.signPermit(params.side === 'ask', quantityToPermit, expires);
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.placeOrder!(
+      this.marketContract.placeOrder!,
+      [
         params.side === 'ask',
         sizeAmount,
         priceAmount,
@@ -325,7 +339,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -358,7 +372,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       contract,
-      contract.placeMarketOrderWithTargetValue!(
+      contract.placeMarketOrderWithTargetValue!,
+      [
         params.side === 'ask',
         targetTokenYValue,
         priceAmount,
@@ -372,7 +387,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -415,7 +430,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.placeMarketOrderWithTargetValue!(
+      this.marketContract.placeMarketOrderWithTargetValue!,
+      [
         params.side === 'ask',
         targetTokenYValue,
         priceAmount,
@@ -432,7 +448,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -454,7 +470,8 @@ export class OnchainLobSpotMarketContract {
     const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
       contract,
-      contract.batchChangeOrder!(
+      contract.batchChangeOrder!,
+      [
         idsAsDirections,
         sizeAmounts,
         priceAmounts,
@@ -468,7 +485,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -481,7 +498,8 @@ export class OnchainLobSpotMarketContract {
     const contract = useFastQuoterProxy && this.fastQuoterProxyContract ? this.fastQuoterProxyContract : this.marketContract;
     const tx = await this.processContractMethodCall(
       contract,
-      contract.claimOrder!(
+      contract.claimOrder!,
+      [
         params.orderId,
         params.onlyClaim,
         params.transferExecutedTokens ?? this.transferExecutedTokensEnabled,
@@ -491,8 +509,8 @@ export class OnchainLobSpotMarketContract {
           nonce: params.nonce,
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
-        })
-    );
+        }
+      ]);
 
     return tx;
   }
@@ -512,7 +530,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       contract,
-      contract.batchClaim!(
+      contract.batchClaim!,
+      [
         addresses,
         orderIds,
         params.onlyClaim,
@@ -523,7 +542,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -537,7 +556,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       this.marketContract,
-      this.marketContract.changeOrder!(
+      this.marketContract.changeOrder!,
+      [
         params.orderId,
         sizeAmount,
         priceAmount,
@@ -551,7 +571,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -575,7 +595,8 @@ export class OnchainLobSpotMarketContract {
 
     const tx = await this.processContractMethodCall(
       contract,
-      contract.batchChangeOrder!(
+      contract.batchChangeOrder!,
+      [
         orderIds,
         newSizes,
         newPrices,
@@ -589,7 +610,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      )
+      ]
     );
 
     return tx;
@@ -615,7 +636,8 @@ export class OnchainLobSpotMarketContract {
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const tx = await this.processContractMethodCall(
       tokenContract,
-      tokenContract.deposit!(
+      tokenContract.deposit!,
+      [
         {
           value: amount,
           gasLimit: params.gasLimit,
@@ -623,7 +645,7 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      ));
+      ]);
 
     return tx;
   }
@@ -648,7 +670,8 @@ export class OnchainLobSpotMarketContract {
     const amount = this.convertTokensAmountToRawAmountIfNeeded(params.amount, token.decimals);
     const tx = await this.processContractMethodCall(
       tokenContract,
-      tokenContract.withdraw!(
+      tokenContract.withdraw!,
+      [
         amount,
         {
           gasLimit: params.gasLimit,
@@ -656,17 +679,53 @@ export class OnchainLobSpotMarketContract {
           maxFeePerGas: params.maxFeePerGas,
           maxPriorityFeePerGas: params.maxPriorityFeePerGas,
         }
-      ));
+      ]);
 
     return tx;
   }
 
-  protected async processContractMethodCall(contract: Contract, methodCall: Promise<ContractTransactionResponse>): Promise<ContractTransactionResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected async processContractMethodCall(contract: Contract, method: any, args: any[]): Promise<ContractTransactionResponse> {
+    const methodName = method.fragment?.name ?? method.name ?? 'unknown';
+    if (this.syncSendRawTransaction) {
+      try {
+        console.log(`[onchain-lob-sdk] Sending tx via syncSendRawTransaction: ${methodName}`);
+        return await this.processContractMethodCallSync(contract, method, args);
+      }
+      catch (error: any) {
+        if (error.code === 'UNSUPPORTED_OPERATION'
+          || error.message?.includes('eth_signTransaction')
+          || error.error?.message?.includes('Method not supported')
+        ) {
+          console.log(`[onchain-lob-sdk] syncSendRawTransaction not supported, falling back to normal flow: ${methodName}`, error.message);
+          // signTransaction not supported (e.g. browser wallet) — fall through to normal flow
+        }
+        else {
+          if (error.data) {
+            try {
+              const decodedError = contract.interface.parseError(error.data);
+              throw new TransactionFailedError(error.data, decodedError, { cause: error });
+            }
+            catch (parseError) {
+              if (parseError instanceof TransactionFailedError) throw parseError;
+              console.error('Failed to parse contract error:', parseError);
+              throw error;
+            }
+          }
+          throw error;
+        }
+      }
+    }
+
+    console.log(`[onchain-lob-sdk] Sending tx via normal flow (eth_sendTransaction): ${methodName}`);
+    const normalStart = Date.now();
     try {
-      const tx = await methodCall;
+      const tx = await method(...args);
+      console.log(`[onchain-lob-sdk] Tx sent: ${methodName}, hash: ${tx.hash}, took ${Date.now() - normalStart}ms`);
 
       if (this.autoWaitTransaction) {
         if (this.fastWaitTransaction) {
+          console.log(`[onchain-lob-sdk] Waiting for tx (fast): ${methodName}`);
           const startingTime = Date.now();
           let receipt = await tx.provider.getTransactionReceipt(tx.hash);
 
@@ -680,6 +739,7 @@ export class OnchainLobSpotMarketContract {
           }
         }
         else {
+          console.log(`[onchain-lob-sdk] Waiting for tx (wait): ${methodName}`);
           await tx.wait();
         }
       }
@@ -694,6 +754,7 @@ export class OnchainLobSpotMarketContract {
         }
         catch (parseError) {
           // If error parsing fails, throw the original error
+          if (parseError instanceof TransactionFailedError) throw parseError;
           console.error('Failed to parse contract error:', parseError);
           throw error;
         }
@@ -701,6 +762,76 @@ export class OnchainLobSpotMarketContract {
 
       throw error;
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected async processContractMethodCallSync(contract: Contract, method: any, args: any[]): Promise<ContractTransactionResponse> {
+    const methodName = method.fragment?.name ?? method.name ?? 'unknown';
+    const totalStart = Date.now();
+    let stepStart = totalStart;
+
+    const contractTx = await method.populateTransaction(...args);
+    console.log(`[onchain-lob-sdk] syncSend [${methodName}] populateTransaction: ${Date.now() - stepStart}ms`);
+
+    stepStart = Date.now();
+    const populatedTx = await this.signer.populateTransaction(contractTx);
+    console.log(`[onchain-lob-sdk] syncSend [${methodName}] signer.populateTransaction: ${Date.now() - stepStart}ms`);
+
+    const provider = this.signer.provider!;
+
+    if (!populatedTx.gasLimit) {
+      stepStart = Date.now();
+      populatedTx.gasLimit = await provider.estimateGas(populatedTx);
+      console.log(`[onchain-lob-sdk] syncSend [${methodName}] estimateGas: ${Date.now() - stepStart}ms`);
+    }
+    if (!populatedTx.maxFeePerGas) {
+      stepStart = Date.now();
+      const feeData = await provider.getFeeData();
+      populatedTx.maxFeePerGas = feeData.maxFeePerGas;
+      populatedTx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+      console.log(`[onchain-lob-sdk] syncSend [${methodName}] getFeeData: ${Date.now() - stepStart}ms`);
+    }
+    if (populatedTx.nonce === undefined || populatedTx.nonce === null || populatedTx.nonce === 0) {
+      stepStart = Date.now();
+      const address = await this.signer.getAddress();
+      populatedTx.nonce = await provider.getTransactionCount(address, 'pending');
+      console.log(`[onchain-lob-sdk] syncSend [${methodName}] getTransactionCount: ${Date.now() - stepStart}ms`);
+    }
+
+    stepStart = Date.now();
+    const signedTx = this.customSignTransaction
+      ? await this.customSignTransaction(populatedTx)
+      : await this.signer.signTransaction(populatedTx);
+    console.log(`[onchain-lob-sdk] syncSend [${methodName}] sign (${this.customSignTransaction ? 'custom' : 'signer'}): ${Date.now() - stepStart}ms`);
+
+    const txObj = Transaction.from(signedTx);
+
+    stepStart = Date.now();
+    const result = await (provider as any).send('eth_sendRawTransactionSync', [signedTx, 'pending']);
+    const hash: string = typeof result === 'string' ? result : result.transactionHash;
+    console.log(`[onchain-lob-sdk] syncSend [${methodName}] eth_sendRawTransactionSync: ${Date.now() - stepStart}ms`);
+    console.log(`[onchain-lob-sdk] syncSend [${methodName}] TOTAL: ${Date.now() - totalStart}ms, hash: ${hash}`);
+
+    const baseTxResponse = new TransactionResponse({
+      blockNumber: null,
+      blockHash: null,
+      hash: hash ?? txObj.hash!,
+      index: 0,
+      type: txObj.type ?? 2,
+      to: txObj.to,
+      from: txObj.from!,
+      nonce: txObj.nonce,
+      gasLimit: txObj.gasLimit,
+      gasPrice: txObj.gasPrice ?? 0n,
+      maxPriorityFeePerGas: txObj.maxPriorityFeePerGas ?? 0n,
+      maxFeePerGas: txObj.maxFeePerGas,
+      data: txObj.data,
+      value: txObj.value,
+      chainId: txObj.chainId,
+      signature: txObj.signature!,
+      accessList: txObj.accessList,
+    }, provider);
+    return new ContractTransactionResponse(contract.interface, provider, baseTxResponse);
   }
 
   private convertTokensAmountToRawAmountIfNeeded(amount: BigNumber | bigint, decimals: number): bigint {

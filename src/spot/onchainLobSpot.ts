@@ -259,6 +259,9 @@ export class OnchainLobSpot implements Disposable {
    * Note: "Wait" means that the client will wait until the transaction confirmation is received.
    */
   autoWaitTransaction: boolean | undefined;
+  fastWaitTransaction: boolean | undefined;
+  fastWaitTransactionInterval: number | undefined;
+  fastWaitTransactionTimeout: number | undefined;
 
   protected signer: Signer | null;
   protected readonly onchainLobService: OnchainLobSpotService;
@@ -272,6 +275,9 @@ export class OnchainLobSpot implements Disposable {
     this.signer = options.signer;
     this.transferExecutedTokensEnabled = options.transferExecutedTokensEnabled;
     this.autoWaitTransaction = options.autoWaitTransaction;
+    this.fastWaitTransaction = options.fastWaitTransaction;
+    this.fastWaitTransactionInterval = options.fastWaitTransactionInterval;
+    this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
     this.onchainLobService = new OnchainLobSpotService(options.apiBaseUrl);
     this.onchainLobWebSocketService = new OnchainLobSpotWebSocketService(options.webSocketApiBaseUrl, options.webSocketConnectImmediately);
     this.mappers = mappers;
@@ -934,6 +940,9 @@ export class OnchainLobSpot implements Disposable {
         signer: this.signer,
         transferExecutedTokensEnabled: this.transferExecutedTokensEnabled,
         autoWaitTransaction: this.autoWaitTransaction,
+        fastWaitTransaction: this.fastWaitTransaction,
+        fastWaitTransactionInterval: this.fastWaitTransactionInterval,
+        fastWaitTransactionTimeout: this.fastWaitTransactionTimeout,
       });
       this.marketContracts.set(params.market, marketContract);
     }

@@ -182,6 +182,9 @@ export class OnchainLobVault {
    * Note: "Wait" means that the client will wait until the transaction confirmation is received.
    */
   autoWaitTransaction: boolean | undefined;
+  fastWaitTransaction: boolean | undefined;
+  fastWaitTransactionInterval: number | undefined;
+  fastWaitTransactionTimeout: number | undefined;
 
   protected signer: Signer | null;
 
@@ -195,6 +198,9 @@ export class OnchainLobVault {
   constructor(options: Readonly<OnchainLobVaultOptions>) {
     this.signer = options.signer;
     this.autoWaitTransaction = options.autoWaitTransaction;
+    this.fastWaitTransaction = options.fastWaitTransaction;
+    this.fastWaitTransactionInterval = options.fastWaitTransactionInterval;
+    this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
     this.onchainLobService = new OnchainLobVaultService(options.apiBaseUrl);
     this.onchainLobWebSocketService = new OnchainLobVaultWebSocketService(options.webSocketApiBaseUrl);
     this.mappers = mappers;
@@ -210,6 +216,7 @@ export class OnchainLobVault {
    */
   setSigner(signer: Signer | null): OnchainLobVault {
     this.signer = signer;
+    this.vaultContracts = new Map();
     return this;
   }
 
@@ -520,6 +527,9 @@ export class OnchainLobVault {
         vault: vaultConfig,
         signer: this.signer,
         autoWaitTransaction: this.autoWaitTransaction,
+        fastWaitTransaction: this.fastWaitTransaction,
+        fastWaitTransactionInterval: this.fastWaitTransactionInterval,
+        fastWaitTransactionTimeout: this.fastWaitTransactionTimeout,
       });
       this.vaultContracts.set(params.vault, vaultContract);
     }

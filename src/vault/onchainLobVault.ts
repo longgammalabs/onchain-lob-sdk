@@ -216,6 +216,7 @@ export class OnchainLobVault {
    */
   setSigner(signer: Signer | null): OnchainLobVault {
     this.signer = signer;
+    this.vaultContracts = new Map();
     return this;
   }
 

@@ -291,6 +291,11 @@ export type VaultListItem = {
    * Is vault deprecated
    */
   isDeprecated: boolean;
+
+  /**
+   * The vault's total volume in usd
+   */
+  totalVolume: number;
 };
 
 /**

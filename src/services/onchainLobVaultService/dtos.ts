@@ -16,6 +16,7 @@ export interface VaultListItemDto {
   creationTimestamp: number;
   isUserGenerated: boolean;
   isDeprecated: boolean;
+  totalVolume: number;
 }
 
 export interface VaultConfigDto {

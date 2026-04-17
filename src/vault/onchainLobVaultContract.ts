@@ -255,6 +255,10 @@ export class OnchainLobVaultContract {
             await wait(this.fastWaitTransactionInterval);
             receipt = await tx.provider.getTransactionReceipt(tx.hash);
           }
+
+          if (receipt && receipt.status === 0) {
+            throw new Error(`Transaction reverted: ${tx.hash}`);
+          }
         }
         else {
           await tx.wait();

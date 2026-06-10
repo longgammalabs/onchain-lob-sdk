@@ -17,6 +17,7 @@ import type {
   SubscribeToUserOrdersParams, UnsubscribeFromUserOrdersParams,
   SubscribeToUserOrderHistoryParams, UnsubscribeFromUserOrderHistoryParams,
   SubscribeToUserFillsParams, UnsubscribeFromUserFillsParams,
+  SubscribeToMarketFillsParams, UnsubscribeFromMarketFillsParams,
   SubscribeToCandlesParams,
   UnsubscribeFromCandlesParams
 } from './params';
@@ -38,6 +39,7 @@ interface OnchainLobSpotWebSocketServiceEvents {
   userOrdersUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderUpdateDto[]]>;
   userOrderHistoryUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: OrderHistoryUpdateDto[]]>;
   userFillsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: FillUpdateDto[]]>;
+  marketFillsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: FillUpdateDto[]]>;
   candlesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: CandleUpdateDto]>;
   subscriptionError: PublicEventEmitter<readonly [error: string]>;
 }
@@ -61,6 +63,7 @@ export class OnchainLobSpotWebSocketService implements Disposable {
     userOrdersUpdated: new EventEmitter(),
     userOrderHistoryUpdated: new EventEmitter(),
     userFillsUpdated: new EventEmitter(),
+    marketFillsUpdated: new EventEmitter(),
     candlesUpdated: new EventEmitter(),
   };
 
@@ -280,6 +283,30 @@ export class OnchainLobSpotWebSocketService implements Disposable {
   }
 
   /**
+   * Subscribes to all fills on a given market across all users.
+   * @param params - The parameters for the market fills subscription.
+   */
+  subscribeToMarketFills(params: SubscribeToMarketFillsParams) {
+    this.startOnchainLobWebSocketClientIfNeeded();
+
+    this.onchainLobWebSocketClient.subscribe({
+      channel: 'marketFills',
+      market: params.market,
+    });
+  }
+
+  /**
+   * Unsubscribes from all-users fill updates for a given market.
+   * @param params - The parameters for the market fills unsubscription.
+   */
+  unsubscribeFromMarketFills(params: UnsubscribeFromMarketFillsParams) {
+    this.onchainLobWebSocketClient.unsubscribe({
+      channel: 'marketFills',
+      market: params.market,
+    });
+  }
+
+  /**
    * Subscribes to candle updates for a given market and resolution.
    * @param params - The parameters for the candle subscription.
    */
@@ -353,6 +380,9 @@ export class OnchainLobSpotWebSocketService implements Disposable {
           break;
         case 'userFills':
           (this.events.userFillsUpdated as ToEventEmitter<typeof this.events.userFillsUpdated>).emit(message.id, message.isSnapshot, message.data as FillUpdateDto[]);
+          break;
+        case 'marketFills':
+          (this.events.marketFillsUpdated as ToEventEmitter<typeof this.events.marketFillsUpdated>).emit(message.id, message.isSnapshot, message.data as FillUpdateDto[]);
           break;
         case 'candles':
           (this.events.candlesUpdated as ToEventEmitter<typeof this.events.candlesUpdated>).emit(message.id, message.isSnapshot, message.data as CandleUpdateDto);

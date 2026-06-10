@@ -777,6 +777,23 @@ export interface GetFillsParams {
   limit?: number;
 }
 
+export interface GetMarketFillsParams {
+  /**
+   * Id of the requested market
+   *
+   * @type {string}
+   */
+  market: string;
+  /**
+   * Number of fills to retrieve
+   *
+   * @type {number}
+   * @optional
+   * @default 100
+   */
+  limit?: number;
+}
+
 export interface GetTokensParams {
   token?: string;
 }
@@ -951,6 +968,11 @@ export interface SubscribeToUserFillsParams {
   market?: string;
 }
 export type UnsubscribeFromUserFillsParams = SubscribeToUserFillsParams;
+
+export interface SubscribeToMarketFillsParams {
+  market: string;
+}
+export type UnsubscribeFromMarketFillsParams = SubscribeToMarketFillsParams;
 
 export interface SubscribeToCandlesParams {
   market: string;

@@ -1,5 +1,5 @@
 import type { CandleDto, FillDto, LimitDetailsDto, MarketDetailsDto, MarketDto, OrderDto, OrderHistoryDto, OrderbookDto, TokenDto, TradeDto, UserBalancesDto, UserDepositsDto, ClobDepthDto } from './dtos';
-import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams, GetUserDepositsParams, GetClobDepthParams } from './params';
+import type { CalculateLimitDetailsParams, CalculateMarketDetailsParams, GetCandlesParams, GetFillsParams, GetMarketFillsParams, GetMarketsParams, GetOrderbookParams, GetOrderHistoryParams, GetOrdersParams, GetTokensParams, GetTradesParams, GetUserBalancesParams, GetUserDepositsParams, GetClobDepthParams } from './params';
 import { guards } from '../../utils';
 import { RemoteService } from '../remoteService';
 import { ALL_MARKETS_ID } from '../constants';
@@ -119,6 +119,24 @@ export class OnchainLobSpotService extends RemoteService {
     const queryParams = new URLSearchParams({
       market: params.market,
       user: params.user,
+    });
+    if (params.limit)
+      queryParams.append('limit', params.limit.toString());
+
+    const queryParamsString = decodeURIComponent(queryParams.toString());
+    const response = await this.fetch<FillDto[]>(`/fills?${queryParamsString}`, 'json');
+
+    return response;
+  }
+
+  /**
+   * Retrieves the fills for a given market across all users.
+   * @param params - The parameters for the market fills request.
+   * @returns The fills data.
+   */
+  async getMarketFills(params: GetMarketFillsParams): Promise<FillDto[]> {
+    const queryParams = new URLSearchParams({
+      market: params.market,
     });
     if (params.limit)
       queryParams.append('limit', params.limit.toString());

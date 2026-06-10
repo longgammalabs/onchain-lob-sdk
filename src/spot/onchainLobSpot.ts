@@ -12,6 +12,7 @@ import type {
   ClaimOrderSpotParams,
   DepositSpotParams,
   GetFillsParams,
+  GetMarketFillsParams,
   GetMarketParams,
   GetMarketsParams,
   GetOrderbookParams,
@@ -27,12 +28,14 @@ import type {
   SubscribeToClobDepthParams,
   SubscribeToTradesParams,
   SubscribeToUserFillsParams,
+  SubscribeToMarketFillsParams,
   SubscribeToUserOrdersParams,
   UnsubscribeFromMarketParams,
   UnsubscribeFromOrderbookParams,
   UnsubscribeFromClobDepthParams,
   UnsubscribeFromTradesParams,
   UnsubscribeFromUserFillsParams,
+  UnsubscribeFromMarketFillsParams,
   UnsubscribeFromUserOrdersParams,
   WithdrawSpotParams,
   SubscribeToCandlesParams,
@@ -203,6 +206,13 @@ interface OnchainLobSpotEvents {
   userFillsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: FillUpdate[]]>;
 
   /**
+   * Emitted when fills on a market are updated (across all users).
+   * @event
+   * @type {PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: FillUpdate[]]>}
+   */
+  marketFillsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: FillUpdate[]]>;
+
+  /**
    * Emitted when a market's candle is updated.
    * @event
    * @type {PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: CandleUpdate[]]>}
@@ -238,6 +248,7 @@ export class OnchainLobSpot implements Disposable {
     userOrdersUpdated: new EventEmitter(),
     userOrderHistoryUpdated: new EventEmitter(),
     userFillsUpdated: new EventEmitter(),
+    marketFillsUpdated: new EventEmitter(),
     candlesUpdated: new EventEmitter(),
     allMarketUpdated: new EventEmitter(),
   };
@@ -667,6 +678,22 @@ export class OnchainLobSpot implements Disposable {
   }
 
   /**
+   * Retrieves all fills on the specified market across all users.
+   *
+   * @param {GetMarketFillsParams} params - The parameters for retrieving the market fills.
+   * @returns {Promise<Fill[]>} A Promise that resolves to an array of fills.
+   */
+  async getMarketFills(params: GetMarketFillsParams): Promise<Fill[]> {
+    const [market, fillDtos] = await Promise.all([
+      this.ensureMarket(params),
+      this.onchainLobService.getMarketFills(params),
+    ]);
+    const fills = fillDtos.map(fillDto => this.mappers.mapFillDtoToFill(fillDto, market.priceScalingFactor, market.tokenXScalingFactor, market.tokenYScalingFactor));
+
+    return fills;
+  }
+
+  /**
    * Retrieves the candles for the specified market and resolution.
    *
    * @param {GetCandlesParams} params - The parameters for retrieving the candles.
@@ -895,6 +922,26 @@ export class OnchainLobSpot implements Disposable {
   }
 
   /**
+   * Subscribes to all-users fill updates for the specified market.
+   *
+   * @param {SubscribeToMarketFillsParams} params - The parameters for subscribing to the market fills updates.
+   * @emits OnchainLobSpot#events#marketFillsUpdated
+   */
+  subscribeToMarketFills(params: SubscribeToMarketFillsParams): void {
+    this.onchainLobWebSocketService.subscribeToMarketFills(params);
+  }
+
+  /**
+   * Unsubscribes from all-users fill updates for the specified market.
+   *
+   * @param {UnsubscribeFromMarketFillsParams} params - The parameters for unsubscribing from the market fills updates.
+   * @emits OnchainLobSpot#events#marketFillsUpdated
+   */
+  unsubscribeFromMarketFills(params: UnsubscribeFromMarketFillsParams): void {
+    this.onchainLobWebSocketService.unsubscribeFromMarketFills(params);
+  }
+
+  /**
    * Subscribes to candle updates for the specified market and resolution.
    *
    * @param {SubscribeToCandlesParams} params - The parameters for subscribing to the candle updates.
@@ -959,6 +1006,7 @@ export class OnchainLobSpot implements Disposable {
     this.onchainLobWebSocketService.events.userOrdersUpdated.addListener(this.onUserOrdersUpdated);
     this.onchainLobWebSocketService.events.userOrderHistoryUpdated.addListener(this.onUserOrderHistoryUpdated);
     this.onchainLobWebSocketService.events.userFillsUpdated.addListener(this.onUserFillsUpdated);
+    this.onchainLobWebSocketService.events.marketFillsUpdated.addListener(this.onMarketFillsUpdated);
     this.onchainLobWebSocketService.events.candlesUpdated.addListener(this.onCandlesUpdated);
     this.onchainLobWebSocketService.events.subscriptionError.addListener(this.onSubscriptionError);
   }
@@ -971,6 +1019,7 @@ export class OnchainLobSpot implements Disposable {
     this.onchainLobWebSocketService.events.userOrdersUpdated.removeListener(this.onUserOrdersUpdated);
     this.onchainLobWebSocketService.events.userOrderHistoryUpdated.removeListener(this.onUserOrderHistoryUpdated);
     this.onchainLobWebSocketService.events.userFillsUpdated.removeListener(this.onUserFillsUpdated);
+    this.onchainLobWebSocketService.events.marketFillsUpdated.removeListener(this.onMarketFillsUpdated);
     this.onchainLobWebSocketService.events.candlesUpdated.removeListener(this.onCandlesUpdated);
     this.onchainLobWebSocketService.events.subscriptionError.removeListener(this.onSubscriptionError);
   }
@@ -1099,6 +1148,25 @@ export class OnchainLobSpot implements Disposable {
       });
 
       (this.events.userFillsUpdated as ToEventEmitter<typeof this.events.userFillsUpdated>).emit(marketId, isSnapshot, fillUpdates);
+    }
+    catch (error) {
+      console.error(getErrorLogMessage(error));
+    }
+  };
+
+  protected onMarketFillsUpdated: Parameters<typeof this.onchainLobWebSocketService.events.marketFillsUpdated['addListener']>[0] = async (marketId, isSnapshot, data) => {
+    try {
+      const markets = await this.getCachedMarkets();
+      if (!markets)
+        return;
+      const fillUpdates = data.map(dto => {
+        const market = markets.get(dto.market.id);
+        if (!market)
+          throw new Error(`Market not found for marketId: ${dto.market.id}`);
+        return this.mappers.mapFillUpdateDtoToFillUpdate(marketId, dto, market.priceScalingFactor, market.tokenXScalingFactor, market.tokenYScalingFactor);
+      });
+
+      (this.events.marketFillsUpdated as ToEventEmitter<typeof this.events.marketFillsUpdated>).emit(marketId, isSnapshot, fillUpdates);
     }
     catch (error) {
       console.error(getErrorLogMessage(error));

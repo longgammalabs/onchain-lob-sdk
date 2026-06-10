@@ -39,6 +39,11 @@ export interface SubscribeToUserFillsParams {
 }
 export type UnsubscribeFromUserFillsParams = SubscribeToUserFillsParams;
 
+export interface SubscribeToMarketFillsParams {
+  market: string;
+}
+export type UnsubscribeFromMarketFillsParams = SubscribeToMarketFillsParams;
+
 export interface SubscribeToCandlesParams {
   market: string;
   resolution: CandleResolution;

@@ -19,6 +19,7 @@ export type {
   GetOrderHistoryParams,
   GetTradesParams,
   GetFillsParams,
+  GetMarketFillsParams,
   GetTokensParams,
   GetMarketParams,
   GetMarketsParams,

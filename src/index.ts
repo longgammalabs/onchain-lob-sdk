@@ -30,6 +30,7 @@ export {
   type GetOrdersParams,
   type GetTradesParams,
   type GetFillsParams,
+  type GetMarketFillsParams,
   type GetTokensParams,
   type GetMarketParams,
   type GetMarketsParams,

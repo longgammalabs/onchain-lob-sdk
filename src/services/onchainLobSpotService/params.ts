@@ -35,6 +35,11 @@ export interface GetFillsParams {
   limit?: number;
 }
 
+export interface GetMarketFillsParams {
+  market: string;
+  limit?: number;
+}
+
 export interface GetTokensParams {
   token?: string;
 }

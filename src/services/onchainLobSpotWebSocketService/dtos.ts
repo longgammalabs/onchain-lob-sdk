@@ -137,6 +137,7 @@ export interface MarketUpdateDto {
   passiveFee: string;
   passiveOrderPayout: string;
   isUserGenerated: boolean;
+  isDeprecated: boolean;
 }
 
 export interface TokenUpdateDto {

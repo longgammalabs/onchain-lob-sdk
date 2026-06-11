@@ -142,6 +142,7 @@ export interface MarketDto {
   passiveFee: string;
   passiveOrderPayout: string;
   isUserGenerated: boolean;
+  isDeprecated: boolean;
 }
 
 export interface CandleDto {

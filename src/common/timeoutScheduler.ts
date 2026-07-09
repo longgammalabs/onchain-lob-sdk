@@ -27,8 +27,7 @@ export class TimeoutScheduler implements Disposable {
   constructor(
     private readonly timeouts: number[],
     private readonly counterExpirationMs?: number
-  ) {
-  }
+  ) {}
 
   get counter() {
     return this._counter;
@@ -47,8 +46,7 @@ export class TimeoutScheduler implements Disposable {
 
   setTimeout(action: () => void | Promise<void>): Promise<void> {
     return new Promise(resolve => {
-      if (this.counterExpirationMs)
-        this.resetCounterExpiration();
+      if (this.counterExpirationMs) this.resetCounterExpiration();
 
       const timeoutIndex = Math.min(this.counter, this.timeouts.length - 1);
       const timeout = this.timeouts[timeoutIndex];
@@ -67,6 +65,23 @@ export class TimeoutScheduler implements Disposable {
 
   resetCounter() {
     this.counter = 0;
+  }
+
+  /**
+   * Cancels any pending scheduled action and counter-expiration watcher, and
+   * resets the escalation counter. Use this to force an immediate retry that
+   * isn't stuck waiting out an escalated backoff delay
+   */
+  reset() {
+    this.actionWatchers.forEach(watcher => clearTimeout(watcher));
+    this.actionWatchers.clear();
+
+    if (this.counterExpirationWatcherId) {
+      clearTimeout(this.counterExpirationWatcherId);
+      this.counterExpirationWatcherId = undefined;
+    }
+
+    this.resetCounter();
   }
 
   private resetCounterExpiration() {

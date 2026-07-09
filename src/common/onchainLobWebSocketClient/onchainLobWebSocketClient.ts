@@ -27,6 +27,8 @@ export class OnchainLobWebSocketClient implements Disposable {
 
   private _isStarted = false;
   private _isStarting = false;
+  private _isReconnecting = false;
+  private _connectPromise: Promise<void> | undefined;
 
   constructor(baseUrl: string) {
     this.baseUrl = textUtils.trimSlashes(baseUrl);
@@ -35,6 +37,10 @@ export class OnchainLobWebSocketClient implements Disposable {
 
   get isStarted() {
     return this._isStarted;
+  }
+
+  get isConnected() {
+    return this.isSocketOpen;
   }
 
   protected get isSocketOpen() {
@@ -71,6 +77,45 @@ export class OnchainLobWebSocketClient implements Disposable {
 
     this._isStarted = false;
     this._isStarting = false;
+  }
+
+  /**
+   * Forces an immediate reconnect, bypassing the escalated backoff of the
+   * background reconnect loop. Intended for the case where the socket was
+   * closed while the page was hidden/frozen (browsers throttle the reconnect
+   * timers) and the user just returned — data should resume without waiting
+   * out a tens-of-seconds backoff delay.
+   *
+   * Existing subscriptions are preserved and re-sent on the fresh socket.
+   * A no-op when the socket is already open.
+   */
+  async reconnect(): Promise<void> {
+    if (this._isReconnecting)
+      return;
+
+    this._isReconnecting = true;
+    try {
+      // Not started yet → a normal start performs the initial connect.
+      if (!this.isStarted && !this._isStarting) {
+        await this.start();
+        return;
+      }
+
+      // Cancel any pending backoff attempt and reset the escalation so we
+      // don't inherit a delay the background reconnect loop grew to tens of
+      // seconds.
+      this.reconnectScheduler.reset();
+
+      // Already connected → nothing to do.
+      if (this.isSocketOpen)
+        return;
+
+      // connect() opens a fresh socket and re-subscribes all subscriptions.
+      await this.connect();
+    }
+    finally {
+      this._isReconnecting = false;
+    }
   }
 
   subscribe(subscriptionData: SubscriptionData): number {
@@ -128,7 +173,23 @@ export class OnchainLobWebSocketClient implements Disposable {
     this.stop();
   }
 
-  protected async connect(): Promise<void> {
+  protected connect(): Promise<void> {
+    // Deduplicate concurrent connects. Without this, a manual reconnect() that
+    // overlaps an already-in-flight connect (the background backoff timer that
+    // just fired, or an initial start()) would open a second socket — the
+    // second connect's internal disconnect() orphans the first, leaking its
+    // unresolved promise and re-sending every subscription needlessly.
+    if (!this._connectPromise) {
+      this._connectPromise = this.performConnect()
+        .finally(() => {
+          this._connectPromise = undefined;
+        });
+    }
+
+    return this._connectPromise;
+  }
+
+  protected async performConnect(): Promise<void> {
     await this.socket.connect();
 
     this.subscribeToAllSubscriptions();

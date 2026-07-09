@@ -341,6 +341,24 @@ export class OnchainLobSpotWebSocketService implements Disposable {
   }
 
   /**
+   * Whether the underlying WebSocket connection is currently open.
+   */
+  get isConnected(): boolean {
+    return this.onchainLobWebSocketClient.isConnected;
+  }
+
+  /**
+   * Forces an immediate reconnect of the underlying WebSocket, preserving all
+   * active subscriptions. Use when the socket may have been dropped while the
+   * page was hidden/frozen and you want data to resume without waiting out the
+   * background reconnect backoff.
+   */
+  reconnect(): void {
+    this.onchainLobWebSocketClient.reconnect()
+      .catch(error => console.error(`Onchain LOB Web Socket reconnect failed. Error = ${getErrorLogMessage(error)}`));
+  }
+
+  /**
    * Starts the WebSocket client if it is not already started.
    */
   protected startOnchainLobWebSocketClientIfNeeded() {

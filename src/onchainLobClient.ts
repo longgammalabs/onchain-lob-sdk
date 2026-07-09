@@ -114,4 +114,13 @@ export class OnchainLobClient {
     this.spot.setSigner(signer);
     this.vault.setSigner(signer);
   }
+
+  /**
+   * Forces an immediate reconnect of both the spot and vault WebSockets,
+   * preserving all active subscriptions.
+   */
+  reconnect(): void {
+    this.spot.reconnect();
+    this.vault.reconnect();
+  }
 }

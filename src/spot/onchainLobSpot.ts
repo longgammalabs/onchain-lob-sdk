@@ -766,6 +766,23 @@ export class OnchainLobSpot implements Disposable {
   }
 
   /**
+   * Whether the spot WebSocket connection is currently open.
+   */
+  get isConnected(): boolean {
+    return this.onchainLobWebSocketService.isConnected;
+  }
+
+  /**
+   * Forces an immediate reconnect of the spot WebSocket, preserving all active
+   * subscriptions. Use when the socket may have been dropped while the page was
+   * hidden/frozen and you want data to resume without waiting out the background
+   * reconnect backoff.
+   */
+  reconnect(): void {
+    this.onchainLobWebSocketService.reconnect();
+  }
+
+  /**
    * Subscribes to the market updates for the specified market.
    *
    * @param {SubscribeToMarketParams} params - The parameters for subscribing to the market updates.

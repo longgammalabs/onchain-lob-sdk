@@ -438,6 +438,23 @@ export class OnchainLobVault {
   }
 
   /**
+   * Whether the vault WebSocket connection is currently open.
+   */
+  get isConnected(): boolean {
+    return this.onchainLobWebSocketService.isConnected;
+  }
+
+  /**
+   * Forces an immediate reconnect of the vault WebSocket, preserving all active
+   * subscriptions. Use when the socket may have been dropped while the page was
+   * hidden/frozen and you want data to resume without waiting out the background
+   * reconnect backoff.
+   */
+  reconnect(): void {
+    this.onchainLobWebSocketService.reconnect();
+  }
+
+  /**
    * Subscribes to the vault total values updates.
    *
    * @emits OnchainLobVault#events#vaultTotalValuesUpdated

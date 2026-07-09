@@ -1,4 +1,5 @@
 import type { WebSocketClient as WebSocketClientInterface } from './shared';
+import { ReadyState } from './shared';
 import { EventEmitter, type ToEventEmitter } from '../eventEmitter';
 
 export type WebSocketOpenEvent = WebSocketEventMap['open'];
@@ -12,7 +13,9 @@ export class WebSocketClient implements WebSocketClientInterface<WebSocketClient
   };
 
   get readyState() {
-    return this.socket.readyState;
+    // No socket yet (never connected, or connect never called) → report Closed
+    // instead of throwing via the `socket` getter.
+    return this._socket?.readyState ?? ReadyState.Closed;
   }
 
   protected _socket: WebSocket | undefined;

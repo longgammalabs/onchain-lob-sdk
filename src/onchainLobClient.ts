@@ -78,7 +78,7 @@ export interface OnchainLobClientOptions {
  *
  * @class OnchainLobClient
  */
-export class OnchainLobClient {
+export class OnchainLobClient implements Disposable {
   /**
    * The OnchainLobSpot instance that provides the API functions to interact with the Onchain LOB Spot contracts.
    *
@@ -122,5 +122,20 @@ export class OnchainLobClient {
   reconnect(): void {
     this.spot.reconnect();
     this.vault.reconnect();
+  }
+
+  /**
+   * Disposes the client: detaches event listeners and stops both the spot and
+   * vault WebSocket connections. Call this when the client is being replaced
+   * (e.g. on chain switch) so the old sockets and their subscriptions don't
+   * linger open and keep emitting updates into a discarded client.
+   */
+  dispose(): void {
+    this.spot[Symbol.dispose]();
+    this.vault[Symbol.dispose]();
+  }
+
+  [Symbol.dispose](): void {
+    this.dispose();
   }
 }

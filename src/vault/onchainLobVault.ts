@@ -158,7 +158,7 @@ interface OnchainLobVaultEvents {
  * The OnchainLobVault is a class for interacting with the Onchain LOB Vault API.
  * It provides methods for managing user deposits and handling subscription events.
  */
-export class OnchainLobVault {
+export class OnchainLobVault implements Disposable {
   /**
    * The events related to user subscriptions.
    *
@@ -332,7 +332,7 @@ export class OnchainLobVault {
    */
   async getVaultConfigs(params: GetVaultConfigsParams): Promise<VaultConfig[]> {
     const vaultConfigDtos = await this.onchainLobService.getVaultConfig(params);
-    const vaultConfigs = vaultConfigDtos.map((vaultConfigDto) => mappers.mapVaultConfigDtoToVaultConfig(vaultConfigDto))
+    const vaultConfigs = vaultConfigDtos.map(vaultConfigDto => mappers.mapVaultConfigDtoToVaultConfig(vaultConfigDto));
     return vaultConfigs;
   }
 
@@ -452,6 +452,16 @@ export class OnchainLobVault {
    */
   reconnect(): void {
     this.onchainLobWebSocketService.reconnect();
+  }
+
+  /**
+   * Detaches event listeners and stops the WebSocket connection. Call this when
+   * the client is being discarded (e.g. on chain switch) so its socket and
+   * subscriptions don't linger and keep emitting.
+   */
+  [Symbol.dispose](): void {
+    this.detachEvents();
+    this.onchainLobWebSocketService[Symbol.dispose]();
   }
 
   /**

@@ -71,6 +71,23 @@ export interface OnchainLobClientOptions {
    * @optional
    */
   fastWaitTransactionTimeout?: number;
+
+  /**
+   * API key for the Pyth Hermes price service, used when fetching price update data for
+   * vault deposits/withdrawals.
+   *
+   * @type {string}
+   * @optional
+   */
+  pythApiKey?: string;
+
+  /**
+   * Base URL of the Pyth Hermes price service. Defaults to `https://hermes.pyth.network`.
+   *
+   * @type {string}
+   * @optional
+   */
+  pythHermesUrl?: string;
 }
 
 /**

@@ -112,6 +112,23 @@ export interface OnchainLobVaultOptions {
    * @optional
    */
   fastWaitTransactionTimeout?: number;
+
+  /**
+   * API key for the Pyth Hermes price service, used when fetching price update data for
+   * vault deposits/withdrawals.
+   *
+   * @type {string}
+   * @optional
+   */
+  pythApiKey?: string;
+
+  /**
+   * Base URL of the Pyth Hermes price service. Defaults to `https://hermes.pyth.network`.
+   *
+   * @type {string}
+   * @optional
+   */
+  pythHermesUrl?: string;
 }
 
 /**
@@ -185,6 +202,8 @@ export class OnchainLobVault implements Disposable {
   fastWaitTransaction: boolean | undefined;
   fastWaitTransactionInterval: number | undefined;
   fastWaitTransactionTimeout: number | undefined;
+  protected readonly pythApiKey: string | undefined;
+  protected readonly pythHermesUrl: string | undefined;
 
   protected signer: Signer | null;
 
@@ -201,6 +220,8 @@ export class OnchainLobVault implements Disposable {
     this.fastWaitTransaction = options.fastWaitTransaction;
     this.fastWaitTransactionInterval = options.fastWaitTransactionInterval;
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
+    this.pythApiKey = options.pythApiKey;
+    this.pythHermesUrl = options.pythHermesUrl;
     this.onchainLobService = new OnchainLobVaultService(options.apiBaseUrl);
     this.onchainLobWebSocketService = new OnchainLobVaultWebSocketService(options.webSocketApiBaseUrl);
     this.mappers = mappers;
@@ -557,6 +578,8 @@ export class OnchainLobVault implements Disposable {
         fastWaitTransaction: this.fastWaitTransaction,
         fastWaitTransactionInterval: this.fastWaitTransactionInterval,
         fastWaitTransactionTimeout: this.fastWaitTransactionTimeout,
+        pythApiKey: this.pythApiKey,
+        pythHermesUrl: this.pythHermesUrl,
       });
       this.vaultContracts.set(params.vault, vaultContract);
     }

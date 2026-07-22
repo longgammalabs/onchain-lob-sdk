@@ -12,7 +12,7 @@ import { erc20Abi, erc20WethAbi, lpManagerAbi } from '../abi';
 import type { VaultConfig } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
-import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js';
+import { HermesClient } from '@pythnetwork/hermes-client';
 
 export interface OnchainLobVaultContractOptions {
   vault: VaultConfig;
@@ -21,6 +21,8 @@ export interface OnchainLobVaultContractOptions {
   fastWaitTransaction?: boolean;
   fastWaitTransactionInterval?: number;
   fastWaitTransactionTimeout?: number;
+  pythApiKey?: string;
+  pythHermesUrl?: string;
 }
 
 const getExpires = () => BigInt(Math.floor(Date.now() / 1000) + 5 * 60);
@@ -29,6 +31,7 @@ export class OnchainLobVaultContract {
   static readonly defaultAutoWaitTransaction = true;
   static readonly defaultFastWaitTransaction = false;
   static readonly defaultFastWaitTransactionInterval = 100;
+  static readonly defaultPythHermesUrl = 'https://hermes.pyth.network';
 
   readonly vault: VaultConfig;
   autoWaitTransaction: boolean;
@@ -49,7 +52,7 @@ export class OnchainLobVaultContract {
     return Promise.resolve(this._chainId);
   }
 
-  protected pythConnection: EvmPriceServiceConnection;
+  protected pythConnection: HermesClient;
 
   constructor(options: Readonly<OnchainLobVaultContractOptions>) {
     this.vault = options.vault;
@@ -60,7 +63,10 @@ export class OnchainLobVaultContract {
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
     this.vaultContract = new Contract(options.vault.vaultAddress, lpManagerAbi, options.signer);
-    this.pythConnection = new EvmPriceServiceConnection('https://hermes.pyth.network');
+    this.pythConnection = new HermesClient(
+      options.pythHermesUrl ?? OnchainLobVaultContract.defaultPythHermesUrl,
+      options.pythApiKey ? { headers: { Authorization: `Bearer ${options.pythApiKey}` } } : {}
+    );
   }
 
   async approveTokens(params: ApproveVaultParams): Promise<ContractTransactionResponse> {
@@ -292,8 +298,9 @@ export class OnchainLobVaultContract {
 
   protected async getPriceUpdateData(feedPriceIds: string[]): Promise<string[]> {
     try {
-      const updateData = await this.pythConnection.getPriceFeedsUpdateData(feedPriceIds);
-      return updateData;
+      const priceUpdates = await this.pythConnection.getLatestPriceUpdates(feedPriceIds, { encoding: 'hex' });
+      // Hermes returns hex-encoded update data without the `0x` prefix; the Pyth contract expects `bytes`.
+      return priceUpdates.binary.data.map(data => data.startsWith('0x') ? data : `0x${data}`);
     }
     catch (error) {
       console.error('Failed to get price update data from pyth:', error);

@@ -7,6 +7,13 @@ import { Token } from './common';
 export type DepositActionDirection = 'deposit' | 'withdraw';
 
 /**
+ * The type of vault, determined by the factory that deployed it.
+ * - `LPManager`: classic single-token/multi-token LP manager vault.
+ * - `LPManagerPair`: pair vault deployed by the LPManagerPair factory.
+ */
+export type VaultType = 'LPManager' | 'LPManagerPair';
+
+/**
  * Represents the dynamic vault values.
  */
 export interface VaultTotalValues {
@@ -296,6 +303,11 @@ export type VaultListItem = {
    * The vault's total volume in usd
    */
   totalVolume: number;
+
+  /**
+   * The vault's type (LPManager or LPManagerPair)
+   */
+  vaultType: VaultType;
 };
 
 /**
@@ -386,6 +398,11 @@ export type VaultConfig = {
     feeBps: number;
     taxBps: number;
   };
+
+  /**
+   * The vault's type (LPManager or LPManagerPair)
+   */
+  vaultType: VaultType;
 };
 
 /**

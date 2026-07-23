@@ -1,4 +1,4 @@
-import type { DepositActionDirection } from '../../models';
+import type { DepositActionDirection, VaultType } from '../../models';
 import { TokenDto } from '../onchainLobSpotService';
 
 export interface VaultListItemDto {
@@ -17,6 +17,7 @@ export interface VaultListItemDto {
   isUserGenerated: boolean;
   isDeprecated: boolean;
   totalVolume: number;
+  vaultType: VaultType;
 }
 
 export interface VaultConfigDto {
@@ -40,6 +41,7 @@ export interface VaultConfigDto {
     feeBps: number;
     taxBps: number;
   };
+  vaultType: VaultType;
 }
 
 export interface VaultDepositActionDto {

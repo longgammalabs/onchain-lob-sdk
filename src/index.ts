@@ -102,6 +102,7 @@ export type {
 
   VaultListItem,
   VaultConfig,
+  VaultType,
   VaultTotalValues,
   VaultTotalValuesUpdate,
   VaultHistory,

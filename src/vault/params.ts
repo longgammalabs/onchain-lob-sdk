@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import type { Provider } from 'ethers';
 import { Token, VaultHistoryPeriod } from '../models';
 
 /**
@@ -449,4 +450,74 @@ export interface GetVaultHistoryParams {
    * @type {VaultHistoryPeriod}
    */
   period: VaultHistoryPeriod;
+}
+
+/** ---- LPManagerPair (pair vault) params ---- */
+
+export interface PreviewAddLiquidityPairParams {
+  vault: string;
+  provider: Provider;
+  /** Anchor token id: 0 = tokenX, 1 = tokenY. */
+  tokenId: number;
+  /** Raw amount (contract units) of the anchor token. */
+  amount: bigint;
+}
+
+export interface PreviewAddLiquidityPairResult {
+  amountTokenX: bigint;
+  amountTokenY: bigint;
+  adminFeeLP: bigint;
+  mintedLP: bigint;
+}
+
+export interface PreviewRemoveLiquidityPairParams {
+  vault: string;
+  provider: Provider;
+  burnLP: bigint;
+}
+
+export interface PreviewRemoveLiquidityPairResult {
+  amountTokenX: bigint;
+  amountTokenY: bigint;
+  adminFeeLP: bigint;
+}
+
+export interface GetPairReservesParams {
+  vault: string;
+  provider: Provider;
+}
+
+export interface PairReserves {
+  totalTokenX: bigint;
+  totalTokenY: bigint;
+}
+
+export interface GetPairConfigParams {
+  vault: string;
+  provider: Provider;
+}
+
+export interface PairConfig {
+  adminMintLPFeeBps: number;
+  adminBurnLPFeeBps: number;
+  cooldownDuration: number;
+  maxTotalTokenX: bigint;
+  maxTotalTokenY: bigint;
+  nativeEnabled: boolean;
+  nativeTokenId: number;
+}
+
+export interface AddLiquidityPairParams extends TransactionParams {
+  vault: string;
+  /** Anchor token id: 0 = tokenX, 1 = tokenY. */
+  tokenId: number;
+  amount: bigint;
+  minLpMinted: bigint;
+}
+
+export interface RemoveLiquidityPairParams extends TransactionParams {
+  vault: string;
+  burnLP: bigint;
+  minTokenXGet: bigint;
+  minTokenYGet: bigint;
 }

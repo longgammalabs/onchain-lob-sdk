@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from 'vitest';
 import { previewAddLiquidityPair, previewRemoveLiquidityPair, getPairReserves, getPairConfig } from './pairReads';
 
 // A fake ethers Provider is enough: pairReads builds a Contract(addr, abi, provider)
@@ -6,12 +5,12 @@ import { previewAddLiquidityPair, previewRemoveLiquidityPair, getPairReserves, g
 // dependency: pairReads exposes an internal factory we override in the test.
 const makeContractStub = (returns: Record<string, unknown>) =>
   new Proxy({}, {
-    get: (_t, prop: string) => vi.fn().mockResolvedValue(returns[prop])
+    get: (_t, prop: string) => jest.fn(() => Promise.resolve(returns[prop]))
   });
 
-vi.mock('ethers', async (orig) => {
-  const actual = await orig<typeof import('ethers')>();
-  return { ...actual, Contract: vi.fn() };
+jest.mock('ethers', () => {
+  const actual = jest.requireActual('ethers');
+  return { ...actual, Contract: jest.fn() };
 });
 
 import { Contract } from 'ethers';
@@ -20,7 +19,7 @@ describe('pairReads', () => {
   const provider = {} as any;
 
   it('previewAddLiquidityPair maps tuple output to named bigints', async () => {
-    (Contract as unknown as any).mockImplementation(() => makeContractStub({
+    (Contract as unknown as jest.Mock).mockImplementation(() => makeContractStub({
       previewAddLiquidity: [10n, 20n, 1n, 30n]
     }));
     const res = await previewAddLiquidityPair({ vault: '0xV', provider, tokenId: 0, amount: 10n });
@@ -28,7 +27,7 @@ describe('pairReads', () => {
   });
 
   it('previewRemoveLiquidityPair maps tuple output', async () => {
-    (Contract as unknown as any).mockImplementation(() => makeContractStub({
+    (Contract as unknown as jest.Mock).mockImplementation(() => makeContractStub({
       previewRemoveLiquidity: [5n, 6n, 1n]
     }));
     const res = await previewRemoveLiquidityPair({ vault: '0xV', provider, burnLP: 100n });
@@ -36,14 +35,14 @@ describe('pairReads', () => {
   });
 
   it('getPairReserves maps tuple output', async () => {
-    (Contract as unknown as any).mockImplementation(() => makeContractStub({
+    (Contract as unknown as jest.Mock).mockImplementation(() => makeContractStub({
       getTotalReserves: [1000n, 2000n]
     }));
     expect(await getPairReserves({ vault: '0xV', provider })).toEqual({ totalTokenX: 1000n, totalTokenY: 2000n });
   });
 
   it('getPairConfig flattens the nested tuples', async () => {
-    (Contract as unknown as any).mockImplementation(() => makeContractStub({
+    (Contract as unknown as jest.Mock).mockImplementation(() => makeContractStub({
       getPairConfig: [[10n, 20n, '0xFee'], [3600n, 111n, 222n], [false, 0n], [true, 1n], false]
     }));
     expect(await getPairConfig({ vault: '0xV', provider })).toEqual({

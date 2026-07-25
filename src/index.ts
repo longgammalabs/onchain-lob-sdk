@@ -64,7 +64,18 @@ export {
   type GetVaultTotalValuesParams,
   type GetVaultDepositActionsParams,
   type GetVaultDepositorsParams,
-  type GetVaultHistoryParams 
+  type GetVaultHistoryParams,
+
+  type PreviewAddLiquidityPairParams,
+  type PreviewAddLiquidityPairResult,
+  type PreviewRemoveLiquidityPairParams,
+  type PreviewRemoveLiquidityPairResult,
+  type GetPairReservesParams,
+  type PairReserves,
+  type GetPairConfigParams,
+  type PairConfig,
+  type AddLiquidityPairParams,
+  type RemoveLiquidityPairParams
 } from './vault';
 
 export type {

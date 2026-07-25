@@ -18,5 +18,16 @@ export type {
   GetVaultTotalValuesParams,
   GetVaultDepositActionsParams,
   GetVaultDepositorsParams,
-  GetVaultHistoryParams
+  GetVaultHistoryParams,
+
+  PreviewAddLiquidityPairParams,
+  PreviewAddLiquidityPairResult,
+  PreviewRemoveLiquidityPairParams,
+  PreviewRemoveLiquidityPairResult,
+  GetPairReservesParams,
+  PairReserves,
+  GetPairConfigParams,
+  PairConfig,
+  AddLiquidityPairParams,
+  RemoveLiquidityPairParams
 } from './params';

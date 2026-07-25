@@ -38,6 +38,14 @@ import { AddLiquidityVaultParams,
 } from './params';
 import { getDepositDetails } from './depositDetails';
 import { getWithdrawDetails } from './withdrawDetails';
+import { previewAddLiquidityPair, previewRemoveLiquidityPair, getPairReserves, getPairConfig } from './pairReads';
+import type {
+  PreviewAddLiquidityPairParams, PreviewAddLiquidityPairResult,
+  PreviewRemoveLiquidityPairParams, PreviewRemoveLiquidityPairResult,
+  GetPairReservesParams, PairReserves,
+  GetPairConfigParams, PairConfig,
+  AddLiquidityPairParams, RemoveLiquidityPairParams
+} from './params';
 import { OnchainLobVaultContract } from './onchainLobVaultContract';
 import { ContractTransactionResponse } from 'ethers';
 import * as mappers from './mappers';
@@ -302,6 +310,68 @@ export class OnchainLobVault implements Disposable {
     const vaultContract = await this.getVaultContract({ vault: params.vault });
 
     return vaultContract.removeLiquidity(params);
+  }
+
+  /**
+   * Preview the result of adding liquidity to a pair vault (read-only, no signer required).
+   *
+   * @param {PreviewAddLiquidityPairParams} params - vault address, provider, anchor tokenId, and raw amount.
+   * @returns {Promise<PreviewAddLiquidityPairResult>} Projected token amounts and minted LP.
+   */
+  previewAddLiquidityPair(params: PreviewAddLiquidityPairParams): Promise<PreviewAddLiquidityPairResult> {
+    return previewAddLiquidityPair(params);
+  }
+
+  /**
+   * Preview the result of removing liquidity from a pair vault (read-only, no signer required).
+   *
+   * @param {PreviewRemoveLiquidityPairParams} params - vault address, provider, and LP amount to burn.
+   * @returns {Promise<PreviewRemoveLiquidityPairResult>} Projected token amounts returned.
+   */
+  previewRemoveLiquidityPair(params: PreviewRemoveLiquidityPairParams): Promise<PreviewRemoveLiquidityPairResult> {
+    return previewRemoveLiquidityPair(params);
+  }
+
+  /**
+   * Get the current token reserves of a pair vault (read-only, no signer required).
+   *
+   * @param {GetPairReservesParams} params - vault address and provider.
+   * @returns {Promise<PairReserves>} Total tokenX and tokenY held by the vault.
+   */
+  getPairReserves(params: GetPairReservesParams): Promise<PairReserves> {
+    return getPairReserves(params);
+  }
+
+  /**
+   * Get the configuration of a pair vault (read-only, no signer required).
+   *
+   * @param {GetPairConfigParams} params - vault address and provider.
+   * @returns {Promise<PairConfig>} Fee, liquidity, and native-token configuration.
+   */
+  getPairConfig(params: GetPairConfigParams): Promise<PairConfig> {
+    return getPairConfig(params);
+  }
+
+  /**
+   * Add liquidity to a pair vault.
+   *
+   * @param {AddLiquidityPairParams} params - vault address, anchor tokenId, amount, and minLpMinted slippage guard.
+   * @returns {Promise<ContractTransactionResponse>} Transaction response.
+   */
+  async addLiquidityPair(params: AddLiquidityPairParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
+    return vaultContract.addLiquidityPair(params);
+  }
+
+  /**
+   * Remove liquidity from a pair vault.
+   *
+   * @param {RemoveLiquidityPairParams} params - vault address, LP amount to burn, and min token slippage guards.
+   * @returns {Promise<ContractTransactionResponse>} Transaction response.
+   */
+  async removeLiquidityPair(params: RemoveLiquidityPairParams): Promise<ContractTransactionResponse> {
+    const vaultContract = await this.getVaultContract({ vault: params.vault });
+    return vaultContract.removeLiquidityPair(params);
   }
 
   /**

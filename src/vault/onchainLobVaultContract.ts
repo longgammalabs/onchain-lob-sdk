@@ -6,9 +6,11 @@ import type {
   ApproveVaultParams,
   RemoveLiquidityVaultParams,
   UnwrapNativeTokenVaultParams,
-  WrapNativeTokenVaultParams
+  WrapNativeTokenVaultParams,
+  AddLiquidityPairParams,
+  RemoveLiquidityPairParams
 } from './params';
-import { erc20Abi, erc20WethAbi, lpManagerAbi } from '../abi';
+import { erc20Abi, erc20WethAbi, lpManagerAbi, lpManagerPairAbi } from '../abi';
 import type { VaultConfig } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -41,6 +43,7 @@ export class OnchainLobVaultContract {
 
   protected readonly signer: Signer;
   protected readonly vaultContract: Contract;
+  protected readonly pairContract: Contract;
   private _chainId: bigint | undefined;
   protected get chainId(): Promise<bigint> {
     if (this._chainId === undefined) {
@@ -63,6 +66,7 @@ export class OnchainLobVaultContract {
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
     this.vaultContract = new Contract(options.vault.vaultAddress, lpManagerAbi, options.signer);
+    this.pairContract = new Contract(options.vault.vaultAddress, lpManagerPairAbi, options.signer);
     this.pythConnection = new HermesClient(
       options.pythHermesUrl ?? OnchainLobVaultContract.defaultPythHermesUrl,
       options.pythApiKey ? { headers: { Authorization: `Bearer ${options.pythApiKey}` } } : {}
@@ -242,6 +246,46 @@ export class OnchainLobVaultContract {
       ));
 
     return tx;
+  }
+
+  async addLiquidityPair(params: AddLiquidityPairParams): Promise<ContractTransactionResponse> {
+    const expires = getExpires();
+    return this.processContractMethodCall(
+      this.pairContract,
+      this.pairContract.addLiquidity!(
+        BigInt(params.tokenId),
+        params.amount,
+        0n,
+        params.minLpMinted,
+        expires,
+        [],
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
+  }
+
+  async removeLiquidityPair(params: RemoveLiquidityPairParams): Promise<ContractTransactionResponse> {
+    const expires = getExpires();
+    return this.processContractMethodCall(
+      this.pairContract,
+      this.pairContract.removeLiquidity!(
+        params.burnLP,
+        params.minTokenXGet,
+        params.minTokenYGet,
+        expires,
+        {
+          gasLimit: params.gasLimit,
+          nonce: params.nonce,
+          maxFeePerGas: params.maxFeePerGas,
+          maxPriorityFeePerGas: params.maxPriorityFeePerGas
+        }
+      )
+    );
   }
 
   protected async processContractMethodCall(contract: Contract, methodCall: Promise<ContractTransactionResponse>): Promise<ContractTransactionResponse> {

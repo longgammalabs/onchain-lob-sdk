@@ -126,7 +126,6 @@ export interface MarketUpdateDto {
   lowPrice24h: string | null;
   highPrice24h: string | null;
   price24h: string | null;
-  coinMarketCapId: string;
   totalSupply: string;
   lastTouched: number;
   baseToken: TokenUpdateDto;

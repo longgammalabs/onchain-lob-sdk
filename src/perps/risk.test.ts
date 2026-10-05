@@ -261,3 +261,28 @@ describe('withdrawals and derived prices', () => {
     expect(calculateImpliedMarkPrice(0n, 0n, 0n, 1n)).toBeNull();
   });
 });
+
+describe('ADM details and bankruptcy', () => {
+  test('every term is rounded up on its own: ceil(0.1 * 305) + ceil(0.03 * 305) = 31 + 10', () => {
+    // one bid lot at 305 ticks: the sum of the ceilings is 41, the ceiling of the sum would be 40
+    expect(calculateAdm(0n, 1n, 0n, ticksToPriceX18(305n), risk)).toBe(41n);
+  });
+
+  test('a short with a resting ask: ADM takes the ask scenario (size - Qask) plus kappa on the order lots', () => {
+    // short 10, ask 5 => exposure 15: ceil(10% * 4_500_000) + ceil(3% * 1_500_000) = 450_000 + 45_000
+    expect(calculateAdm(-10n, 0n, 5n, mark, risk)).toBe(495_000n);
+    // a bid that covers part of the short does not lower ADM: the ask scenario (the short alone) still dominates
+    expect(calculateAdm(-10n, 5n, 0n, mark, risk)).toBe(calculateRequirement(10n, mark, 1000, 1n));
+  });
+
+  test('a short that lost more than its collateral is bankrupt', () => {
+    // short 10 @ 300000 with 100000 collateral, the mark rises to 330000: unrealized -300000, equity -200000
+    const metrics = calculateAccountMetrics({
+      collateral: 100_000n, size: -10n, costBasis: -3_000_000n, owedCharges: 0n, qBid: 0n, qAsk: 0n, priceX18: ticksToPriceX18(330000n),
+    }, risk);
+    expect(metrics.unrealized).toBe(-300_000n);
+    expect(metrics.equity).toBe(-200_000n);
+    expect(metrics.state).toBe(PerpHealthState.Bankrupt);
+    expect(metrics.availableMargin).toBeLessThan(0n);
+  });
+});

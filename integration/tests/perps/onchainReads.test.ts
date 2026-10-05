@@ -1,3 +1,5 @@
+import { execFileSync } from 'node:child_process';
+
 import { JsonRpcProvider } from 'ethers';
 
 import {
@@ -14,6 +16,28 @@ const rpcUrl = process.env.PERPS_RPC_URL ?? 'https://testnet-rpc.monad.xyz';
 const marketAddress = (process.env.PERPS_MARKET ?? '0x96F3f420D7479E21E66460F21A8cb422a8AE865d').toLowerCase();
 
 jest.setTimeout(120_000);
+
+/**
+ * Jest cannot skip a test at run time, so the precondition of the book tests (a non-empty book) is probed
+ * synchronously before the tests are declared: without orders they are reported as skipped, not as passed.
+ */
+const hasOrdersInBook = (): boolean => {
+  const script = `
+    const { JsonRpcProvider, Contract } = require('ethers');
+    (async () => {
+      const provider = new JsonRpcProvider(${JSON.stringify(rpcUrl)}, 10143, { staticNetwork: true, batchMaxCount: 1 });
+      const market = new Contract(${JSON.stringify(marketAddress)}, ['function head(bool) view returns (uint64)'], provider);
+      console.log((await market.head(true)) !== 0n && (await market.head(false)) !== 0n ? '1' : '0');
+    })().catch(() => console.log('0'));
+  `;
+  try {
+    return execFileSync(process.execPath, ['-e', script], { timeout: 60_000, cwd: process.cwd() }).toString().trim() === '1';
+  }
+  catch {
+    return false;
+  }
+};
+const testWithBook = hasOrdersInBook() ? test : test.skip;
 
 const abs = (value: bigint) => value < 0n ? -value : value;
 
@@ -68,12 +92,10 @@ describe('Perps on-chain reads (Monad testnet)', () => {
       expect(bids[0].price).toBeLessThan(asks[0].price);
   });
 
-  test('an account of a resting maker: live state, margin requirements and the SDK formulas', async () => {
+  testWithBook('an account of a resting maker: live state, margin requirements and the SDK formulas', async () => {
     const bids = await contract.getBookOrders({ bid: true, limit: 5 });
     const asks = await contract.getBookOrders({ bid: false, limit: 5 });
-    const maker = bids[0] ?? asks[0];
-    if (!maker)
-      return; // an empty book: nothing to check
+    const maker = bids[0] ?? asks[0]!;
 
     const state = await contract.getAccountState(maker.account);
     expect(decodePerpAccountId(maker.account)).toEqual({ owner: maker.owner, subaccount: maker.subaccount });
@@ -102,12 +124,10 @@ describe('Perps on-chain reads (Monad testnet)', () => {
     }
   });
 
-  test('the calldata the SDK builds is accepted by the contract (eth_call simulation, nothing is sent)', async () => {
+  testWithBook('the calldata the SDK builds is accepted by the contract (eth_call simulation, nothing is sent)', async () => {
     const bids = await contract.getBookOrders({ bid: true, limit: 50 });
     const asks = await contract.getBookOrders({ bid: false, limit: 50 });
-    const maker = bids[0] ?? asks[0];
-    if (!maker || bids.length === 0)
-      return;
+    const maker = bids[0] ?? asks[0]!;
 
     const from = maker.owner;
     const account = encodePerpAccountId(maker.owner, maker.subaccount);

@@ -50,6 +50,14 @@ describe('OnchainLobClient.perps', () => {
     client.dispose();
   });
 
+  it('client.reconnect() does not open the perps socket of a client that never used perps', () => {
+    const client = createClient();
+    const start = jest.spyOn((client.perps as any).onchainLobWebSocketService.onchainLobWebSocketClient, 'start');
+    client.reconnect();
+    expect(start).not.toHaveBeenCalled();
+    client.dispose();
+  });
+
   it('forwards setSigner, reconnect and dispose to the perps module', () => {
     const client = createClient();
     const setSigner = jest.spyOn(client.perps, 'setSigner');

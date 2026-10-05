@@ -29,15 +29,15 @@ const accountView = (overrides: Partial<Record<string, unknown>> = {}) => ({
 });
 
 /** The words of a book node, the same layout `order(handle)` returns. */
-const nodeWords = (price: bigint, lots: bigint, bid: boolean, nodeOwner = owner, sub = 0n): [bigint, bigint] => [
-  price | (lots << 64n) | ((bid ? 3n : 2n) << 192n),
+const nodeWords = (price: bigint, lots: bigint, bid: boolean, nodeOwner = owner, sub = 0n, reduceOnly = false): [bigint, bigint] => [
+  price | (lots << 64n) | (((bid ? 3n : 2n) | (reduceOnly ? 4n : 0n)) << 192n),
   BigInt(nodeOwner) | (sub << 160n) | (1n << 176n),
 ];
 
-const makeSut = (options: { signer?: boolean } = {}) => {
+const makeSut = (options: { signer?: boolean; autoWait?: boolean; realProcess?: boolean } = {}) => {
   const provider = new JsonRpcProvider('http://localhost:1', 10143, { staticNetwork: true });
   const signer = options.signer === false ? null : new VoidSigner(owner, provider);
-  const sut = new OnchainLobPerpMarketContract({ market, signer, provider, autoWaitTransaction: false }) as any;
+  const sut = new OnchainLobPerpMarketContract({ market, signer, provider, autoWaitTransaction: options.autoWait ?? false }) as any;
 
   const stub: any = {
     interface: iface,
@@ -60,12 +60,14 @@ const makeSut = (options: { signer?: boolean } = {}) => {
   sut.quoteTokenContract = token;
   sut.devnetTokenContract = { faucet: jest.fn(() => Promise.resolve('faucet tx')) };
   const calls: unknown[] = [];
-  sut.processContractMethodCall = jest.fn(async (_contract: unknown, call: Promise<unknown>) => {
-    const result = await call;
-    calls.push(result);
+  if (!options.realProcess) {
+    sut.processContractMethodCall = jest.fn(async (_contract: unknown, call: Promise<unknown>) => {
+      const result = await call;
+      calls.push(result);
 
-    return result;
-  });
+      return result;
+    });
+  }
 
   return { sut, stub, token, calls };
 };
@@ -322,7 +324,14 @@ describe('collateral', () => {
     stub.perpAccount!.mockResolvedValue(accountView({ collateral: 1_000_000_000n, owedCharges: 1_000_000n, unrealized: 50_000_000n, adm: 300_000_000n }));
     await sut.withdraw({ account, withdrawAll: true });
 
-    expect(stub.withdraw).toHaveBeenCalledWith(account, 699_000_000n, noOverrides);
+    // 699_000_000 minus the safety margin of 1% of ADM (3_000_000)
+    expect(stub.withdraw).toHaveBeenCalledWith(account, 696_000_000n, noOverrides);
+  });
+
+  test('withdrawAll of a flat account takes everything (no requirement, no margin)', async () => {
+    const { sut, stub } = makeSut();
+    await sut.withdraw({ account, withdrawAll: true });
+    expect(stub.withdraw).toHaveBeenCalledWith(account, 1_000_000_000n, noOverrides);
   });
 
   test('withdraw needs an amount or withdrawAll', async () => {
@@ -574,5 +583,211 @@ describe('error decoding', () => {
     const original = Object.assign(new Error('boom'), { data: '0xdeadbeef' });
 
     await expect(sut.processContractMethodCall(sut.marketContract, Promise.reject(original))).rejects.toBe(original);
+  });
+});
+
+describe('deposit approval flow', () => {
+  test('the deposit is not sent when the approval is rejected', async () => {
+    const { sut, stub, token } = makeSut();
+    token.approve!.mockRejectedValue(new Error('user rejected'));
+
+    await expect(sut.deposit({ account, amount: 1n })).rejects.toThrow('user rejected');
+    expect(stub.deposit).not.toHaveBeenCalled();
+  });
+
+  test('the deposit is not sent when the approval transaction fails', async () => {
+    const { sut, stub, token } = makeSut();
+    token.approve!.mockResolvedValue({ wait: jest.fn().mockRejectedValue(new Error('approval reverted')) });
+
+    await expect(sut.deposit({ account, amount: 1n })).rejects.toThrow('approval reverted');
+    expect(stub.deposit).not.toHaveBeenCalled();
+  });
+
+  test('the nonce is not bumped when no approval is sent', async () => {
+    const { sut, stub, token } = makeSut();
+    token.allowance!.mockResolvedValue(10n);
+    await sut.deposit({ account, amount: 5n, nonce: 7n });
+    expect(token.approve).not.toHaveBeenCalled();
+    expect(stub.deposit).toHaveBeenLastCalledWith(account, 5n, { ...noOverrides, nonce: 7n });
+
+    token.allowance!.mockResolvedValue(0n);
+    await sut.deposit({ account, amount: 5n, nonce: 9n, autoApprove: false });
+    expect(token.approve).not.toHaveBeenCalled();
+    expect(stub.deposit).toHaveBeenLastCalledWith(account, 5n, { ...noOverrides, nonce: 9n });
+  });
+
+  test('the approval is waited for once when autoWaitTransaction is off (by ensureQuoteAllowance)', async () => {
+    const { sut, token } = makeSut({ autoWait: false });
+    const wait = jest.fn();
+    token.approve!.mockResolvedValue({ wait });
+    await sut.deposit({ account, amount: 1n });
+    expect(wait).toHaveBeenCalledTimes(1);
+  });
+
+  test('the approval is waited for once when autoWaitTransaction is on (by the transaction processing)', async () => {
+    const { sut, stub, token } = makeSut({ autoWait: true, realProcess: true });
+    const approveWait = jest.fn();
+    const depositWait = jest.fn();
+    token.approve!.mockResolvedValue({ wait: approveWait, hash: '0x1' });
+    stub.deposit!.mockResolvedValue({ wait: depositWait, hash: '0x2' });
+    await sut.deposit({ account, amount: 1n });
+
+    expect(approveWait).toHaveBeenCalledTimes(1); // not a second time by ensureQuoteAllowance
+    expect(depositWait).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('replaceOrders and the oracle', () => {
+  const update = { handle: 4294967308n, price: 299900n, lots: 100n };
+
+  test('a replacement of a risk-increasing order refreshes a stale oracle (the maker account is read from the book)', async () => {
+    const { sut, stub } = makeSut();
+    stub.order!.mockResolvedValue(nodeWords(299850n, 1000n, true));
+    stub.perpAccount!.mockResolvedValue(accountView({ oracleFresh: false }));
+    await sut.replaceOrders({ updates: [update] });
+
+    expect(stub.order).toHaveBeenCalledWith(update.handle);
+    expect(stub.perpAccount).toHaveBeenCalledWith(account);
+    expect(decodeMulticall(stub.multicall!.mock.calls[0]![0]).map(call => call.name)).toEqual(['refreshPrice', 'replaceBatch']);
+  });
+
+  test('a fresh oracle needs no refresh', async () => {
+    const { sut, stub } = makeSut();
+    stub.order!.mockResolvedValue(nodeWords(299850n, 1000n, true));
+    await sut.replaceOrders({ updates: [update] });
+    expect(stub.replaceBatch).toHaveBeenCalledTimes(1);
+    expect(stub.multicall).not.toHaveBeenCalled();
+  });
+
+  test('cancels and reduce-only orders never need a fresh oracle', async () => {
+    const { sut, stub } = makeSut();
+    stub.perpAccount!.mockResolvedValue(accountView({ oracleFresh: false }));
+    stub.order!.mockResolvedValue(nodeWords(310000n, 10n, false, owner, 0n, true));
+
+    await sut.replaceOrders({ updates: [{ ...update, op: 'cancel' }] });
+    await sut.replaceOrders({ updates: [update] });
+
+    expect(stub.replaceBatch).toHaveBeenCalledTimes(2);
+    expect(stub.multicall).not.toHaveBeenCalled();
+    expect(stub.perpAccount).not.toHaveBeenCalled();
+  });
+
+  test('refreshPrice: true batches it without reading the book', async () => {
+    const { sut, stub } = makeSut();
+    await sut.replaceOrders({ updates: [update], refreshPrice: true });
+    expect(stub.order).not.toHaveBeenCalled();
+    expect(decodeMulticall(stub.multicall!.mock.calls[0]![0]).map(call => call.name)).toEqual(['refreshPrice', 'replaceBatch']);
+  });
+});
+
+describe('autoHint fallbacks', () => {
+  const linkBook = (stub: any, nodes: Map<bigint, [bigint, bigint]>) => {
+    const chain = [...nodes.keys()];
+    stub.head.mockResolvedValue(chain[0] ?? 0n);
+    stub.order.mockImplementation((handle: bigint) => Promise.resolve(nodes.get(handle) ?? [0n, 0n]));
+    stub.next.mockImplementation((handle: bigint) => Promise.resolve(chain[chain.indexOf(handle) + 1] ?? 0n));
+  };
+
+  test('place: a book prefix too long to know the hint falls back to hinted = false', async () => {
+    const { sut, stub } = makeSut();
+    // 300 bids all better than the new order: the walk stops at 256 and the hint is unknown
+    linkBook(stub, new Map(Array.from({ length: 300 }, (_, i) => [BigInt(i + 1), nodeWords(400_000n - BigInt(i), 10n, true)] as const)));
+    await sut.placeOrder({ account, side: 'buy', price: 100n, size: 1n, autoHint: true });
+
+    expect(stub.place.mock.calls[0]!.slice(5, 7)).toEqual([0n, false]);
+    expect(stub.order).toHaveBeenCalledTimes(256);
+  });
+
+  test('cancel: an order that is not in the book at all throws', async () => {
+    const { sut, stub } = makeSut();
+    stub.order!.mockResolvedValue([0n, 0n]);
+    await expect(sut.cancelOrder({ handle: 5n, autoHint: true })).rejects.toThrow('Order 5 is not in the book');
+    expect(stub.cancel).not.toHaveBeenCalled();
+  });
+
+  test('cancel: an order not found while walking its side falls back to hinted = false', async () => {
+    const { sut, stub } = makeSut();
+    stub.order!.mockImplementation((handle: bigint) => Promise.resolve(handle === 5n ? nodeWords(299000n, 10n, true) : nodeWords(299850n, 10n, true)));
+    stub.head!.mockResolvedValue(0n); // the walk sees an empty side (the order was removed meanwhile)
+    await sut.cancelOrder({ handle: 5n, autoHint: true });
+
+    expect(stub.cancel).toHaveBeenCalledWith(5n, 0n, false, noOverrides);
+  });
+});
+
+describe('multicall \'auto\' refresh selection', () => {
+  const other = encodePerpAccountId('0x2222222222222222222222222222222222222222', 3);
+
+  test('actions that never need a fresh oracle do not read the account', async () => {
+    const { sut, stub } = makeSut();
+    stub.perpAccount!.mockResolvedValue(accountView({ oracleFresh: false }));
+    await sut.multicall({ calls: [{ type: 'deposit', params: { account, amount: 1n } }, { type: 'transfer', params: { from: account, to: other, amount: 1n } }] });
+
+    expect(stub.perpAccount).not.toHaveBeenCalled();
+    expect(decodeMulticall(stub.multicall!.mock.calls[0]![0]).map(call => call.name)).toEqual(['deposit', 'transfer']);
+  });
+
+  test('the first action that needs a fresh oracle decides, a reduce-only order is skipped', async () => {
+    const { sut, stub } = makeSut();
+    stub.perpAccount!.mockResolvedValue(accountView({ oracleFresh: false }));
+    await sut.multicall({
+      calls: [
+        { type: 'placeOrder', params: { account, side: 'sell', price: 310000n, size: 1n, reduceOnly: true } },
+        { type: 'takeOrder', params: { account: other, side: 'buy', size: 1n, deadline: 1_800_000_000 } },
+      ],
+    });
+
+    expect(stub.perpAccount).toHaveBeenCalledTimes(1);
+    expect(stub.perpAccount).toHaveBeenCalledWith(other);
+    expect(decodeMulticall(stub.multicall!.mock.calls[0]![0]).map(call => call.name)).toEqual(['refreshPrice', 'place', 'take']);
+  });
+
+  test('a fresh oracle adds nothing', async () => {
+    const { sut, stub } = makeSut();
+    await sut.multicall({ calls: [{ type: 'withdraw', params: { account, amount: 1n } }, { type: 'cancelAllOrders', params: { account } }] });
+    expect(decodeMulticall(stub.multicall!.mock.calls[0]![0]).map(call => call.name)).toEqual(['withdraw', 'cancelAll']);
+  });
+});
+
+describe('fromChain', () => {
+  const erc20 = new Interface(['function decimals() view returns (uint8)']);
+  const stubRunner = (risk: { baseLot: bigint; quoteTick: bigint }) => ({
+    provider: null,
+    call: jest.fn(async (tx: { data: string }) => {
+      const selector = tx.data.slice(0, 10);
+      if (selector === id('riskParams()').slice(0, 10))
+        return iface.encodeFunctionResult('riskParams', [[1000, 1000, 500, 750, 300, 0, risk.baseLot, risk.quoteTick]]);
+      if (selector === id('quoteToken()').slice(0, 10))
+        return iface.encodeFunctionResult('quoteToken', [market.quoteToken.address]);
+      if (selector === id('decimals()').slice(0, 10))
+        return erc20.encodeFunctionResult('decimals', [6]);
+      throw new Error(`unexpected call ${selector}`);
+    }),
+  });
+
+  test('derives the display scaling from the lot and the tick', async () => {
+    const contract = await OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id, provider: stubRunner({ baseLot: 10n ** 14n, quoteTick: 1n }) as any });
+    expect(contract.market).toMatchObject({ baseLot: 10n ** 14n, quoteTick: 1n, sizeDecimals: 4, priceDecimals: 2, quoteToken: { address: market.quoteToken.address, decimals: 6 } });
+  });
+
+  test('a quote tick of 100 shifts the price scale', async () => {
+    const contract = await OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id, provider: stubRunner({ baseLot: 10n ** 14n, quoteTick: 100n }) as any });
+    expect(contract.market).toMatchObject({ sizeDecimals: 4, priceDecimals: 0 });
+  });
+
+  test('base decimals are configurable', async () => {
+    const contract = await OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id, provider: stubRunner({ baseLot: 10n ** 4n, quoteTick: 1n }) as any, baseDecimals: 8 });
+    expect(contract.market).toMatchObject({ sizeDecimals: 4, priceDecimals: 2 });
+  });
+
+  test('a lot or a tick that is not a power of ten is rejected', async () => {
+    await expect(OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id, provider: stubRunner({ baseLot: 3n * 10n ** 14n, quoteTick: 1n }) as any }))
+      .rejects.toThrow('baseLot (300000000000000) is not a power of ten');
+    await expect(OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id, provider: stubRunner({ baseLot: 10n ** 14n, quoteTick: 25n }) as any }))
+      .rejects.toThrow('quoteTick (25) is not a power of ten');
+  });
+
+  test('requires a signer or a provider', async () => {
+    await expect(OnchainLobPerpMarketContract.fromChain({ marketAddress: market.id })).rejects.toThrow('Either a signer or a provider is required');
   });
 });

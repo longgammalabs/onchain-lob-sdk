@@ -119,9 +119,12 @@ describe('OnchainLobPerpsMockService', () => {
 });
 
 describe('OnchainLobPerpsMockWebSocketService', () => {
-  const tick = () => new Promise(resolve => setTimeout(resolve, 5));
+  // Fake timers make the snapshot (setTimeout 0) and the simulation (setInterval) deterministic.
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+  const advance = (ms: number) => jest.advanceTimersByTime(ms);
 
-  test('answers a subscription with a snapshot and stops after unsubscribe', async () => {
+  test('answers a subscription with a snapshot and stops after unsubscribe', () => {
     const socket = new OnchainLobPerpsMockWebSocketService(options);
     const markets = jest.fn();
     const orders = jest.fn();
@@ -131,7 +134,7 @@ describe('OnchainLobPerpsMockWebSocketService', () => {
     socket.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
     socket.subscribeToUserPerpOrders({ user });
     expect(markets).not.toHaveBeenCalled(); // asynchronous, like a real socket
-    await tick();
+    advance(1);
 
     expect(markets).toHaveBeenCalledTimes(1);
     expect(markets.mock.calls[0]![0]).toBe(PERP_MOCK_MARKET_ID);
@@ -141,25 +144,37 @@ describe('OnchainLobPerpsMockWebSocketService', () => {
 
     socket.unsubscribeFromPerpMarket({ market: PERP_MOCK_MARKET_ID });
     socket.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
-    await tick();
+    advance(1);
     expect(markets).toHaveBeenCalledTimes(2);
     socket[Symbol.dispose]();
   });
 
-  test('candles have no snapshot; the simulation updates the last candle with the market id', async () => {
+  test('a snapshot that was not delivered yet is dropped by an unsubscribe', () => {
+    const socket = new OnchainLobPerpsMockWebSocketService(options);
+    const markets = jest.fn();
+    socket.events.perpMarketUpdated.addListener(markets);
+    socket.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
+    socket.unsubscribeFromPerpMarket({ market: PERP_MOCK_MARKET_ID });
+    advance(10);
+    expect(markets).not.toHaveBeenCalled();
+    socket[Symbol.dispose]();
+  });
+
+  test('candles have no snapshot; the simulation updates the last candle with the market id', () => {
     const socket = new OnchainLobPerpsMockWebSocketService(new PerpsMockDataSource(options), 10);
     const candles = jest.fn();
     socket.events.perpCandlesUpdated.addListener(candles);
     socket.subscribeToPerpCandles({ market: PERP_MOCK_MARKET_ID, resolution: '60' });
-    await new Promise(resolve => setTimeout(resolve, 5));
+    advance(5);
     expect(candles).not.toHaveBeenCalled();
 
-    await new Promise(resolve => setTimeout(resolve, 40));
+    advance(10);
+    expect(candles).toHaveBeenCalledTimes(1);
     expect(candles).toHaveBeenCalledWith(PERP_MOCK_MARKET_ID, false, expect.objectContaining({ resolution: '60', time: expect.any(Number) }));
     socket[Symbol.dispose]();
   });
 
-  test('emits simulated updates only for active subscriptions and stops on dispose', async () => {
+  test('emits simulated updates only for active subscriptions and stops on dispose', () => {
     const socket = new OnchainLobPerpsMockWebSocketService(new PerpsMockDataSource(options), 10);
     const trades = jest.fn();
     const books = jest.fn();
@@ -167,17 +182,53 @@ describe('OnchainLobPerpsMockWebSocketService', () => {
     socket.events.perpOrderbookUpdated.addListener(books);
 
     socket.subscribeToPerpTrades({ market: PERP_MOCK_MARKET_ID });
-    await new Promise(resolve => setTimeout(resolve, 60));
+    advance(1); // the snapshot
+    expect(trades).toHaveBeenCalledTimes(1);
+    advance(30);
     const updates = trades.mock.calls.filter(call => call[1] === false);
-    expect(updates.length).toBeGreaterThanOrEqual(2);
+    expect(updates).toHaveLength(3);
     expect(updates[0]![2]).toHaveLength(1);
     expect(books).not.toHaveBeenCalled();
 
     socket[Symbol.dispose]();
     const count = trades.mock.calls.length;
-    await new Promise(resolve => setTimeout(resolve, 40));
+    advance(100);
     expect(trades.mock.calls.length).toBe(count);
     expect(socket.isConnected).toBe(false);
+  });
+
+  test('the simulation stops when the last subscription is removed', () => {
+    const socket = new OnchainLobPerpsMockWebSocketService(new PerpsMockDataSource(options), 10);
+    const trades = jest.fn();
+    socket.events.perpTradesUpdated.addListener(trades);
+    socket.subscribeToPerpTrades({ market: PERP_MOCK_MARKET_ID });
+    advance(21);
+    socket.unsubscribeFromPerpTrades({ market: PERP_MOCK_MARKET_ID });
+    const count = trades.mock.calls.length;
+    advance(100);
+    expect(trades.mock.calls.length).toBe(count);
+    expect(jest.getTimerCount()).toBe(0);
+    socket[Symbol.dispose]();
+  });
+
+  test('reconnect does nothing: the mock has no socket and keeps its subscriptions', () => {
+    const socket = new OnchainLobPerpsMockWebSocketService(new PerpsMockDataSource(options), 10);
+    const trades = jest.fn();
+    socket.events.perpTradesUpdated.addListener(trades);
+
+    socket.reconnect(); // never subscribed: no timers, no events
+    expect(jest.getTimerCount()).toBe(0);
+    expect(trades).not.toHaveBeenCalled();
+
+    socket.subscribeToPerpTrades({ market: PERP_MOCK_MARKET_ID });
+    advance(1);
+    const count = trades.mock.calls.length;
+    socket.reconnect();
+    advance(1);
+    expect(trades.mock.calls.length).toBe(count); // no second snapshot
+    advance(10);
+    expect(trades.mock.calls.length).toBe(count + 1); // the subscription is kept
+    socket[Symbol.dispose]();
   });
 
   test('tick moves the shared state seen by the REST mock', async () => {

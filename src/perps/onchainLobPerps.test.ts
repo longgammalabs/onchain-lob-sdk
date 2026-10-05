@@ -6,7 +6,6 @@ import { PERP_MOCK_MARKET_ID } from './mock';
 import { OnchainLobPerps } from './onchainLobPerps';
 
 const owner = '0x9c72ee4ef78d523da2b604214a7d29b983033234';
-const tick = () => new Promise(resolve => setTimeout(resolve, 5));
 
 const createPerps = (options: { signer?: boolean } = {}) => {
   const provider = new JsonRpcProvider('http://localhost:1', 10143, { staticNetwork: true });
@@ -51,7 +50,8 @@ describe('OnchainLobPerps with the mock data source', () => {
     expect((await perps.getAccounts({ user: owner })).map(account => account.subaccount)).toEqual([0, 1]);
   });
 
-  test('subscriptions emit mapped snapshots', async () => {
+  test('subscriptions emit mapped snapshots', () => {
+    jest.useFakeTimers();
     const perps = createPerps({ signer: false });
     const market = jest.fn();
     const accounts = jest.fn();
@@ -63,7 +63,7 @@ describe('OnchainLobPerps with the mock data source', () => {
     perps.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
     perps.subscribeToUserPerpAccounts({ user: owner });
     perps.subscribeToPerpTrades({ market: PERP_MOCK_MARKET_ID });
-    await tick();
+    jest.advanceTimersByTime(5);
 
     expect(market).toHaveBeenCalledWith(PERP_MOCK_MARKET_ID, true, expect.objectContaining({ rawIndexPrice: 300000n }));
     expect(accounts).toHaveBeenCalledWith('allMarkets', true, expect.any(Array));
@@ -71,6 +71,7 @@ describe('OnchainLobPerps with the mock data source', () => {
     expect(trades.mock.calls[0]![2][0].price).toBeInstanceOf(BigNumber);
 
     perps[Symbol.dispose]();
+    jest.useRealTimers();
   });
 
   test('transactions resolve the market from the data source and use the signer', async () => {

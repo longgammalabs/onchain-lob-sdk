@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 
 import {
   calculateAccountMetrics, calculateAdm, calculateAdmc, calculateBankruptcyPrice, calculateEquity, calculateLiquidationPrice,
-  calculateMaxLeverage, calculateRequiredMargin, calculateRequirement, calculateUnrealizedPnl, getHealthState, isWithinCollar,
+  calculateEntryPrice, calculateImpliedMarkPrice, calculateMaxLeverage, calculateMaxWithdrawable, calculateRequiredMargin, calculateRequirement, calculateUnrealizedPnl, getHealthState, isWithinCollar,
   markValue, simulateFill, ticksToPriceX18, valueDown, valueUp, type PerpRiskInput
 } from './risk';
 import { PerpHealthState } from '../models';
@@ -233,5 +233,31 @@ describe('liquidation price', () => {
     const stateAt = (ticks: bigint) => calculateAccountMetrics({ ...input, owedCharges: 0n, qBid: 0n, qAsk: 0n, priceX18: ticksToPriceX18(ticks) }, risk).state;
     expect(stateAt(BigInt(liquidationPrice.integerValue(BigNumber.ROUND_CEIL).toFixed(0)) + 1n)).not.toBe(PerpHealthState.Liquidatable);
     expect(stateAt(BigInt(liquidationPrice.integerValue(BigNumber.ROUND_FLOOR).toFixed(0)) - 1n)).toBe(PerpHealthState.Liquidatable);
+  });
+});
+
+describe('withdrawals and derived prices', () => {
+  test('max withdrawable: collateral minus the requirement, unrealized profit is not withdrawable', () => {
+    // flat, nothing required
+    expect(calculateMaxWithdrawable(1_000n, 0n, 0n, 0n)).toBe(1_000n);
+    // a position that needs 300 of margin and has a profit: only collateral - ADM is free
+    expect(calculateMaxWithdrawable(1_000n, 0n, 500n, 300n)).toBe(700n);
+    // a loss reduces what can be withdrawn
+    expect(calculateMaxWithdrawable(1_000n, 0n, -200n, 300n)).toBe(500n);
+    // owed funding is settled first
+    expect(calculateMaxWithdrawable(1_000n, 100n, 0n, 0n)).toBe(900n);
+    // never negative
+    expect(calculateMaxWithdrawable(100n, 0n, 0n, 300n)).toBe(0n);
+    expect(calculateMaxWithdrawable(-50n, 0n, 0n, 0n)).toBe(0n);
+  });
+
+  test('entry price and the mark implied by the account view', () => {
+    expect(calculateEntryPrice(10n, 3_000_000n, 1n)!.toString()).toBe('300000');
+    expect(calculateEntryPrice(-10n, -3_000_000n, 1n)!.toString()).toBe('300000');
+    expect(calculateEntryPrice(0n, 0n, 1n)).toBeNull();
+    // long 10 lots, basis 3_000_000, unrealized 100_000 => the mark is 310000
+    expect(calculateImpliedMarkPrice(10n, 3_000_000n, 100_000n, 1n)!.toString()).toBe('310000');
+    expect(calculateImpliedMarkPrice(-10n, -3_000_000n, -100_000n, 1n)!.toString()).toBe('310000');
+    expect(calculateImpliedMarkPrice(0n, 0n, 0n, 1n)).toBeNull();
   });
 });

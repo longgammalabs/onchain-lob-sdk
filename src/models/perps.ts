@@ -452,3 +452,24 @@ export interface PerpBookOrder {
   generation: number;
   epoch: number;
 }
+
+/**
+ * The live overview of an account: the on-chain view and the values derived from it.
+ */
+export interface PerpAccountOverview {
+  /** The account id. */
+  account: bigint;
+  owner: string;
+  subaccount: number;
+  state: PerpAccountState;
+  /** The entry price (quote per base) of the open position, `null` for a flat account. */
+  entryPrice: BigNumber | null;
+  /** The mark price (quote per base) the contract valued the position with, `null` for a flat account. */
+  markPrice: BigNumber | null;
+  /** The mark price (quote per base) at which the position becomes liquidatable. */
+  liquidationPrice: BigNumber | null;
+  /** The mark price (quote per base) at which the equity is zero. */
+  bankruptcyPrice: BigNumber | null;
+  /** The maximal amount a withdrawal takes out now (raw quote units). */
+  maxWithdrawable: bigint;
+}

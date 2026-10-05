@@ -340,3 +340,35 @@ export const isWithinCollar = (buySide: boolean, priceTicks: bigint, priceX18: b
     ? p <= priceX18 * (BPS + BigInt(collarBps))
     : p >= priceX18 * (BPS - BigInt(collarBps));
 };
+
+/**
+ * The maximal amount (raw quote units) a withdrawal can take out of an account (D1 §8):
+ * after settling the pending funding, `amount <= max(0, collateral)` and
+ * `collateral - amount + min(0, unrealized) >= ADM`. Unrealized profit is never withdrawable.
+ * `adm` must be the requirement the contract uses: with a position or open orders it needs a fresh oracle.
+ */
+export const calculateMaxWithdrawable = (collateral: bigint, owedCharges: bigint, unrealized: bigint, adm: bigint): bigint => {
+  const settled = collateral - owedCharges;
+  const byHealth = settled + (unrealized < 0n ? unrealized : 0n) - adm;
+  const limit = settled < byHealth ? settled : byHealth;
+
+  return limit > 0n ? limit : 0n;
+};
+
+/**
+ * The mark price implied by the on-chain account view, in ticks per lot (fractional): `(unrealized + costBasis) / (size * quoteTick)`,
+ * or `null` for a flat account. The contract exposes no mark getter; this is the price its own valuation used.
+ */
+export const calculateImpliedMarkPrice = (size: bigint, costBasis: bigint, unrealized: bigint, quoteTick: bigint): BigNumber | null =>
+  size === 0n
+    ? null
+    : new BigNumber((unrealized + costBasis).toString()).div(new BigNumber((size * quoteTick).toString()));
+
+/**
+ * The average entry price of the open position in ticks per lot (fractional): `|costBasis| / (|size| * quoteTick)`,
+ * or `null` for a flat account.
+ */
+export const calculateEntryPrice = (size: bigint, costBasis: bigint, quoteTick: bigint): BigNumber | null =>
+  size === 0n
+    ? null
+    : new BigNumber(abs(costBasis).toString()).div(new BigNumber((abs(size) * quoteTick).toString()));

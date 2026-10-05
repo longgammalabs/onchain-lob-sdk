@@ -119,3 +119,26 @@ export const calculateOwedCharges = (size: bigint, index: bigint, snap: bigint):
     ? ceilDiv(owedScaled, PERP_CHARGE_SCALE)
     : -(abs(owedScaled) / PERP_CHARGE_SCALE);
 };
+
+/**
+ * The IOC limit of a market-like order that tolerates `slippageBps` from the reference price (ticks):
+ * a buy limit is `ceil(reference * (1 + slippage))`, a sell limit is `floor(reference * (1 - slippage))` but at least 1.
+ */
+export const calculateLimitPriceWithSlippage = (referenceTicks: bigint, buy: boolean, slippageBps: number): bigint => {
+  if (!Number.isInteger(slippageBps) || slippageBps < 0 || slippageBps > 10_000)
+    throw new Error(`Invalid slippage: ${slippageBps} bps`);
+
+  if (buy)
+    return ceilDiv(referenceTicks * (10_000n + BigInt(slippageBps)), 10_000n);
+
+  const limit = referenceTicks * (10_000n - BigInt(slippageBps)) / 10_000n;
+
+  return limit > 1n ? limit : 1n;
+};
+
+/**
+ * Converts the price of the oracle adapter (`IPriceSource.latestPrice`: quote units per one base unit multiplied by 1e18)
+ * to ticks per lot (fractional): `priceWad * baseLot / (quoteTick * 1e18)`.
+ */
+export const oraclePriceWadToTicks = (priceWad: bigint, baseLot: bigint, quoteTick: bigint): BigNumber =>
+  new BigNumber((priceWad * baseLot).toString()).div(new BigNumber((quoteTick * 10n ** 18n).toString()));

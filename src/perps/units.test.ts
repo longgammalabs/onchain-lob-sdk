@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 import {
-  calculateFee, calculateNotional, calculateOwedCharges, fundingRateAnnualized, fundingRatePerHour, lotsToSize,
+  calculateFee, calculateLimitPriceWithSlippage, calculateNotional, oraclePriceWadToTicks, calculateOwedCharges, fundingRateAnnualized, fundingRatePerHour, lotsToSize,
   priceToTicks, quoteAmountToUnits, quoteUnitsToAmount, sizeToLots, ticksToPrice
 } from './units';
 
@@ -54,5 +54,21 @@ describe('perp units', () => {
     expect(calculateOwedCharges(-10n, -1_000_000_001n, -1_000_000_000n)).toBe(0n);
     expect(calculateOwedCharges(10n, -1_500_000_000n, 0n)).toBe(-15n);
     expect(calculateOwedCharges(0n, 5n, 1n)).toBe(0n);
+  });
+});
+
+describe('slippage and oracle conversions', () => {
+  test('IOC limit with slippage: a buy rounds up, a sell rounds down', () => {
+    expect(calculateLimitPriceWithSlippage(300000n, true, 50)).toBe(301500n);
+    expect(calculateLimitPriceWithSlippage(300000n, false, 50)).toBe(298500n);
+    expect(calculateLimitPriceWithSlippage(333n, true, 50)).toBe(335n); // ceil(334.665)
+    expect(calculateLimitPriceWithSlippage(1n, false, 10_000)).toBe(1n);
+    expect(() => calculateLimitPriceWithSlippage(1n, true, -1)).toThrow('Invalid slippage');
+  });
+
+  test('oracle price in WAD to ticks per lot', () => {
+    // 3000 tUSDC (6 decimals) per WETH (18 decimals): 3000e6 / 1e18 quote units per base unit, in WAD: 3000e6 * 1e18 / 1e18 = 3e9
+    // baseLot 1e14, quoteTick 1: 3e9 * 1e14 / 1e18 = 300000 ticks
+    expect(oraclePriceWadToTicks(3_000_000_000n, 100_000_000_000_000n, 1n).toString()).toBe('300000');
   });
 });

@@ -26,11 +26,15 @@ describe('perps mappers', () => {
     expect(market.indexPrice).toEqual(new BigNumber(3000));
     expect(market.rawIndexPrice).toBe(300000n);
     expect(market.fundingRateE15).toBe(27777778n);
-    expect(market.fundingRate.toFixed(8)).toBe('0.00010000');
+    expect(market.fundingRate.toFixed(18)).toBe('0.000000027777778000');
     expect(market.cShort).toBe(-29438250230n);
     expect(market.openInterest).toEqual(new BigNumber('85.3'));
     expect(market.rawOpenInterest).toBe(853000n);
     expect(market.unresolvedDeficit).toEqual(new BigNumber(0));
+    expect(market.aggregations).toEqual([1, 5, 10, 50, 100]);
+    expect(market.rawInsurance).toBe(1996508656n);
+    expect(market.rawUnresolvedDeficit).toBe(0n);
+    expect(market.insurance).toEqual(new BigNumber('1996.508656'));
     expect(market.fundingSaturated).toBe(false);
   });
 
@@ -130,6 +134,9 @@ describe('perps mappers', () => {
     expect(fill.rawSize).toBe(2000n);
     expect(fill.notional).toEqual(new BigNumber('600.1'));
     expect(fill.rawFee).toBe(300050n);
+    expect(fill.rawNotional).toBe(600_100_000n);
+    expect(fill.realizedPnl).toEqual(new BigNumber(0));
+    expect(mappers.mapPerpFillDtoToPerpFill(mock.getFills({ user })[2]!).rawRealizedPnl).toBe(54_000_000n);
     expect(fill.isLiquidation).toBe(false);
   });
 
@@ -149,7 +156,7 @@ describe('perps mappers', () => {
 
     const liquidation = mappers.mapPerpLiquidationDtoToPerpLiquidation(mock.getLiquidations({ market: marketDto().id })[1]!);
     expect(liquidation.lots).toBe(-5000n);
-    expect(liquidation.size).toEqual(new BigNumber('0.5'));
+    expect(liquidation.size).toEqual(new BigNumber('-0.5'));
     expect(liquidation.penalty.gt(0)).toBe(true);
     expect(liquidation.deficitCovered).toBeNull();
     expect(liquidation.outcome).toBe(1);
@@ -172,10 +179,16 @@ describe('perps mappers', () => {
     expect(mappers.mapPerpOrderbookDtoToPerpOrderbook(mock.getOrderbook({ market }))).toBeDefined();
   });
 
-  test('candles channel id', () => {
-    expect(mappers.parsePerpCandlesChannelId('0xabc-15')).toEqual({ market: '0xabc', resolution: '15' });
-    expect(mappers.parsePerpCandlesChannelId('0xabc-1D')).toEqual({ market: '0xabc', resolution: '1D' });
-    expect(mappers.parsePerpCandlesChannelId('0xabc')).toEqual({ market: '0xabc', resolution: '' });
+  test('candle: raw ticks and lots, time in ms, converted with the market scaling', () => {
+    const candle = mappers.mapPerpCandleDtoToPerpCandle({ time: 1_791_198_000_000, open: '299850', high: '300500', low: '299000', close: '300150', volume: '12500', resolution: '15' });
+    expect(candle.time).toBe(1_791_198_000_000);
+    expect(candle.open).toBe('299850');
+
+    const decimal = mappers.convertPerpCandle(candle, { priceDecimals: 2, sizeDecimals: 4 });
+    expect(decimal.open).toEqual(new BigNumber('2998.5'));
+    expect(decimal.high).toEqual(new BigNumber(3005));
+    expect(decimal.volume).toEqual(new BigNumber('1.25'));
+    expect(decimal.resolution).toBe('15');
   });
 });
 

@@ -104,6 +104,8 @@ export interface PerpMarket {
   sizeDecimals: number;
   /** Price (quote per base) = ticks / 10^priceDecimals. */
   priceDecimals: number;
+  /** The supported orderbook groupings in ticks. */
+  aggregations: number[];
   params: PerpMarketParams;
   priceSource: string;
   fundingSource: string;
@@ -115,6 +117,7 @@ export interface PerpMarket {
   bestBid: BigNumber | null;
   bestAsk: BigNumber | null;
   price24h: BigNumber | null;
+  /** A fraction of the last price against price24h: 0.05 is +5%. */
   change24h: BigNumber | null;
   /** 24h volume in base. */
   volume24h: BigNumber;
@@ -124,7 +127,7 @@ export interface PerpMarket {
   openInterest: BigNumber;
   /** Open interest in lots. */
   rawOpenInterest: bigint;
-  /** The funding rate per hour as a fraction (positive: longs pay shorts). */
+  /** The funding rate per second as a decimal (`fundingRateE15 / 1e15`); positive: longs pay shorts. See `fundingRatePerHour`. */
   fundingRate: BigNumber;
   /** The funding rate per second multiplied by 1e15. */
   fundingRateE15: bigint;
@@ -136,8 +139,10 @@ export interface PerpMarket {
   fundingSaturated: boolean;
   /** The insurance fund in quote. */
   insurance: BigNumber;
+  rawInsurance: bigint;
   /** The unresolved deficit in quote. */
   unresolvedDeficit: BigNumber;
+  rawUnresolvedDeficit: bigint;
   reduceOnly: boolean;
   lastTouched: number;
 }
@@ -185,7 +190,10 @@ export interface PerpTrade {
 
 export type PerpTradeUpdate = PerpTrade;
 
-/** The candle has the same shape as the spot candle. */
+/**
+ * The candle has the same shape as the spot candle: `time` is in milliseconds (unlike every other perps time),
+ * OHLC are raw prices in ticks and `volume` is raw lots (decimal strings). Convert with `convertPerpCandle`.
+ */
 export interface PerpCandle {
   time: number;
   open: string;
@@ -193,7 +201,19 @@ export interface PerpCandle {
   low: string;
   close: string;
   volume: string;
-  lastTouched: number;
+  resolution: string;
+}
+
+/** A candle with human-readable values. */
+export interface PerpCandleDecimal {
+  time: number;
+  open: BigNumber;
+  high: BigNumber;
+  low: BigNumber;
+  close: BigNumber;
+  /** Volume in base. */
+  volume: BigNumber;
+  resolution: string;
 }
 
 export type PerpCandleUpdate = PerpCandle;
@@ -286,8 +306,11 @@ export interface PerpFill {
   size: BigNumber;
   rawSize: bigint;
   notional: BigNumber;
+  rawNotional: bigint;
   fee: BigNumber;
   rawFee: bigint;
+  realizedPnl: BigNumber;
+  rawRealizedPnl: bigint;
   isLiquidation: boolean;
   timestamp: number;
   txnHash: string;
@@ -297,7 +320,7 @@ export type PerpFillUpdate = PerpFill;
 
 export interface PerpFundingRate {
   marketId: string;
-  /** The funding rate per hour as a fraction. */
+  /** The funding rate per second as a decimal. */
   rate: BigNumber;
   /** The funding rate per second multiplied by 1e15. */
   rateE15: bigint;
@@ -325,9 +348,9 @@ export interface PerpLiquidation {
   victimOwner: string;
   liquidator: string;
   liquidatorOwner: string;
-  /** Liquidated lots. */
+  /** Signed liquidated lots from the victim's side. */
   lots: bigint;
-  /** Liquidated size in base. */
+  /** Liquidated size in base, signed like `lots`. */
   size: BigNumber;
   /** The notional of the transfer to the liquidator in quote. */
   transferNotional: BigNumber;

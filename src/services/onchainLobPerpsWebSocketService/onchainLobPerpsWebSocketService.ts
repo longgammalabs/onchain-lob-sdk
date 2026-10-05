@@ -49,8 +49,8 @@ export interface OnchainLobPerpsWebSocketServiceEvents {
   allPerpMarketsUpdated: PublicEventEmitter<readonly [isSnapshot: boolean, data: PerpMarketUpdateDto[]]>;
   perpOrderbookUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpOrderbookUpdateDto]>;
   perpTradesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpTradeUpdateDto[]]>;
-  /** The id is `${market}-${resolution}`. */
-  perpCandlesUpdated: PublicEventEmitter<readonly [id: string, isSnapshot: boolean, data: PerpCandleUpdateDto[]]>;
+  /** The id is the market; the resolution is in the candle. Candles are not sent as a snapshot: load them with REST. */
+  perpCandlesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpCandleUpdateDto]>;
   userPerpAccountsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpAccountUpdateDto[]]>;
   userPerpOrdersUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpOrderUpdateDto[]]>;
   userPerpFillsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpFillUpdateDto[]]>;
@@ -283,7 +283,7 @@ export class OnchainLobPerpsWebSocketService implements IOnchainLobPerpsWebSocke
           (this.events.perpTradesUpdated as ToEventEmitter<typeof this.events.perpTradesUpdated>).emit(message.id, message.isSnapshot, toArray(message.data as PerpTradeUpdateDto | PerpTradeUpdateDto[]));
           break;
         case PERP_CANDLES_CHANNEL:
-          (this.events.perpCandlesUpdated as ToEventEmitter<typeof this.events.perpCandlesUpdated>).emit(message.id, message.isSnapshot, toArray(message.data as PerpCandleUpdateDto | PerpCandleUpdateDto[]));
+          (this.events.perpCandlesUpdated as ToEventEmitter<typeof this.events.perpCandlesUpdated>).emit(message.id, message.isSnapshot, message.data as PerpCandleUpdateDto);
           break;
         case USER_PERP_ACCOUNTS_CHANNEL:
           (this.events.userPerpAccountsUpdated as ToEventEmitter<typeof this.events.userPerpAccountsUpdated>).emit(message.id, message.isSnapshot, toArray(message.data as PerpAccountUpdateDto | PerpAccountUpdateDto[]));

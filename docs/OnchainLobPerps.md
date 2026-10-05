@@ -41,7 +41,7 @@ One quote-settled linear perpetual lives in one `PerpMarket` contract. The colla
 
 `PerpMarket.sizeDecimals` and `priceDecimals` are the scale of the human values; the raw `baseLot` and `quoteTick` are the contract units.
 
-Positive position size is long, negative is short. A positive funding rate means longs pay shorts.
+Positive position size is long, negative is short. A positive funding rate means longs pay shorts. `PerpMarket.fundingRate` and `PerpFundingRate.rate` are **per-second** decimals (`rateE15 / 1e15`; use `fundingRatePerHour(rateE15)` for the hourly rate). `change24h` is a fraction (0.05 = +5%), a funding payment is positive when the account paid, and `PerpLiquidation.lots`/`size` are signed from the victim's side. Times are unix seconds, except the candles (milliseconds).
 
 ### Order semantics
 
@@ -164,12 +164,12 @@ All of them return mapped models. Pagination is `limit`/`offset`.
 | Method | Endpoint | Returns |
 |---|---|---|
 | `getMarkets({ market? })`, `getMarket({ market })` | `GET /perps/markets` | `PerpMarket[]` |
-| `getOrderbook({ market, aggregation?, limit? })` | `GET /perps/orderbook` | `PerpOrderbook` |
+| `getOrderbook({ market, aggregation?, limit? })` | `GET /perps/orderbook` | `PerpOrderbook`; `aggregation` is a grouping in ticks (one of `market.aggregations`, default 1): bids round down, asks round up |
 | `getTrades({ market, limit?, offset? })` | `GET /perps/trades` | `PerpTrade[]` |
-| `getCandles({ market, resolution, fromTime, toTime })` | `GET /perps/candles` | `PerpCandle[]` |
+| `getCandles({ market, resolution, fromTime?, toTime? })` | `GET /perps/candles` | `PerpCandle[]`: like spot, `time`, `fromTime` and `toTime` are in **milliseconds**, OHLC are raw ticks and volume raw lots (strings); `convertPerpCandle(candle, market)` gives human values |
 | `getAccounts({ user, market? })` | `GET /perps/accounts` | `PerpAccount[]`, one per subaccount |
-| `getPositions({ user, market?, status? })` | `GET /perps/positions` | `PerpPosition[]` (`open`, `closed`, `all`) |
-| `getOrders({ user, market?, status?, limit?, offset? })` | `GET /perps/orders` | `PerpOrder[]` (`open`, `filled`, `cancelled`, `all`) |
+| `getPositions({ user, market?, status? })` | `GET /perps/positions` | `PerpPosition[]` (`open`, `closed`; all statuses when `status` is omitted) |
+| `getOrders({ user, market?, status?, limit?, offset? })` | `GET /perps/orders` | `PerpOrder[]` (`open`, `filled`, `cancelled`; all statuses when `status` is omitted) |
 | `getFills({ user, market?, limit?, offset? })` | `GET /perps/fills` | `PerpFill[]` |
 | `getFundingRates({ market, fromTime?, toTime?, limit? })` | `GET /perps/funding-rates` | `PerpFundingRate[]` |
 | `getFundingPayments({ user, market?, limit?, offset? })` | `GET /perps/funding-payments` | `PerpFundingPayment[]` |
@@ -182,11 +182,11 @@ All of them return mapped models. Pagination is `limit`/`offset`.
 |---|---|---|
 | `subscribeToPerpMarket({ market })` | `perpMarket` | `perpMarketUpdated(marketId, isSnapshot, PerpMarket)` |
 | `subscribeToAllPerpMarkets()` | `allPerpMarkets` | `allPerpMarketsUpdated(isSnapshot, PerpMarket[])` |
-| `subscribeToPerpOrderbook({ market, aggregation? })` | `perpOrderbook` | `perpOrderbookUpdated(marketId, isSnapshot, PerpOrderbook)` |
+| `subscribeToPerpOrderbook({ market, aggregation? })` (ticks, default 1) | `perpOrderbook` | `perpOrderbookUpdated(marketId, isSnapshot, PerpOrderbook)` |
 | `subscribeToPerpTrades({ market })` | `perpTrades` | `perpTradesUpdated(marketId, isSnapshot, PerpTrade[])` |
-| `subscribeToPerpCandles({ market, resolution })` | `perpCandles` | `perpCandlesUpdated(id, isSnapshot, PerpCandle[])`, the id is `${market}-${resolution}` (`parsePerpCandlesChannelId`) |
+| `subscribeToPerpCandles({ market, resolution })` | `perpCandles` | `perpCandlesUpdated(marketId, isSnapshot, PerpCandle)`: one candle (with its `resolution`), no snapshot - load the history with `getCandles` |
 | `subscribeToUserPerpAccounts({ user, market? })` | `userPerpAccounts` | `userPerpAccountsUpdated(marketId, isSnapshot, PerpAccount[])` |
-| `subscribeToUserPerpOrders({ user, market? })` | `userPerpOrders` | `userPerpOrdersUpdated(marketId, isSnapshot, PerpOrder[])` |
+| `subscribeToUserPerpOrders({ user, market? })` | `userPerpOrders` | `userPerpOrdersUpdated(marketId, isSnapshot, PerpOrder[])` (the snapshot has the open orders and the recent ones of any status) |
 | `subscribeToUserPerpFills({ user, market? })` | `userPerpFills` | `userPerpFillsUpdated(marketId, isSnapshot, PerpFill[])` |
 | `subscribeToUserPerpCollateral({ user, market? })` | `userPerpCollateral` | `userPerpCollateralUpdated(marketId, isSnapshot, PerpCollateralEvent[])` |
 | | `error` | `subscriptionError(error)` |
@@ -210,9 +210,9 @@ const client = new OnchainLobClient({
 });
 ```
 
-The mock serves fixtures of WETH-tUSDC-PERP (0x96f3...865d, ~3000 tUSDC per WETH): a book with 12 levels per side, 30 trades, candles for every resolution,
+The mock serves fixtures of WETH-tUSDC-PERP (0x96f3...865d, ~3000 tUSDC per WETH): a book with 12 levels per side, 30 trades, candles for every resolution (ms times, raw ticks and lots),
 funding history, and for any `user` two accounts: subaccount 0 holds a 1.2 WETH long (entry 2950, collateral 1485 tUSDC) with two open orders, subaccount 1 is closed.
-Every REST method and every subscription works; a subscription is answered with a snapshot. With `updateIntervalMs` the market, orderbook and trades channels also emit updates
+Every REST method and every subscription works; a subscription is answered with a snapshot (except candles, like the API). With `updateIntervalMs` the market, orderbook and trades channels also emit updates
 (the same data the REST mock returns afterwards).
 The transactions are not mocked: they still go through the signer to the real market address, so for the UI without a wallet only the data is available.
 The mock classes (`PerpsMockDataSource`, `OnchainLobPerpsMockService`, `OnchainLobPerpsMockWebSocketService`) are exported for standalone use and tests.
@@ -222,7 +222,7 @@ The mock classes (`PerpsMockDataSource`, `OnchainLobPerpsMockService`, `OnchainL
 ```typescript
 import {
   encodePerpAccountId, decodePerpAccountId, lotsToSize, sizeToLots, priceToTicks, ticksToPrice,
-  calculateAccountMetrics, calculateAdm, calculateLiquidationPrice, simulateFill, getHealthState
+  calculateAccountMetrics, calculateAdm, calculateLiquidationPrice, simulateFill, getHealthState, convertPerpCandle
 } from 'onchain-lob-sdk';
 ```
 

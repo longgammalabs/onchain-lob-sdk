@@ -33,7 +33,7 @@ describe('OnchainLobPerps with the mock data source', () => {
     expect((await perps.getMarket({ market: PERP_MOCK_MARKET_ID })).name).toBe('WETH-tUSDC-PERP');
     await expect(perps.getMarket({ market: '0xdead' })).rejects.toThrow('Market not found');
 
-    const positions = await perps.getPositions({ user: owner });
+    const positions = await perps.getPositions({ user: owner, status: 'open' });
     expect(positions).toHaveLength(1);
     expect(positions[0]!.rawSize).toBe(12000n);
     expect(positions[0]!.size).toEqual(new BigNumber('1.2'));
@@ -41,7 +41,7 @@ describe('OnchainLobPerps with the mock data source', () => {
     const orderbook = await perps.getOrderbook({ market: PERP_MOCK_MARKET_ID });
     expect(orderbook.levels.bids[0]!.rawPrice).toBeLessThan(orderbook.levels.asks[0]!.rawPrice);
     expect((await perps.getTrades({ market: PERP_MOCK_MARKET_ID, limit: 3 }))).toHaveLength(3);
-    expect((await perps.getCandles({ market: PERP_MOCK_MARKET_ID, resolution: '60', fromTime: 1_791_198_360 - 86400, toTime: 1_791_198_360 })).length).toBeGreaterThan(10);
+    expect((await perps.getCandles({ market: PERP_MOCK_MARKET_ID, resolution: '60', fromTime: (1_791_198_360 - 86400) * 1000, toTime: 1_791_198_360_000 })).length).toBeGreaterThan(10);
     expect((await perps.getOrders({ user: owner, status: 'all' }))).toHaveLength(4);
     expect((await perps.getFills({ user: owner }))[0]!.rawFee).toBe(300050n);
     expect((await perps.getFundingRates({ market: PERP_MOCK_MARKET_ID, limit: 2 }))[0]!.rateE15).toEqual(expect.any(BigInt));
@@ -56,23 +56,19 @@ describe('OnchainLobPerps with the mock data source', () => {
     const market = jest.fn();
     const accounts = jest.fn();
     const trades = jest.fn();
-    const candles = jest.fn();
     perps.events.perpMarketUpdated.addListener(market);
     perps.events.userPerpAccountsUpdated.addListener(accounts);
     perps.events.perpTradesUpdated.addListener(trades);
-    perps.events.perpCandlesUpdated.addListener(candles);
 
     perps.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
     perps.subscribeToUserPerpAccounts({ user: owner });
     perps.subscribeToPerpTrades({ market: PERP_MOCK_MARKET_ID });
-    perps.subscribeToPerpCandles({ market: PERP_MOCK_MARKET_ID, resolution: '15' });
     await tick();
 
     expect(market).toHaveBeenCalledWith(PERP_MOCK_MARKET_ID, true, expect.objectContaining({ rawIndexPrice: 300000n }));
     expect(accounts).toHaveBeenCalledWith('allMarkets', true, expect.any(Array));
     expect(accounts.mock.calls[0]![2][0].rawCollateral).toBe(1_485_000_000n);
     expect(trades.mock.calls[0]![2][0].price).toBeInstanceOf(BigNumber);
-    expect(candles.mock.calls[0]![0]).toBe(`${PERP_MOCK_MARKET_ID}-15`);
 
     perps[Symbol.dispose]();
   });

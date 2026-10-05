@@ -149,6 +149,7 @@ export type {
   PerpTradeUpdate,
   PerpCandle,
   PerpCandleUpdate,
+  PerpCandleDecimal,
   PerpAccount,
   PerpAccountUpdate,
   PerpPosition,

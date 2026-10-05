@@ -42,16 +42,32 @@ describe('OnchainLobPerpsMockService', () => {
       expect(BigInt(trade.rawNotional)).toBe(BigInt(trade.rawPrice) * BigInt(trade.rawSize));
   });
 
-  test('candles are OHLC-consistent and inside the requested range', async () => {
-    const candles = await service.getCandles({ market: PERP_MOCK_MARKET_ID, resolution: '15', fromTime: options.now - 86400, toTime: options.now });
+  test('candles are like the spot ones: ms times, raw ticks and lots, OHLC-consistent, inside the requested range', async () => {
+    const nowMs = options.now * 1000;
+    const candles = await service.getCandles({ market: PERP_MOCK_MARKET_ID, resolution: '15', fromTime: nowMs - 86_400_000, toTime: nowMs });
     expect(candles.length).toBeGreaterThan(50);
     for (const candle of candles) {
-      expect(Number(candle.high)).toBeGreaterThanOrEqual(Math.max(Number(candle.open), Number(candle.close)));
-      expect(Number(candle.low)).toBeLessThanOrEqual(Math.min(Number(candle.open), Number(candle.close)));
-      expect(candle.time % 900).toBe(0);
-      expect(candle.time).toBeGreaterThanOrEqual(options.now - 86400 - 900);
-      expect(candle.time).toBeLessThanOrEqual(options.now);
+      expect(BigInt(candle.high)).toBeGreaterThanOrEqual(BigInt(candle.open) > BigInt(candle.close) ? BigInt(candle.open) : BigInt(candle.close));
+      expect(BigInt(candle.low)).toBeLessThanOrEqual(BigInt(candle.open) < BigInt(candle.close) ? BigInt(candle.open) : BigInt(candle.close));
+      expect(candle.open).toMatch(/^\d+$/);
+      expect(candle.volume).toMatch(/^\d+$/);
+      expect(candle.resolution).toBe('15');
+      expect(candle.time % 900_000).toBe(0);
+      expect(candle.time).toBeGreaterThanOrEqual(nowMs - 86_400_000);
+      expect(candle.time).toBeLessThanOrEqual(nowMs);
     }
+    // without a range the latest candles are returned
+    expect((await service.getCandles({ market: PERP_MOCK_MARKET_ID, resolution: '60' })).length).toBeGreaterThan(100);
+  });
+
+  test('orderbook grouping is in ticks: bids round down, asks round up', async () => {
+    expect((await service.getMarkets({}))[0]!.aggregations).toEqual([1, 5, 10, 50, 100]);
+    const { aggregation, levels } = await service.getOrderbook({ market: PERP_MOCK_MARKET_ID, aggregation: 50 });
+    expect(aggregation).toBe(50);
+    for (const level of [...levels.asks, ...levels.bids])
+      expect(BigInt(level.rawPrice) % 50n).toBe(0n);
+    expect(BigInt(levels.bids[0]!.rawPrice)).toBeLessThan(BigInt(levels.asks[0]!.rawPrice));
+    expect((await service.getOrderbook({ market: PERP_MOCK_MARKET_ID })).aggregation).toBe(1);
   });
 
   test('user data is keyed by the requested user', async () => {
@@ -63,7 +79,7 @@ describe('OnchainLobPerpsMockService', () => {
   });
 
   test('one open position: entry price is |costBasis| / |size|', async () => {
-    const open = await service.getPositions({ user });
+    const open = await service.getPositions({ user, status: 'open' });
     expect(open).toHaveLength(1);
     const [position] = open;
     expect(position).toMatchObject({ status: 'open', side: 'long', subaccount: 0 });
@@ -72,10 +88,12 @@ describe('OnchainLobPerpsMockService', () => {
     const all = await service.getPositions({ user, status: 'all' });
     expect(all.map(item => item.status)).toEqual(['open', 'closed']);
     expect(await service.getPositions({ user, status: 'closed' })).toHaveLength(1);
+    expect(await service.getPositions({ user })).toHaveLength(2); // all statuses when omitted
   });
 
   test('orders can be filtered by status; remaining = original - filled for open orders', async () => {
-    const open = await service.getOrders({ user });
+    expect(await service.getOrders({ user })).toHaveLength(4); // all statuses when omitted
+    const open = await service.getOrders({ user, status: 'open' });
     expect(open.map(order => order.status)).toEqual(['open', 'open']);
     for (const order of open)
       expect(BigInt(order.rawRemainingSize)).toBe(BigInt(order.rawOrigSize) - BigInt(order.rawFilledSize));
@@ -119,7 +137,7 @@ describe('OnchainLobPerpsMockWebSocketService', () => {
     expect(markets.mock.calls[0]![0]).toBe(PERP_MOCK_MARKET_ID);
     expect(markets.mock.calls[0]![1]).toBe(true);
     expect(orders).toHaveBeenCalledWith('allMarkets', true, expect.any(Array));
-    expect(orders.mock.calls[0]![2]).toHaveLength(2);
+    expect(orders.mock.calls[0]![2]).toHaveLength(4); // open and recent orders of any status
 
     socket.unsubscribeFromPerpMarket({ market: PERP_MOCK_MARKET_ID });
     socket.subscribeToPerpMarket({ market: PERP_MOCK_MARKET_ID });
@@ -128,14 +146,16 @@ describe('OnchainLobPerpsMockWebSocketService', () => {
     socket[Symbol.dispose]();
   });
 
-  test('candles snapshot uses the `${market}-${resolution}` id', async () => {
-    const socket = new OnchainLobPerpsMockWebSocketService(options);
+  test('candles have no snapshot; the simulation updates the last candle with the market id', async () => {
+    const socket = new OnchainLobPerpsMockWebSocketService(new PerpsMockDataSource(options), 10);
     const candles = jest.fn();
     socket.events.perpCandlesUpdated.addListener(candles);
     socket.subscribeToPerpCandles({ market: PERP_MOCK_MARKET_ID, resolution: '60' });
-    await tick();
+    await new Promise(resolve => setTimeout(resolve, 5));
+    expect(candles).not.toHaveBeenCalled();
 
-    expect(candles).toHaveBeenCalledWith(`${PERP_MOCK_MARKET_ID}-60`, true, expect.any(Array));
+    await new Promise(resolve => setTimeout(resolve, 40));
+    expect(candles).toHaveBeenCalledWith(PERP_MOCK_MARKET_ID, false, expect.objectContaining({ resolution: '60', time: expect.any(Number) }));
     socket[Symbol.dispose]();
   });
 

@@ -48,6 +48,8 @@ export interface PerpMarketDto {
   quoteTick: string;
   sizeDecimals: number;
   priceDecimals: number;
+  /** The supported orderbook groupings in ticks. */
+  aggregations: number[];
   params: PerpMarketParamsDto;
   priceSource: string;
   fundingSource: string;
@@ -59,11 +61,13 @@ export interface PerpMarketDto {
   bestBid: string | null;
   bestAsk: string | null;
   price24h: string | null;
+  /** A fraction of the last price against price24h: 0.05 is +5%. */
   change24h: string | null;
   volume24h: string;
   quoteVolume24h: string;
   openInterest: string;
   rawOpenInterest: string;
+  /** The per-second rate as a decimal (`rateE15 / 1e15`); positive means longs pay shorts. */
   fundingRate: string;
   fundingRateE15: string;
   fundingRateTime: number | null;
@@ -71,7 +75,9 @@ export interface PerpMarketDto {
   cShort: string;
   fundingSaturated: boolean;
   insurance: string;
+  rawInsurance: string;
   unresolvedDeficit: string;
+  rawUnresolvedDeficit: string;
   reduceOnly: boolean;
   lastTouched: number;
 }
@@ -113,6 +119,9 @@ export interface PerpTradeDto {
   blockNumber: number;
 }
 
+/**
+ * The same shape as the spot candle: `time` is in milliseconds, OHLC are raw prices (ticks), `volume` is raw lots.
+ */
 export interface PerpCandleDto {
   time: number;
   open: string;
@@ -120,7 +129,7 @@ export interface PerpCandleDto {
   low: string;
   close: string;
   volume: string;
-  lastTouched: number;
+  resolution: string;
 }
 
 export interface PerpAccountDto {
@@ -197,8 +206,11 @@ export interface PerpFillDto {
   size: string;
   rawSize: string;
   notional: string;
+  rawNotional: string;
   fee: string;
   rawFee: string;
+  realizedPnl: string;
+  rawRealizedPnl: string;
   isLiquidation: boolean;
   timestamp: number;
   txnHash: string;
@@ -206,6 +218,7 @@ export interface PerpFillDto {
 
 export interface PerpFundingRateDto {
   marketId: string;
+  /** The per-second rate as a decimal (`rateE15 / 1e15`). */
   rate: string;
   rateE15: string;
   cLong: string | null;
@@ -218,6 +231,7 @@ export interface PerpFundingPaymentDto {
   marketId: string;
   account: string;
   owner: string;
+  /** Positive means the account paid. */
   amount: string;
   rawAmount: string;
   positionSize: string;
@@ -231,7 +245,9 @@ export interface PerpLiquidationDto {
   victimOwner: string;
   liquidator: string;
   liquidatorOwner: string;
+  /** Signed raw lots from the victim's side. */
   lots: string;
+  /** Signed base amount, the same sign as lots. */
   size: string;
   transferNotional: string;
   penalty: string;

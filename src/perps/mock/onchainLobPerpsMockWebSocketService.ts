@@ -1,5 +1,6 @@
 import { PerpsMockDataSource, type PerpsMockOptions } from './perpsMockDataSource';
 import { EventEmitter, type ToEventEmitter } from '../../common';
+import type { CandleResolution } from '../../models';
 import { ALL_MARKETS_ID } from '../../services/constants';
 import type {
   IOnchainLobPerpsWebSocketService, OnchainLobPerpsWebSocketServiceEvents,
@@ -100,11 +101,8 @@ export class OnchainLobPerpsMockWebSocketService implements IOnchainLobPerpsWebS
   }
 
   subscribeToPerpCandles(params: SubscribeToPerpCandlesParams): void {
-    this.subscribe(`perpCandles:${params.market}:${params.resolution}`, () => {
-      const now = Math.floor(Date.now() / 1000);
-      const candles = this.dataSource.getCandles({ market: params.market, resolution: params.resolution, fromTime: now - 7 * 86400, toTime: now });
-      (this.events.perpCandlesUpdated as Emit<'perpCandlesUpdated'>).emit(`${params.market}-${params.resolution}`, true, candles);
-    });
+    // Like the real socket, candles have no snapshot: the history comes from REST, the socket only updates the last candle.
+    this.subscribe(`perpCandles:${params.market}:${params.resolution}`, () => undefined);
   }
 
   unsubscribeFromPerpCandles(params: UnsubscribeFromPerpCandlesParams): void {
@@ -126,7 +124,7 @@ export class OnchainLobPerpsMockWebSocketService implements IOnchainLobPerpsWebS
   subscribeToUserPerpOrders(params: SubscribeToUserPerpOrdersParams): void {
     this.subscribe(`userPerpOrders:${params.user}:${params.market ?? ''}`, () => {
       (this.events.userPerpOrdersUpdated as Emit<'userPerpOrdersUpdated'>).emit(
-        params.market || ALL_MARKETS_ID, true, this.dataSource.getOrders({ user: params.user, market: params.market, status: 'open' })
+        params.market || ALL_MARKETS_ID, true, this.dataSource.getOrders({ user: params.user, market: params.market, status: 'all' })
       );
     });
   }
@@ -228,6 +226,15 @@ export class OnchainLobPerpsMockWebSocketService implements IOnchainLobPerpsWebS
         (this.events.perpOrderbookUpdated as Emit<'perpOrderbookUpdated'>).emit(market.id, false, orderbook);
       if (this.subscriptions.has(`perpTrades:${market.id}`))
         (this.events.perpTradesUpdated as Emit<'perpTradesUpdated'>).emit(market.id, false, [trade]);
+      for (const key of this.subscriptions.keys()) {
+        const [channel, candlesMarket, resolution] = key.split(':');
+        if (channel !== 'perpCandles' || candlesMarket !== market.id)
+          continue;
+
+        const candle = this.dataSource.getCandles({ market: market.id, resolution: resolution as CandleResolution }).at(-1);
+        if (candle)
+          (this.events.perpCandlesUpdated as Emit<'perpCandlesUpdated'>).emit(market.id, false, candle);
+      }
     });
   }
 

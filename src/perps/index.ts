@@ -82,7 +82,7 @@ export {
   type PerpLiquidationPriceInput
 } from './risk';
 export { decodeBookOrder, calculatePlaceHint, calculateCancelHint, encodeReplaceBatchUpdates } from './book';
-export { parsePerpCandlesChannelId } from './mappers';
+export { convertPerpCandle } from './mappers';
 
 export type {
   PerpTransactionParams,

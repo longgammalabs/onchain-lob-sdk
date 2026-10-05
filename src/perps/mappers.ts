@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 import type {
-  PerpAccount, PerpAccountState, PerpCandle, PerpCollateralEvent, PerpFill, PerpFundingPayment, PerpFundingRate, PerpHealthState,
+  PerpAccount, PerpAccountState, PerpCandle, PerpCandleDecimal, PerpCollateralEvent, PerpFill, PerpFundingPayment, PerpFundingRate, PerpHealthState,
   PerpLevel, PerpLiquidation, PerpMarket, PerpMarketParams, PerpMarketState, PerpOrder, PerpOrderbook, PerpPosition,
   PerpRiskParams, PerpTrade
 } from '../models';
@@ -45,7 +45,9 @@ export const mapPerpMarketDtoToPerpMarket = (dto: PerpMarketDto): PerpMarket => 
   cLong: toBigInt(dto.cLong),
   cShort: toBigInt(dto.cShort),
   insurance: toBigNumber(dto.insurance),
+  rawInsurance: toBigInt(dto.rawInsurance),
   unresolvedDeficit: toBigNumber(dto.unresolvedDeficit),
+  rawUnresolvedDeficit: toBigInt(dto.rawUnresolvedDeficit),
 });
 
 const mapPerpLevelDtoToPerpLevel = (dto: PerpLevelDto): PerpLevel => ({
@@ -120,8 +122,11 @@ export const mapPerpFillDtoToPerpFill = (dto: PerpFillDto): PerpFill => ({
   size: toBigNumber(dto.size),
   rawSize: toBigInt(dto.rawSize),
   notional: toBigNumber(dto.notional),
+  rawNotional: toBigInt(dto.rawNotional),
   fee: toBigNumber(dto.fee),
   rawFee: toBigInt(dto.rawFee),
+  realizedPnl: toBigNumber(dto.realizedPnl),
+  rawRealizedPnl: toBigInt(dto.rawRealizedPnl),
 });
 
 export const mapPerpFundingRateDtoToPerpFundingRate = (dto: PerpFundingRateDto): PerpFundingRate => ({
@@ -155,15 +160,17 @@ export const mapPerpCollateralEventDtoToPerpCollateralEvent = (dto: PerpCollater
 });
 
 /**
- * Splits the id of the candles channel (`${market}-${resolution}`) into the market and the resolution.
+ * Converts a candle (raw ticks and lots) to human-readable values with the market scaling.
  */
-export const parsePerpCandlesChannelId = (id: string): { market: string; resolution: string } => {
-  const separatorIndex = id.lastIndexOf('-');
-
-  return separatorIndex < 0
-    ? { market: id, resolution: '' }
-    : { market: id.slice(0, separatorIndex), resolution: id.slice(separatorIndex + 1) };
-};
+export const convertPerpCandle = (candle: PerpCandle, scaling: { priceDecimals: number; sizeDecimals: number }): PerpCandleDecimal => ({
+  time: candle.time,
+  open: new BigNumber(candle.open).shiftedBy(-scaling.priceDecimals),
+  high: new BigNumber(candle.high).shiftedBy(-scaling.priceDecimals),
+  low: new BigNumber(candle.low).shiftedBy(-scaling.priceDecimals),
+  close: new BigNumber(candle.close).shiftedBy(-scaling.priceDecimals),
+  volume: new BigNumber(candle.volume).shiftedBy(-scaling.sizeDecimals),
+  resolution: candle.resolution,
+});
 
 // On-chain structs. The ethers `Result` of a tuple is indexable by field name.
 

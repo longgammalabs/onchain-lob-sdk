@@ -7,6 +7,7 @@ export interface GetPerpMarketsParams {
 
 export interface GetPerpOrderbookParams {
   market: string;
+  /** The grouping in ticks (one of `PerpMarket.aggregations`, 1 by default): bids round down, asks round up. */
   aggregation?: number;
   limit?: number;
 }
@@ -20,10 +21,10 @@ export interface GetPerpTradesParams {
 export interface GetPerpCandlesParams {
   market: string;
   resolution: CandleResolution;
-  /** Unix seconds. */
-  fromTime: number;
-  /** Unix seconds. */
-  toTime: number;
+  /** Milliseconds, like the spot candles (every other perps time is in seconds). Optional. */
+  fromTime?: number;
+  /** Milliseconds. Optional. */
+  toTime?: number;
 }
 
 export interface GetPerpAccountsParams {
@@ -35,14 +36,14 @@ export interface GetPerpAccountsParams {
 export interface GetPerpPositionsParams {
   user: string;
   market?: string;
-  /** Defaults to the API default (`open`). */
+  /** All statuses when omitted. */
   status?: PerpPositionStatus | 'all';
 }
 
 export interface GetPerpOrdersParams {
   user: string;
   market?: string;
-  /** Defaults to the API default (`open`). */
+  /** All statuses when omitted. */
   status?: PerpOrderStatus | 'all';
   limit?: number;
   offset?: number;

@@ -112,28 +112,32 @@ export class PerpsMockDataSource {
     if (!step)
       throw new Error(`Unknown resolution: ${params.resolution}`);
 
+    const stepMs = step * 1000;
+    const nowMs = this.now * 1000;
     const candles: PerpCandleDto[] = [];
-    const from = Math.floor(params.fromTime / step) * step;
-    const to = Math.min(params.toTime, this.now);
+    const from = params.fromTime ?? nowMs - 400 * stepMs;
+    const to = Math.min(params.toTime ?? nowMs, nowMs);
     // The walk is anchored to the current price and generated backwards from "now", so that candles
     // of different requests are consistent with each other and the last close is the last price.
-    const firstSlot = Math.floor(this.now / step) * step - 400 * step;
+    const lastSlot = Math.floor(nowMs / stepMs) * stepMs;
+    const firstSlot = lastSlot - 400 * stepMs;
     let price = Number(this.lastTicks);
     const series: PerpCandleDto[] = [];
-    for (let time = Math.floor(this.now / step) * step; time >= firstSlot; time -= step) {
-      const random = mulberry32(time ^ 0x5bd1e995);
+    for (let time = lastSlot; time >= firstSlot; time -= stepMs) {
+      const random = mulberry32((time / 1000) ^ 0x5bd1e995);
       const close = price;
       const open = close * (1 + (random() - 0.5) * 0.004 * Math.sqrt(step / 60));
       const high = Math.max(open, close) * (1 + random() * 0.002);
       const low = Math.min(open, close) * (1 - random() * 0.002);
       series.push({
         time,
-        open: dec(Math.round(open), PRICE_DECIMALS),
-        high: dec(Math.round(high), PRICE_DECIMALS),
-        low: dec(Math.round(low), PRICE_DECIMALS),
-        close: dec(Math.round(close), PRICE_DECIMALS),
-        volume: dec(Math.round(random() * 40000 + 2000), SIZE_DECIMALS),
-        lastTouched: time + step,
+        // Like the spot candles: raw ticks and raw lots, the time in ms.
+        open: Math.round(open).toString(),
+        high: Math.round(high).toString(),
+        low: Math.round(low).toString(),
+        close: Math.round(close).toString(),
+        volume: Math.round(random() * 40000 + 2000).toString(),
+        resolution: params.resolution,
       });
       price = open;
     }
@@ -153,7 +157,7 @@ export class PerpsMockDataSource {
   }
 
   getPositions(params: GetPerpPositionsParams): PerpPositionDto[] {
-    const status = params.status ?? 'open';
+    const status = params.status ?? 'all';
 
     return this.getAccounts(params)
       .map(account => ({ ...account, status: account.rawSize === '0' ? 'closed' as const : 'open' as const }))
@@ -162,7 +166,7 @@ export class PerpsMockDataSource {
 
   getOrders(params: GetPerpOrdersParams): PerpOrderDto[] {
     this.ensureOptionalMarket(params.market);
-    const status = params.status ?? 'open';
+    const status = params.status ?? 'all';
     const orders = this.createOrders(params.user).filter(order => status === 'all' || order.status === status);
 
     return page(orders, params.limit, params.offset);
@@ -185,7 +189,7 @@ export class PerpsMockDataSource {
       const rateE15 = Math.round(27777778 * (0.2 + 0.8 * Math.abs(Math.sin(i / 5))) * (Math.cos(i / 9) > -0.4 ? 1 : -1));
       rates.push({
         marketId: this.marketId,
-        rate: new BigNumber(rateE15).times(HOUR).shiftedBy(-15).toFixed(),
+        rate: new BigNumber(rateE15).shiftedBy(-15).toFixed(),
         rateE15: rateE15.toString(),
         cLong: (29438250244 - i * 120000).toString(),
         cShort: (-29438250230 + i * 120000).toString(),
@@ -236,7 +240,7 @@ export class PerpsMockDataSource {
         liquidator: encodePerpAccountId(addressFromSeed(99), 0).toString(),
         liquidatorOwner: addressFromSeed(99),
         lots: (i === 0 ? lots : -lots).toString(),
-        size: dec(lots, SIZE_DECIMALS),
+        size: dec(i === 0 ? lots : -lots, SIZE_DECIMALS),
         transferNotional: quote(notional),
         penalty: quote(notional / 200n),
         outcome: i === 0 ? 0 : 1,
@@ -332,6 +336,7 @@ export class PerpsMockDataSource {
       quoteTick: '1',
       sizeDecimals: SIZE_DECIMALS,
       priceDecimals: PRICE_DECIMALS,
+      aggregations: [1, 5, 10, 50, 100],
       params: {
         imrBps: 1000,
         fmrBps: 1000,
@@ -368,31 +373,41 @@ export class PerpsMockDataSource {
       quoteVolume24h: quote(3_751_200_000_000n),
       openInterest: dec(853_000n, SIZE_DECIMALS),
       rawOpenInterest: '853000',
-      fundingRate: new BigNumber(27777778).times(HOUR).shiftedBy(-15).toFixed(),
+      fundingRate: new BigNumber(27777778).shiftedBy(-15).toFixed(),
       fundingRateE15: '27777778',
       fundingRateTime: Math.floor(this.now / HOUR) * HOUR,
       cLong: '29438250244',
       cShort: '-29438250230',
       fundingSaturated: false,
       insurance: quote(1_996_508_656n),
+      rawInsurance: '1996508656',
       unresolvedDeficit: '0',
+      rawUnresolvedDeficit: '0',
       reduceOnly: false,
       lastTouched: this.now,
     };
   }
 
   private createOrderbook(aggregation = 1, limit = 15): PerpOrderbookDto {
+    // Grouping in ticks: bids round down, asks round up (like the API). Levels of one group are summed.
+    const step = BigInt(Math.max(aggregation, 1));
     const levels = (side: 'asks' | 'bids'): PerpLevelDto[] => {
-      const direction = side === 'asks' ? 1n : -1n;
-      const best = side === 'asks' ? this.bestAskTicks : this.bestBidTicks;
-      const result: PerpLevelDto[] = [];
-      for (let i = 0; i < Math.min(limit, 12); i++) {
-        const ticks = best + direction * BigInt(i) * 25n * BigInt(Math.max(aggregation, 1));
-        const lots = BigInt(1000 + ((i * 7919 + (side === 'asks' ? 13 : 29)) % 9) * 450);
-        result.push({ ...priceOf(ticks), ...sizeOf(lots) });
+      const isAsk = side === 'asks';
+      const direction = isAsk ? 1n : -1n;
+      const best = isAsk ? this.bestAskTicks : this.bestBidTicks;
+      const groups = new Map<bigint, bigint>();
+      for (let i = 0; i < 60; i++) {
+        const ticks = best + direction * BigInt(i) * 25n;
+        const floor = (ticks / step) * step;
+        const bucket = isAsk && floor !== ticks ? floor + step : floor;
+        const lots = BigInt(1000 + ((i * 7919 + (isAsk ? 13 : 29)) % 9) * 450);
+        groups.set(bucket, (groups.get(bucket) ?? 0n) + lots);
       }
 
-      return result;
+      return [...groups.entries()]
+        .sort(([a], [b]) => a < b ? (isAsk ? -1 : 1) : (isAsk ? 1 : -1))
+        .slice(0, Math.min(limit, 12))
+        .map(([ticks, lots]) => ({ ...priceOf(ticks), ...sizeOf(lots) }));
     };
 
     return {
@@ -523,7 +538,7 @@ export class PerpsMockDataSource {
   private createFills(user: string): PerpFillDto[] {
     const owner = user.toLowerCase();
     const account = encodePerpAccountId(owner, 0).toString();
-    const fill = (index: number, role: 'maker' | 'taker', side: 'buy' | 'sell', ticks: bigint, lots: bigint, hoursAgo: number, isLiquidation = false): PerpFillDto => {
+    const fill = (index: number, role: 'maker' | 'taker', side: 'buy' | 'sell', ticks: bigint, lots: bigint, hoursAgo: number, realized = 0n, isLiquidation = false): PerpFillDto => {
       const notional = lots * ticks * BigInt(TICK);
       const fee = role === 'taker' ? notional * 5n / 10000n : 0n;
 
@@ -539,8 +554,11 @@ export class PerpsMockDataSource {
         ...priceOf(ticks),
         ...sizeOf(lots),
         notional: quote(notional),
+        rawNotional: notional.toString(),
         fee: quote(fee),
         rawFee: fee.toString(),
+        realizedPnl: quote(realized),
+        rawRealizedPnl: realized.toString(),
         isLiquidation,
         timestamp: this.now - hoursAgo * HOUR,
         txnHash: hash(0x9000 + index),
@@ -550,7 +568,7 @@ export class PerpsMockDataSource {
     return [
       fill(0, 'taker', 'buy', 300050n, 2000n, 1),
       fill(1, 'maker', 'buy', 295000n, 12000n, 70),
-      fill(2, 'taker', 'sell', 304000n, 6000n, 80),
+      fill(2, 'taker', 'sell', 304000n, 6000n, 80, 54_000_000n),
       fill(3, 'taker', 'buy', 298000n, 6000n, 90),
     ];
   }

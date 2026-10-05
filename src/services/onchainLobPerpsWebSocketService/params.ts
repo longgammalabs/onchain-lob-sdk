@@ -7,6 +7,7 @@ export type UnsubscribeFromPerpMarketParams = SubscribeToPerpMarketParams;
 
 export interface SubscribeToPerpOrderbookParams {
   market: string;
+  /** The grouping in ticks (1 by default). */
   aggregation?: number;
 }
 export type UnsubscribeFromPerpOrderbookParams = SubscribeToPerpOrderbookParams;

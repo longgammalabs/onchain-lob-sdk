@@ -107,8 +107,8 @@ export interface OnchainLobPerpsEvents {
   perpOrderbookUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpOrderbookUpdate]>;
   /** Emitted when the trades of a market are updated. */
   perpTradesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpTradeUpdate[]]>;
-  /** Emitted when the candles are updated. The id is `${market}-${resolution}`, see `parsePerpCandlesChannelId`. */
-  perpCandlesUpdated: PublicEventEmitter<readonly [id: string, isSnapshot: boolean, data: PerpCandleUpdate[]]>;
+  /** Emitted when a candle is updated (the market id and the candle with its `resolution`; time in ms, raw ticks and lots). */
+  perpCandlesUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpCandleUpdate]>;
   /** Emitted when the accounts (positions) of a user are updated. The id is the market or `allMarkets`. */
   userPerpAccountsUpdated: PublicEventEmitter<readonly [marketId: string, isSnapshot: boolean, data: PerpAccountUpdate[]]>;
   /** Emitted when the orders of a user are updated. */
@@ -631,9 +631,9 @@ export class OnchainLobPerps implements Disposable {
     });
   };
 
-  protected onPerpCandlesUpdated: Parameters<IOnchainLobPerpsWebSocketService['events']['perpCandlesUpdated']['addListener']>[0] = (id, isSnapshot, data) => {
+  protected onPerpCandlesUpdated: Parameters<IOnchainLobPerpsWebSocketService['events']['perpCandlesUpdated']['addListener']>[0] = (marketId, isSnapshot, data) => {
     this.safely(() => {
-      (this.events.perpCandlesUpdated as ToEventEmitter<typeof this.events.perpCandlesUpdated>).emit(id, isSnapshot, data.map(this.mappers.mapPerpCandleDtoToPerpCandle));
+      (this.events.perpCandlesUpdated as ToEventEmitter<typeof this.events.perpCandlesUpdated>).emit(marketId, isSnapshot, this.mappers.mapPerpCandleDtoToPerpCandle(data));
     });
   };
 

@@ -22,7 +22,7 @@ Creates a new instance of the `OnchainLobClient`.
 | `fastWaitTransaction?` | `boolean` | Whether to use a fast algorithm for waiting for transactions to be confirmed. |
 | `fastWaitTransactionInterval?` | `number` | Interval between requests in milliseconds when using a fast algorithm for waiting for transaction confirmations. |
 | `fastWaitTransactionTimeout?` | `number` | Timeout in milliseconds when using a fast algorithm for waiting for transaction confirmations. |
-| `perps?` | `OnchainLobClientPerpsOptions` | Options of the perps module: `dataSource` (`'api'` by default or `'mock'`), `mock` (options of the mock data source) and `webSocketConnectImmediately` (default `false`: the perps socket connects on the first subscription). |
+| `perps?` | `OnchainLobClientPerpsOptions` | Options of the perps module: `module` (the `OnchainLobPerps` class of `onchain-lob-sdk/perps`; attach later with `usePerps` instead), `dataSource` (`'api'` by default or `'mock'`), `mock` and `webSocketConnectImmediately` (default `false`: the perps socket connects on the first subscription). |
 
 ## Properties
 
@@ -32,7 +32,11 @@ An instance of `OnchainLobSpot` that provides API functions to interact with the
 
 ### `perps: OnchainLobPerps`
 
-An instance of [`OnchainLobPerps`](./OnchainLobPerps.md) that provides API functions to interact with the Onchain LOB perpetual markets.
+The attached [`OnchainLobPerps`](./OnchainLobPerps.md) module. The perps code is not in the main bundle: attach it with `perps: { module }` in the options or `usePerps(OnchainLobPerps)` (`import { OnchainLobPerps } from 'onchain-lob-sdk/perps'`). Throws until attached; `hasPerps` tells.
+
+### `usePerps(module, options?): OnchainLobPerps`
+
+Attaches the perps module (idempotent) and returns it.
 
 ## Methods
 

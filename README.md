@@ -24,16 +24,20 @@ The Onchain LOB TypeScript SDK is a library that simplifies the interaction with
 
 ## Modules
 
-`OnchainLobClient` exposes three modules: `client.spot` ([docs](./docs/OnchainLobSpot.md)), `client.vault` and `client.perps` ([docs](./docs/OnchainLobPerps.md)).
+`OnchainLobClient` exposes `client.spot` ([docs](./docs/OnchainLobSpot.md)), `client.vault` and `client.perps` ([docs](./docs/OnchainLobPerps.md)).
 
-The perps module can run on a built-in fixture-backed mock, so a UI can be developed before the backend is live:
+The perps module is **not part of the main bundle**: it lives in the `onchain-lob-sdk/perps` entry and is attached to the client,
+so an app that does not use perps (or loads it lazily) does not pay for it.
 
 ```ts
-const client = new OnchainLobClient({
-  apiBaseUrl, webSocketApiBaseUrl, signer,
-  perps: { dataSource: 'mock' },
-});
-const [market] = await client.perps.getMarkets();
+import { OnchainLobClient } from 'onchain-lob-sdk';
+
+const client = new OnchainLobClient({ apiBaseUrl, webSocketApiBaseUrl, signer });
+
+// later, e.g. in a lazily loaded chunk:
+const { OnchainLobPerps } = await import('onchain-lob-sdk/perps');
+const perps = client.usePerps(OnchainLobPerps, { dataSource: 'mock' }); // 'mock': fixtures, no backend needed
+const [market] = await perps.getMarkets(); // afterwards also available as client.perps
 ```
 
 ## Example

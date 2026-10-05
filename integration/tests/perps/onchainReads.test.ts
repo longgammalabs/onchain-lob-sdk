@@ -4,7 +4,7 @@ import { JsonRpcProvider } from 'ethers';
 
 import {
   calculateAdm, calculateAdmc, calculateRequirement, decodePerpAccountId, encodePerpAccountId, OnchainLobPerpMarketContract, PerpHealthState
-} from '../../../src';
+} from '../../../src/perps';
 
 /**
  * Read-only checks of the SDK against the deployed perp market on Monad testnet (WETH-tUSDC-PERP).

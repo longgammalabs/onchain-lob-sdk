@@ -10,17 +10,32 @@
   "browser": "dist/browser/index.js",
   "types": "dist/types/index.d.ts",
   "exports": {
-    "node": {
-      "import": "./dist/node/index.mjs",
-      "require": "./dist/node/index.cjs",
-      "default": "./dist/node/index.mjs"
+    ".": {
+      "node": {
+        "import": "./dist/node/index.mjs",
+        "require": "./dist/node/index.cjs",
+        "default": "./dist/node/index.mjs"
+      },
+      "browser": {
+        "import": "./dist/browser/index.mjs",
+        "default": "./dist/browser/index.js"
+      },
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/node/index.js"
     },
-    "browser": {
-      "import": "./dist/browser/index.mjs",
-      "default": "./dist/browser/index.js"
-    },
-    "types": "./dist/types/index.d.ts",
-    "default": "./dist/node/index.js"
+    "./perps": {
+      "types": "./dist/types/perps/index.d.ts",
+      "node": {
+        "import": "./dist/node/perps.mjs",
+        "require": "./dist/node/perps.cjs",
+        "default": "./dist/node/perps.mjs"
+      },
+      "browser": {
+        "import": "./dist/browser/perps.mjs",
+        "default": "./dist/browser/perps.js"
+      },
+      "default": "./dist/node/perps.js"
+    }
   },
   "dependencies": {
     "@pythnetwork/hermes-client": "^2.1.0",
@@ -68,5 +83,12 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "typesVersions": {
+    "*": {
+      "perps": [
+        "dist/types/perps/index.d.ts"
+      ]
+    }
   }
 }

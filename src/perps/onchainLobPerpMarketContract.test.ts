@@ -3,8 +3,8 @@ import { Interface, JsonRpcProvider, VoidSigner, id } from 'ethers';
 
 import { encodePerpAccountId } from './accounts';
 import { OnchainLobPerpMarketContract, type PerpMarketConfig } from './onchainLobPerpMarketContract';
-import { perpMarketAbi } from '../abi';
-import { PerpHealthState } from '../models';
+import { perpMarketAbi } from '../abi/perpMarket';
+import { PerpHealthState } from '../models/perps';
 import { TransactionFailedError } from '../spot/errors';
 
 const iface = new Interface(perpMarketAbi);

@@ -12,6 +12,13 @@ The `OnchainLobPerps` class (`client.perps`) is the module for the perpetual fut
 Beside the class the SDK exports pure helpers (account ids, unit conversions, margin and liquidation math) so the frontend can compute
 previews without a request.
 
+## Loading the module
+
+The perps code is a separate entry, `onchain-lob-sdk/perps`; the main entry (`onchain-lob-sdk`) does not contain it. A bundle that imports only
+`OnchainLobClient` and spot is the same size as before perps existed (measured with esbuild: 117.2 KB gzip against 131.5 KB when the client imported perps statically;
+the perps entry itself is about 17 KB gzip on top of the shared code).
+Attach the module to the client in one of two ways:
+
 ```typescript
 import { OnchainLobClient } from 'onchain-lob-sdk';
 
@@ -19,11 +26,24 @@ const client = new OnchainLobClient({
   apiBaseUrl: 'https://api.example.com',
   webSocketApiBaseUrl: 'wss://sockets.example.com',
   signer,
-  perps: { dataSource: 'api' }, // or 'mock', see "Mock data source"
 });
 
-const [market] = await client.perps.getMarkets();
+// 1. Lazily (recommended for apps where perps is on a separate route or chunk):
+const { OnchainLobPerps } = await import('onchain-lob-sdk/perps');
+const perps = client.usePerps(OnchainLobPerps, { dataSource: 'api' }); // or 'mock', see "Mock data source"
+
+// 2. Statically, when the app uses perps everywhere:
+//    import { OnchainLobPerps } from 'onchain-lob-sdk/perps';
+//    new OnchainLobClient({ ..., perps: { module: OnchainLobPerps, dataSource: 'api' } });
+
+const [market] = await client.perps.getMarkets(); // client.perps is the attached module
 ```
+
+`client.perps` throws until the module is attached (`client.hasPerps` tells). The module shares the API URLs, the signer and the transaction waiting options of the client, and the client forwards
+`setSigner`, `reconnect` and `dispose` to it. `usePerps` is idempotent: a second call returns the attached instance. Everything perps-related (helpers, models, constants, the services and the mock)
+is exported from `onchain-lob-sdk/perps`; the main entry only has the types.
+
+`OnchainLobPerps` can also be used without a client: `new OnchainLobPerps({ apiBaseUrl, webSocketApiBaseUrl, signer })`.
 
 ## Model of a perp market
 
@@ -199,14 +219,9 @@ User channels use `allMarkets` as the market when `market` is omitted, like spot
 For frontend development before the backend is live:
 
 ```typescript
-const client = new OnchainLobClient({
-  apiBaseUrl: 'https://unused.example.com',
-  webSocketApiBaseUrl: 'wss://unused.example.com',
-  signer,
-  perps: {
-    dataSource: 'mock',
-    mock: { updateIntervalMs: 2000 }, // optional: emit simulated updates
-  },
+const perps = client.usePerps(OnchainLobPerps, {
+  dataSource: 'mock',
+  mock: { updateIntervalMs: 2000 }, // optional: emit simulated updates
 });
 ```
 
@@ -223,7 +238,7 @@ The mock classes (`PerpsMockDataSource`, `OnchainLobPerpsMockService`, `OnchainL
 import {
   encodePerpAccountId, decodePerpAccountId, lotsToSize, sizeToLots, priceToTicks, ticksToPrice,
   calculateAccountMetrics, calculateAdm, calculateLiquidationPrice, simulateFill, getHealthState, convertPerpCandle
-} from 'onchain-lob-sdk';
+} from 'onchain-lob-sdk/perps';
 ```
 
 | Group | Functions |

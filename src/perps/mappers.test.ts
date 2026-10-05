@@ -3,8 +3,8 @@ import BigNumber from 'bignumber.js';
 import * as mappers from './mappers';
 import { PerpsMockDataSource } from './mock';
 import { Interface } from 'ethers';
-import { perpMarketAbi } from '../abi';
-import { PerpHealthState } from '../models';
+import { perpMarketAbi } from '../abi/perpMarket';
+import { PerpHealthState } from '../models/perps';
 import type { PerpAccountDto, PerpFillDto, PerpMarketDto, PerpOrderDto, PerpTradeDto } from '../services/onchainLobPerpsService';
 
 const user = '0x9c72ee4ef78d523da2b604214a7d29b983033234';

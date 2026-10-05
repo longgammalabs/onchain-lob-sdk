@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 
 import { BPS, PRICE_X18 } from './constants';
 import { calculateFee, calculateNotional, ceilDiv } from './units';
-import { PerpHealthState } from '../models';
+import { PerpHealthState } from '../models/perps';
 
 /**
  * Margin and risk math of a perp market. Pure functions over raw integers, a port of the formulas

@@ -9,7 +9,8 @@ export {
   OnchainLobClient,
 
   type OnchainLobClientOptions,
-  type OnchainLobClientPerpsOptions
+  type OnchainLobClientPerpsOptions,
+  type OnchainLobPerpsConstructor
 } from './onchainLobClient';
 
 export {
@@ -78,14 +79,6 @@ export {
   type AddLiquidityPairParams,
   type RemoveLiquidityPairParams
 } from './vault';
-
-export * from './perps';
-
-export {
-  PerpHealthState,
-  PerpOrderRemoveReason,
-  PerpLiquidationOutcome
-} from './models';
 
 export type {
   Side,
@@ -173,12 +166,7 @@ export {
   OnchainLobSpotService,
   OnchainLobSpotWebSocketService,
   OnchainLobVaultService,
-  OnchainLobVaultWebSocketService,
-  OnchainLobPerpsService,
-  OnchainLobPerpsWebSocketService,
-
-  type IOnchainLobPerpsService,
-  type IOnchainLobPerpsWebSocketService
+  OnchainLobVaultWebSocketService
 } from './services';
 export type {
   PerpMarketDto,
@@ -195,3 +183,6 @@ export type {
   PerpLiquidationDto,
   PerpCollateralEventDto
 } from './services/onchainLobPerpsService';
+
+// Types only (erased at build time): the perps module itself is in 'onchain-lob-sdk/perps'.
+export type { OnchainLobPerps, OnchainLobPerpsOptions, OnchainLobPerpsEvents } from './perps/onchainLobPerps';

@@ -155,3 +155,27 @@ export type {
   SubscribeToUserPerpFillsParams, UnsubscribeFromUserPerpFillsParams,
   SubscribeToUserPerpCollateralParams, UnsubscribeFromUserPerpCollateralParams
 } from './params';
+
+// The services and the models: the main entry of the SDK does not export them at run time, so that
+// a consumer that never uses perps does not bundle them.
+export { OnchainLobPerpsService, type IOnchainLobPerpsService } from '../services/onchainLobPerpsService';
+export { OnchainLobPerpsWebSocketService, type IOnchainLobPerpsWebSocketService, type OnchainLobPerpsWebSocketServiceEvents } from '../services/onchainLobPerpsWebSocketService';
+export { PerpHealthState, PerpOrderRemoveReason, PerpLiquidationOutcome } from '../models/perps';
+export type * from '../models/perps';
+export type {
+  PerpQuoteTokenDto,
+  PerpMarketParamsDto,
+  PerpMarketDto,
+  PerpLevelDto,
+  PerpOrderbookDto,
+  PerpTradeDto,
+  PerpCandleDto,
+  PerpAccountDto,
+  PerpPositionDto,
+  PerpOrderDto,
+  PerpFillDto,
+  PerpFundingRateDto,
+  PerpFundingPaymentDto,
+  PerpLiquidationDto,
+  PerpCollateralEventDto
+} from '../services/onchainLobPerpsService';

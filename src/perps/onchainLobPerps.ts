@@ -25,10 +25,8 @@ import type {
   PerpCollateralEventUpdate, PerpFill, PerpFillUpdate, PerpFundingPayment, PerpFundingRate, PerpLiquidation, PerpMarket, PerpMarketState,
   PerpMarketUpdate, PerpOrder, PerpOrderUpdate, PerpOrderbook, PerpOrderbookUpdate, PerpPosition, PerpRiskParams, PerpTrade, PerpTradeUpdate
 } from '../models';
-import {
-  OnchainLobPerpsService, OnchainLobPerpsWebSocketService,
-  type IOnchainLobPerpsService, type IOnchainLobPerpsWebSocketService
-} from '../services';
+import { OnchainLobPerpsService, type IOnchainLobPerpsService } from '../services/onchainLobPerpsService';
+import { OnchainLobPerpsWebSocketService, type IOnchainLobPerpsWebSocketService } from '../services/onchainLobPerpsWebSocketService';
 
 /**
  * Options for configuring the OnchainLobPerps instance.

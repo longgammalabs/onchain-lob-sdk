@@ -20,7 +20,9 @@ import {
   type PerpRiskInput
 } from './risk';
 import { priceToTicks, quoteAmountToUnits, sizeToLots } from './units';
-import { devnetTokenAbi, erc20Abi, perpMarketAbi } from '../abi';
+import { devnetTokenAbi } from '../abi/devnetToken';
+import { erc20Abi } from '../abi/erc20';
+import { perpMarketAbi } from '../abi/perpMarket';
 import type {
   PerpAccountOverview, PerpAccountState, PerpBookOrder, PerpMarketParams, PerpMarketState, PerpRiskParams
 } from '../models';

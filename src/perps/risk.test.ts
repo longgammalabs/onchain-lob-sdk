@@ -5,7 +5,7 @@ import {
   calculateEntryPrice, calculateImpliedMarkPrice, calculateMaxLeverage, calculateMaxWithdrawable, calculateRequiredMargin, calculateRequirement, calculateUnrealizedPnl, getHealthState, isWithinCollar,
   markValue, simulateFill, ticksToPriceX18, valueDown, valueUp, type PerpRiskInput
 } from './risk';
-import { PerpHealthState } from '../models';
+import { PerpHealthState } from '../models/perps';
 
 // Risk parameters of the deployed WETH-tUSDC-PERP (riskParams() on Monad testnet).
 const risk: PerpRiskInput = {

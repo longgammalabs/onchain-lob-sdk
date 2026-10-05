@@ -118,6 +118,8 @@ export class OnchainLobPerpsWebSocketService implements IOnchainLobPerpsWebSocke
    * @param baseUrl - The base URL for the WebSocket connection.
    * @param startImmediately - Whether to start the WebSocket client immediately.
    */
+  private hasStarted = false;
+
   constructor(readonly baseUrl: string, startImmediately = true) {
     this.onchainLobWebSocketClient = new OnchainLobWebSocketClient(baseUrl);
     this.onchainLobWebSocketClient.events.messageReceived.addListener(this.onSocketMessageReceived);
@@ -238,8 +240,13 @@ export class OnchainLobPerpsWebSocketService implements IOnchainLobPerpsWebSocke
 
   /**
    * Forces an immediate reconnect of the underlying WebSocket, preserving all active subscriptions.
+   * A no-op until the socket has been started (by the constructor or the first subscription).
    */
   reconnect(): void {
+    // Nothing to restore when perps was never subscribed: do not open a socket just for a reconnect.
+    if (!this.hasStarted)
+      return;
+
     this.onchainLobWebSocketClient.reconnect()
       .catch(error => console.error(`Onchain LOB Web Socket reconnect failed. Error = ${getErrorLogMessage(error)}`));
   }
@@ -253,6 +260,7 @@ export class OnchainLobPerpsWebSocketService implements IOnchainLobPerpsWebSocke
    * Starts the WebSocket client if it is not already started.
    */
   protected startOnchainLobWebSocketClientIfNeeded() {
+    this.hasStarted = true;
     this.onchainLobWebSocketClient.start()
       .catch(error => console.error(`Onchain LOB Web Socket has not been started. Error = ${getErrorLogMessage(error)}`));
   }

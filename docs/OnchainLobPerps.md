@@ -98,7 +98,7 @@ Prices are `BigNumber` (quote per base) or `bigint` (ticks). Human prices round 
 | `faucetQuoteToken({ market })` | `DevnetToken.faucet` | Test tokens only. |
 | `openAccount({ market, subaccount })` | `openAccount(sub)` | Opens a subaccount of the signer. |
 | `deposit({ market, account, amount, autoApprove?, approveMax? })` | `deposit` | Checks the allowance and approves the missing amount first (the approval is waited for). |
-| `withdraw({ market, account, amount \| withdrawAll, refreshPrice? })` | `withdraw` | `withdrawAll` takes the live maximum (`collateral - owed funding + min(0, unrealized) - ADM`). |
+| `withdraw({ market, account, amount \| withdrawAll, refreshPrice? })` | `withdraw` | `withdrawAll` takes the live maximum (`collateral - owed funding + min(0, unrealized) - ADM`), minus 1% of ADM when there is a position or open orders: the amount is computed before the transaction and before a batched `refreshPrice` moves the mark. |
 | `transfer({ market, from, to, amount })` | `transfer` | Between accounts of the same owner. |
 | `placeOrder({ market, account, side, price, size, reduceOnly?, expiry?, prev?, autoHint?, refreshPrice? })` | `place` | `expiry` is unix seconds, none is good-till-cancelled. |
 | `takeOrder({ market, account, side, size, limitPrice?, minFill?, maxSteps?, deadline?, reduceOnly?, strictGate?, refreshPrice? })` | `take` | `deadline` defaults to now + 5 minutes. |

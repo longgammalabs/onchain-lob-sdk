@@ -116,7 +116,9 @@ export interface WithdrawPerpArgs {
   amount?: PerpQuoteAmount;
   /**
    * Withdraw the maximal withdrawable amount computed from the live account state
-   * (`collateral - owed funding + min(0, unrealized) - ADM`, never unrealized profit).
+   * (`collateral - owed funding + min(0, unrealized) - ADM`, never unrealized profit). With a position or open orders
+   * 1% of ADM is left in the account: the amount is computed before the transaction (and before a batched
+   * `refreshPrice` moves the mark), so the exact maximum could make the withdrawal revert.
    */
   withdrawAll?: boolean;
 }

@@ -473,7 +473,7 @@ export class OnchainLobPerpMarketContract {
 
     // 'auto': the first action that needs a fresh oracle decides.
     for (const item of items) {
-      const account = this.getOracleDependentAccount(item);
+      const account = await this.getOracleDependentAccount(item);
       if (account === undefined)
         continue;
 
@@ -489,7 +489,7 @@ export class OnchainLobPerpMarketContract {
    * The account whose view tells whether the action needs a refresh of the oracle, `undefined` when the action
    * works at a stale oracle. Reduce-only orders can be placed on a stale oracle, fills of any kind cannot (D1 §7).
    */
-  protected getOracleDependentAccount(item: PerpMulticallItem): PerpAccountRef | undefined {
+  protected async getOracleDependentAccount(item: PerpMulticallItem): Promise<PerpAccountRef | undefined> {
     switch (item.type) {
       case 'placeOrder':
         return item.params.reduceOnly ? undefined : item.params.account;
@@ -501,6 +501,19 @@ export class OnchainLobPerpMarketContract {
         return item.params.victim;
       case 'forceCancel':
         return item.params.account;
+      case 'replaceOrders': {
+        // A cancel or a reduce-only order is fine on a stale oracle; any other update is a risk-increasing quote of its maker.
+        for (const update of item.params.updates) {
+          if (update.op === 'cancel')
+            continue;
+
+          const order = await this.getBookOrder(update.handle);
+          if (order && !order.reduceOnly)
+            return order.account;
+        }
+
+        return undefined;
+      }
       default:
         return undefined;
     }
@@ -629,8 +642,13 @@ export class OnchainLobPerpMarketContract {
   private async resolveWithdrawAmount(params: Extract<PerpMulticallItem, { type: 'withdraw' }>['params']): Promise<bigint> {
     if (params.withdrawAll) {
       const state = await this.getAccountState(params.account);
+      const max = calculateMaxWithdrawable(state.collateral, state.owedCharges, state.unrealized, state.adm);
 
-      return calculateMaxWithdrawable(state.collateral, state.owedCharges, state.unrealized, state.adm);
+      // The requirement is read before the transaction (and before a batched refreshPrice moves the mark), so with a
+      // position or open orders leave a margin of 1% of ADM; otherwise a small price move makes the withdrawal revert.
+      const margin = state.adm > 0n ? (state.adm + 99n) / 100n : 0n;
+
+      return max > margin ? max - margin : 0n;
     }
     if (params.amount === undefined)
       throw new Error('Either amount or withdrawAll must be specified');

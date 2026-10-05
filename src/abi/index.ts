@@ -6,3 +6,5 @@ export { erc20WethAbi } from './erc20Weth';
 export { lpManagerAbi } from './lpManager';
 export { lpManagerPairAbi } from './lpManagerPair';
 export { fastQuoterProxyAbi } from './fastQuoterProxy';
+export { perpMarketAbi } from './perpMarket';
+export { devnetTokenAbi } from './devnetToken';

@@ -1,5 +1,6 @@
 import type { Signer } from 'ethers/providers';
 
+import { OnchainLobPerps, type PerpsMockOptions } from './perps';
 import { OnchainLobSpot } from './spot';
 import { OnchainLobVault } from './vault';
 
@@ -88,6 +89,43 @@ export interface OnchainLobClientOptions {
    * @optional
    */
   pythHermesUrl?: string;
+
+  /**
+   * Options of the perps module (`client.perps`).
+   *
+   * @type {OnchainLobClientPerpsOptions}
+   * @optional
+   */
+  perps?: OnchainLobClientPerpsOptions;
+}
+
+/**
+ * The options of the perps module of the OnchainLobClient.
+ *
+ * @interface OnchainLobClientPerpsOptions
+ */
+export interface OnchainLobClientPerpsOptions {
+  /**
+   * Where the perps data comes from: the Onchain LOB API (`'api'`, default) or fixtures (`'mock'`).
+   * The mock lets the frontend develop before the backend is live: no network is used for the REST and
+   * WebSocket data. Transactions still go to the chain through the signer.
+   *
+   * @default 'api'
+   */
+  dataSource?: 'api' | 'mock';
+
+  /**
+   * Options of the mock data source (`dataSource: 'mock'`).
+   */
+  mock?: PerpsMockOptions;
+
+  /**
+   * Whether to connect the perps WebSocket immediately. Unlike spot and vault, the perps WebSocket is connected
+   * on the first subscription by default, so that a client that does not use perps does not open one more socket.
+   *
+   * @default false
+   */
+  webSocketConnectImmediately?: boolean;
 }
 
 /**
@@ -113,6 +151,14 @@ export class OnchainLobClient implements Disposable {
   readonly vault: OnchainLobVault;
 
   /**
+   * The OnchainLobPerps instance that provides the API functions to interact with the Onchain LOB perpetual markets.
+   *
+   * @type {OnchainLobPerps}
+   * @readonly
+   */
+  readonly perps: OnchainLobPerps;
+
+  /**
    * Creates a new OnchainLobClient instance.
    *
    * @param {OnchainLobClientOptions} options - The options for the OnchainLobClient.
@@ -120,6 +166,18 @@ export class OnchainLobClient implements Disposable {
   constructor(options: Readonly<OnchainLobClientOptions>) {
     this.spot = new OnchainLobSpot(options);
     this.vault = new OnchainLobVault(options);
+    this.perps = new OnchainLobPerps({
+      apiBaseUrl: options.apiBaseUrl,
+      webSocketApiBaseUrl: options.webSocketApiBaseUrl,
+      signer: options.signer,
+      autoWaitTransaction: options.autoWaitTransaction,
+      fastWaitTransaction: options.fastWaitTransaction,
+      fastWaitTransactionInterval: options.fastWaitTransactionInterval,
+      fastWaitTransactionTimeout: options.fastWaitTransactionTimeout,
+      dataSource: options.perps?.dataSource,
+      mock: options.perps?.mock,
+      webSocketConnectImmediately: options.perps?.webSocketConnectImmediately ?? false,
+    });
   }
 
   /**
@@ -130,26 +188,29 @@ export class OnchainLobClient implements Disposable {
   setSigner(signer: Signer | null): void {
     this.spot.setSigner(signer);
     this.vault.setSigner(signer);
+    this.perps.setSigner(signer);
   }
 
   /**
-   * Forces an immediate reconnect of both the spot and vault WebSockets,
+   * Forces an immediate reconnect of the spot, vault and perps WebSockets,
    * preserving all active subscriptions.
    */
   reconnect(): void {
     this.spot.reconnect();
     this.vault.reconnect();
+    this.perps.reconnect();
   }
 
   /**
-   * Disposes the client: detaches event listeners and stops both the spot and
-   * vault WebSocket connections. Call this when the client is being replaced
+   * Disposes the client: detaches event listeners and stops the spot, vault and
+   * perps WebSocket connections. Call this when the client is being replaced
    * (e.g. on chain switch) so the old sockets and their subscriptions don't
    * linger open and keep emitting updates into a discarded client.
    */
   dispose(): void {
     this.spot[Symbol.dispose]();
     this.vault[Symbol.dispose]();
+    this.perps[Symbol.dispose]();
   }
 
   [Symbol.dispose](): void {

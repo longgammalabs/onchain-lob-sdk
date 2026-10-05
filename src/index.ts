@@ -8,7 +8,8 @@ export {
 export {
   OnchainLobClient,
 
-  type OnchainLobClientOptions
+  type OnchainLobClientOptions,
+  type OnchainLobClientPerpsOptions
 } from './onchainLobClient';
 
 export {
@@ -78,6 +79,14 @@ export {
   type RemoveLiquidityPairParams
 } from './vault';
 
+export * from './perps';
+
+export {
+  PerpHealthState,
+  PerpOrderRemoveReason,
+  PerpLiquidationOutcome
+} from './models';
+
 export type {
   Side,
   Direction,
@@ -122,12 +131,66 @@ export type {
   VaultDepositorUpdate,
   VaultDepositAction,
   VaultDepositActionUpdate,
-  VaultHistoryPeriod
+  VaultHistoryPeriod,
+
+  PerpPositionSide,
+  PerpPositionStatus,
+  PerpOrderStatus,
+  PerpFillRole,
+  PerpCollateralEventType,
+  PerpQuoteToken,
+  PerpMarketParams,
+  PerpMarket,
+  PerpMarketUpdate,
+  PerpLevel,
+  PerpOrderbook,
+  PerpOrderbookUpdate,
+  PerpTrade,
+  PerpTradeUpdate,
+  PerpCandle,
+  PerpCandleUpdate,
+  PerpAccount,
+  PerpAccountUpdate,
+  PerpPosition,
+  PerpOrder,
+  PerpOrderUpdate,
+  PerpFill,
+  PerpFillUpdate,
+  PerpFundingRate,
+  PerpFundingPayment,
+  PerpLiquidation,
+  PerpCollateralEvent,
+  PerpCollateralEventUpdate,
+  PerpAccountState,
+  PerpMarketState,
+  PerpRiskParams,
+  PerpBookOrder,
+  PerpAccountOverview
 } from './models';
 
 export {
   OnchainLobSpotService,
   OnchainLobSpotWebSocketService,
   OnchainLobVaultService,
-  OnchainLobVaultWebSocketService
+  OnchainLobVaultWebSocketService,
+  OnchainLobPerpsService,
+  OnchainLobPerpsWebSocketService,
+
+  type IOnchainLobPerpsService,
+  type IOnchainLobPerpsWebSocketService
 } from './services';
+export type {
+  PerpMarketDto,
+  PerpOrderbookDto,
+  PerpLevelDto,
+  PerpTradeDto,
+  PerpCandleDto,
+  PerpAccountDto,
+  PerpPositionDto,
+  PerpOrderDto,
+  PerpFillDto,
+  PerpFundingRateDto,
+  PerpFundingPaymentDto,
+  PerpLiquidationDto,
+  PerpCollateralEventDto
+} from './services/onchainLobPerpsService';

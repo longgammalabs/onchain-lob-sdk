@@ -22,6 +22,20 @@ The Onchain LOB TypeScript SDK is a library that simplifies the interaction with
     npm install ws
     ```
 
+## Modules
+
+`OnchainLobClient` exposes three modules: `client.spot` ([docs](./docs/OnchainLobSpot.md)), `client.vault` and `client.perps` ([docs](./docs/OnchainLobPerps.md)).
+
+The perps module can run on a built-in fixture-backed mock, so a UI can be developed before the backend is live:
+
+```ts
+const client = new OnchainLobClient({
+  apiBaseUrl, webSocketApiBaseUrl, signer,
+  perps: { dataSource: 'mock' },
+});
+const [market] = await client.perps.getMarkets();
+```
+
 ## Example
 
 You can find example usage in the `example` folder.
@@ -73,7 +87,13 @@ npm run watch
 
 ### Testing
 
-Currently, the SDK has only integration tests.
+Unit tests need no infrastructure:
+
+```sh
+npm run test:unit
+```
+
+The integration tests need a configured environment (see `integration/.env.example`).
 To run them, use the following command:
 
 ```sh

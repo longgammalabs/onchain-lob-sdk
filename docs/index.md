@@ -8,6 +8,8 @@ It holds information about the Onchain LOB API endpoints and the user transactio
 
 All methods to interact with the spot market are available in the [`OnchainLobSpot`](./OnchainLobSpot.md) class.
 
+The perpetual futures are available in the [`OnchainLobPerps`](./OnchainLobPerps.md) class (`client.perps`), which can also run on a built-in mock data source.
+
 The SDK also provides type and interface definitions for the objects used.
 
 ## Getting Started

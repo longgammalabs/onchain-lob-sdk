@@ -22,12 +22,17 @@ Creates a new instance of the `OnchainLobClient`.
 | `fastWaitTransaction?` | `boolean` | Whether to use a fast algorithm for waiting for transactions to be confirmed. |
 | `fastWaitTransactionInterval?` | `number` | Interval between requests in milliseconds when using a fast algorithm for waiting for transaction confirmations. |
 | `fastWaitTransactionTimeout?` | `number` | Timeout in milliseconds when using a fast algorithm for waiting for transaction confirmations. |
+| `perps?` | `OnchainLobClientPerpsOptions` | Options of the perps module: `dataSource` (`'api'` by default or `'mock'`), `mock` (options of the mock data source) and `webSocketConnectImmediately` (default `false`: the perps socket connects on the first subscription). |
 
 ## Properties
 
 ### `spot: OnchainLobSpot`
 
 An instance of `OnchainLobSpot` that provides API functions to interact with the Onchain LOB Spot contracts.
+
+### `perps: OnchainLobPerps`
+
+An instance of [`OnchainLobPerps`](./OnchainLobPerps.md) that provides API functions to interact with the Onchain LOB perpetual markets.
 
 ## Methods
 

@@ -114,7 +114,8 @@ export interface MarketUpdateDto {
   symbol: string;
   orderbookAddress: string;
   fastQuoterProxyAddress: string | null;
-  engine: MarketEngine;
+  /** Missing in the APIs that predate PageBook markets, whose markets are all Hanji ones. */
+  engine?: MarketEngine;
   aggregations: number[];
   tokenXScalingFactor: number;
   tokenYScalingFactor: number;

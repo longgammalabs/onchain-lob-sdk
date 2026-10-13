@@ -1,5 +1,7 @@
 export { OnchainLobSpot, type OnchainLobSpotOptions } from './onchainLobSpot';
 export { OnchainLobSpotMarketContract, type OnchainLobSpotMarketContractOptions } from './onchainLobSpotMarketContract';
+export { OnchainLobSpotPageBookMarketContract } from './onchainLobSpotPageBookMarketContract';
+export { TransactionFailedError, UnsupportedMarketMethodError } from './errors';
 
 export type {
   ApproveSpotParams,

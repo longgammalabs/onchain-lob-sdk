@@ -11,3 +11,9 @@ export class TransactionFailedError extends OnchainLobError {
     super(`${error ? `${error.name} [${error.selector}]` : `Unknown error: [${encodedError}]`}`, options);
   }
 }
+
+export class UnsupportedMarketMethodError extends OnchainLobError {
+  constructor(readonly method: string, readonly market: string) {
+    super(`${method} is not supported by the market ${market}`);
+  }
+}

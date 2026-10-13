@@ -1,7 +1,8 @@
 import type { ContractTransactionResponse } from 'ethers';
 import type { Signer } from 'ethers/providers';
 
-import { OnchainLobSpotMarketContract } from './onchainLobSpotMarketContract';
+import { OnchainLobSpotMarketContract, type OnchainLobSpotMarketContractOptions } from './onchainLobSpotMarketContract';
+import { OnchainLobSpotPageBookMarketContract } from './onchainLobSpotPageBookMarketContract';
 import * as mappers from './mappers';
 import type {
   ApproveSpotParams,
@@ -999,7 +1000,7 @@ export class OnchainLobSpot implements Disposable {
     if (!marketContract) {
       const market = await this.ensureMarket(params);
 
-      marketContract = new OnchainLobSpotMarketContract({
+      const options: OnchainLobSpotMarketContractOptions = {
         market,
         signer: this.signer,
         transferExecutedTokensEnabled: this.transferExecutedTokensEnabled,
@@ -1007,7 +1008,14 @@ export class OnchainLobSpot implements Disposable {
         fastWaitTransaction: this.fastWaitTransaction,
         fastWaitTransactionInterval: this.fastWaitTransactionInterval,
         fastWaitTransactionTimeout: this.fastWaitTransactionTimeout,
-      });
+      };
+      switch (market.engine) {
+        case 'hanji_pagebook':
+          marketContract = new OnchainLobSpotPageBookMarketContract(options);
+          break;
+        default:
+          marketContract = new OnchainLobSpotMarketContract(options);
+      }
       this.marketContracts.set(params.market, marketContract);
     }
 

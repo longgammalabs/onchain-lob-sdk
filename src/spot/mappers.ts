@@ -116,6 +116,7 @@ export const mapOrderDtoToOrder = (dto: OrderUpdateDto, priceFactor: number, siz
     origSize: tokenUtils.convertTokensRawAmountToAmount(dto.origSize, sizeFactor),
     rawClaimed: BigInt(dto.claimed),
     claimed: tokenUtils.convertTokensRawAmountToAmount(dto.claimed, sizeFactor),
+    expiry: dto.expiry ?? null,
   };
 };
 

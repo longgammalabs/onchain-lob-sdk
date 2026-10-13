@@ -93,6 +93,12 @@ export interface Market {
   fastQuoterProxyAddress: string | null;
 
   /**
+   * The contracts the market runs on: a Hanji order book (`hanji_clob`) or a PageBook
+   * (`hanji_pagebook`, MIP-8). The market contract methods differ between the two.
+   */
+  engine: MarketEngine;
+
+  /**
    * Array of aggregation levels for the market.
    */
   aggregations: number[];
@@ -347,6 +353,11 @@ export interface ClobDepth {
 export type ClobDepthUpdate = ClobDepth;
 
 /**
+ * The contracts a spot market runs on.
+ */
+export type MarketEngine = 'hanji_clob' | 'hanji_pagebook';
+
+/**
  * Represents an order in the Onchain LOB Spot market.
  */
 export interface Order {
@@ -486,6 +497,13 @@ export interface Order {
    * Sparse ascending index.
    */
   logIndex: number;
+
+  /**
+   * The unix time (seconds) after which a resting PageBook order expires, or null for the
+   * orders of a Hanji order book, which do not expire. 0 marks a PageBook order known only
+   * from its fills (placed by `replaceBatch`, which emits no events).
+   */
+  expiry: number | null;
 }
 
 export type OrderUpdate = Order;

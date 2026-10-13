@@ -246,7 +246,7 @@ export class OnchainLobSpotMarketContract {
     else {
       priceAmount = this.convertTokensAmountToRawAmountIfNeeded(params.price, this.market.priceScalingFactor);
     }
-    const expires = params.expires === undefined ? this.getOrderExpires(params.type) : BigInt(params.expires);
+    const expires = params.expires === undefined ? this.getOrderExpires(params.type) : BigInt(Math.floor(params.expires));
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
     const value = params.nativeTokenToSend === undefined
       ? 0n
@@ -310,7 +310,7 @@ export class OnchainLobSpotMarketContract {
         this.market.quoteToken.decimals - this.market.tokenYScalingFactor);
     }
 
-    const expires = params.expires === undefined ? getExpires() : BigInt(params.expires);
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
     const { v, r, s } = await this.signPermit(params.side === 'ask', quantityToPermit, expires);
     const tx = await this.processContractMethodCall(
@@ -357,7 +357,7 @@ export class OnchainLobSpotMarketContract {
       priceAmount = this.convertTokensAmountToRawAmountIfNeeded(params.price, this.market.priceScalingFactor);
     }
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
-    const expires = params.expires === undefined ? getExpires() : BigInt(params.expires);
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const value = params.nativeTokenToSend === undefined
       ? 0n
       : this.convertTokensAmountToRawAmountIfNeeded(params.nativeTokenToSend,
@@ -419,7 +419,7 @@ export class OnchainLobSpotMarketContract {
         this.market.quoteToken.decimals - this.market.tokenYScalingFactor);
     }
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
-    const expires = params.expires === undefined ? getExpires() : BigInt(params.expires);
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const { v, r, s } = await this.signPermit(params.side === 'ask', quantityToPermit, expires);
 
     const tx = await this.processContractMethodCall(
@@ -708,15 +708,17 @@ export class OnchainLobSpotMarketContract {
     }
     catch (error) {
       if ((error as any).data) {
+        let decodedError;
         try {
-          const decodedError = contract.interface.parseError((error as any).data);
-          throw new TransactionFailedError((error as any).data, decodedError, { cause: error });
+          decodedError = contract.interface.parseError((error as any).data);
         }
         catch (parseError) {
           // If error parsing fails, throw the original error
           console.error('Failed to parse contract error:', parseError);
           throw error;
         }
+        // Thrown outside the try: inside it, the catch above swallowed it and rethrew the raw error.
+        throw new TransactionFailedError((error as any).data, decodedError, { cause: error });
       }
 
       throw error;

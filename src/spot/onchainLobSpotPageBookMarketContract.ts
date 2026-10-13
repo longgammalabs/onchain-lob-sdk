@@ -86,7 +86,7 @@ export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketCo
         params.orderId,
         params.onlyClaim,
         params.transferExecutedTokens ?? this.transferExecutedTokensEnabled,
-        false,
+        await this.getWithdrawAsNativeToken(),
         getExpires(),
         this.getTxParams(params)
       )
@@ -95,9 +95,11 @@ export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketCo
 
   override async batchClaim(params: BatchClaimOrderSpotParams): Promise<ContractTransactionResponse> {
     const expires = getExpires();
+    // Only the signer's own orders are paid as given; the others follow their owner's config.
+    const withdrawAsNativeToken = await this.getWithdrawAsNativeToken();
     const calls = params.claimParams.map(claim => this.marketContract.interface.encodeFunctionData(
       'claimOrder',
-      [claim.address, claim.orderId, params.onlyClaim, this.transferExecutedTokensEnabled, false, expires]
+      [claim.address, claim.orderId, params.onlyClaim, this.transferExecutedTokensEnabled, withdrawAsNativeToken, expires]
     ));
 
     return this.processContractMethodCall(
@@ -106,27 +108,27 @@ export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketCo
     );
   }
 
-  override placeOrderWithPermit(_params: PlaceOrderWithPermitSpotParams): Promise<ContractTransactionResponse> {
+  override async placeOrderWithPermit(_params: PlaceOrderWithPermitSpotParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('placeOrderWithPermit', this.market.id);
   }
 
-  override placeMarketOrderWithTargetValueWithPermit(_params: PlaceMarketOrderWithTargetValueWithPermitParams): Promise<ContractTransactionResponse> {
+  override async placeMarketOrderWithTargetValueWithPermit(_params: PlaceMarketOrderWithTargetValueWithPermitParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('placeMarketOrderWithTargetValueWithPermit', this.market.id);
   }
 
-  override setProxyTraderPermissions(_params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse> {
+  override async setProxyTraderPermissions(_params: SetProxyTraderPermissionsSpotParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('setProxyTraderPermissions', this.market.id);
   }
 
-  override batchPlaceOrder(_params: BatchPlaceOrderSpotParams): Promise<ContractTransactionResponse> {
+  override async batchPlaceOrder(_params: BatchPlaceOrderSpotParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('batchPlaceOrder', this.market.id);
   }
 
-  override changeOrder(_params: ChangeOrderSpotParams): Promise<ContractTransactionResponse> {
+  override async changeOrder(_params: ChangeOrderSpotParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('changeOrder', this.market.id);
   }
 
-  override batchChangeOrder(_params: BatchChangeOrderSpotParams): Promise<ContractTransactionResponse> {
+  override async batchChangeOrder(_params: BatchChangeOrderSpotParams): Promise<ContractTransactionResponse> {
     throw new UnsupportedMarketMethodError('batchChangeOrder', this.market.id);
   }
 
@@ -145,8 +147,21 @@ export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketCo
   }
 
   /**
+   * Whether a claim pays the wrapped native token out as native, as the signer's trader config
+   * says: the same way the book pays the fills of the signer's orders.
+   */
+  private async getWithdrawAsNativeToken(): Promise<boolean> {
+    if (!this.market.supportsNativeToken) return false;
+    const id = await this.getTraderId();
+    if (id === 0n) return false;
+    const [, , , withdrawAsNativeEth] = await this.marketContract.getTraderConfig!(id);
+    return withdrawAsNativeEth;
+  }
+
+  /**
    * The trader id of the signer. A signer that has not traded yet has none, so it is registered
-   * first; a given nonce then goes to the registration and the next one to the call itself.
+   * first; a given nonce then goes to the registration and the next one to the call itself, so a
+   * retry after a failed call needs a fresh nonce.
    */
   private async ensureTraderId(params: TransactionParams): Promise<{ id: bigint; txParams: TransactionParams }> {
     const id = await this.getTraderId();
@@ -154,11 +169,21 @@ export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketCo
       return { id, txParams: this.getTxParams(params) };
     }
 
-    const registration = await this.marketContract.registerTrader!(this.getTxParams(params));
-    await registration.wait();
+    const registration = await this.processContractMethodCall(
+      this.marketContract,
+      this.marketContract.registerTrader!(this.getTxParams(params))
+    );
+    // The id comes from the receipt: a node behind the one that mined the registration would still read 0.
+    const receipt = await registration.wait();
+    const registered = receipt?.logs
+      .map(log => this.marketContract.interface.parseLog(log))
+      .find(log => log?.name === 'TraderRegistered');
+    if (!registered) {
+      throw new Error(`Trader registration ${registration.hash} emitted no TraderRegistered`);
+    }
 
     return {
-      id: await this.getTraderId(),
+      id: registered.args.traderId as bigint,
       txParams: this.getTxParams({ ...params, nonce: nextNonce(params.nonce) }),
     };
   }

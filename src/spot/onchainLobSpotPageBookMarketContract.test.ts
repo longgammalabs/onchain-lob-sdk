@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { Interface } from 'ethers';
 
-import { UnsupportedMarketMethodError } from './errors';
+import { TransactionFailedError, UnsupportedMarketMethodError } from './errors';
 import { OnchainLobSpotPageBookMarketContract } from './onchainLobSpotPageBookMarketContract';
 import { pageBookAbi } from '../abi';
 import { testMarket, testSigner } from '../helpers.test';
@@ -11,6 +11,10 @@ const market = { ...testMarket, engine: 'hanji_pagebook', fastQuoterProxyAddress
 const pageBook = new Interface(pageBookAbi);
 const MAX_UINT32 = 2n ** 32n - 1n;
 const noTxParams = { gasLimit: undefined, nonce: undefined, maxFeePerGas: undefined, maxPriorityFeePerGas: undefined };
+const registeredLog = (traderId: bigint) => {
+  const event = pageBook.getEvent('TraderRegistered')!;
+  return { ...pageBook.encodeEventLog(event, [traderId, '0x000000000000000000000000000000000000dEaD']), address: market.orderbookAddress };
+};
 
 describe('PageBook market contract', () => {
   let marketContract: OnchainLobSpotPageBookMarketContract;
@@ -29,9 +33,9 @@ describe('PageBook market contract', () => {
       setTraderConfig: jest.fn(),
       getTraderConfig: jest.fn(async () => [owner, false, true, true]),
       traderId: jest.fn(async () => 7n),
-      registerTrader: jest.fn(async () => ({ wait: async () => null })),
+      registerTrader: jest.fn(async () => ({ hash: '0xregistration', wait: async () => ({ logs: [registeredLog(9n)] }) })),
     };
-    (marketContract as any)['processContractMethodCall'] = jest.fn(() => 'transaction hash');
+    (marketContract as any)['processContractMethodCall'] = jest.fn((_contract, call) => call ?? 'transaction hash');
     (marketContract as any)['marketContract'] = book;
     owner = await testSigner.getAddress();
   });
@@ -65,11 +69,17 @@ describe('PageBook market contract', () => {
     expect((book.placeOrder as jest.Mock).mock.calls[0][7]).toBe(1_900_000_000n);
   });
 
-  test('claimOrder names the signer as the owner', async () => {
+  test('claimOrder names the signer as the owner and pays native as its config says', async () => {
     await marketContract.claimOrder({ market: market.id, orderId: '30064771073', onlyClaim: false });
     expect((book.claimOrder as jest.Mock).mock.calls).toEqual([
-      [owner, '30064771073', false, true, false, expect.any(BigInt), noTxParams],
+      [owner, '30064771073', false, true, true, expect.any(BigInt), noTxParams],
     ]);
+  });
+
+  test('a signer with no trader claims without native payout', async () => {
+    (book.traderId as jest.Mock).mockResolvedValueOnce(0n);
+    await marketContract.claimOrder({ market: market.id, orderId: '1', onlyClaim: false });
+    expect((book.claimOrder as jest.Mock).mock.calls[0][4]).toBe(false);
   });
 
   test('batchClaim is a batchExecute of claimOrder calls', async () => {
@@ -85,8 +95,8 @@ describe('PageBook market contract', () => {
       const call = pageBook.parseTransaction({ data })!;
       return [call.name, ...call.args.slice(0, 5)];
     })).toEqual([
-      ['claimOrder', owner, 1n, true, true, false],
-      ['claimOrder', other, 2n, true, true, false],
+      ['claimOrder', owner, 1n, true, true, true],
+      ['claimOrder', other, 2n, true, true, true],
     ]);
   });
 
@@ -97,7 +107,7 @@ describe('PageBook market contract', () => {
   });
 
   test('a new trader is registered before the deposit, which takes the next nonce', async () => {
-    (book.traderId as jest.Mock).mockResolvedValueOnce(0n).mockResolvedValueOnce(9n);
+    (book.traderId as jest.Mock).mockResolvedValueOnce(0n);
     await marketContract.depositTokens({ market: market.id, baseTokenAmount: 1n, quoteTokenAmount: 2n, nonce: 4n });
     expect((book.registerTrader as jest.Mock).mock.calls).toEqual([[{ ...noTxParams, nonce: 4n }]]);
     expect((book.depositTokens as jest.Mock).mock.calls).toEqual([[9n, 1n, 2n, { ...noTxParams, nonce: 5n }]]);
@@ -120,7 +130,25 @@ describe('PageBook market contract', () => {
     'batchPlaceOrder',
     'changeOrder',
     'batchChangeOrder',
-  ] as const)('%s is not supported', method => {
-    expect(() => (marketContract[method] as (params: unknown) => unknown)({})).toThrow(UnsupportedMarketMethodError);
+  ] as const)('%s is not supported', async method => {
+    await expect((marketContract[method] as (params: unknown) => Promise<unknown>)({})).rejects.toThrow(UnsupportedMarketMethodError);
+  });
+
+  test('a fractional expires is rounded down', async () => {
+    await marketContract.placeOrder({
+      market: market.id, side: 'bid', type: 'limit', size: BigNumber(25), price: BigNumber(0.732), expires: 1_900_000_000.7,
+    });
+    expect((book.placeOrder as jest.Mock).mock.calls[0][7]).toBe(1_900_000_000n);
+  });
+});
+
+describe('contract errors', () => {
+  test('a revert the ABI knows is thrown decoded', async () => {
+    const marketContract = new OnchainLobSpotPageBookMarketContract({ market, signer: testSigner });
+    const data = pageBook.encodeErrorResult('ClaimNotAllowed', []);
+    const call = Promise.reject(Object.assign(new Error('execution reverted'), { data }));
+    const error = await (marketContract as any)['processContractMethodCall']((marketContract as any)['marketContract'], call).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(TransactionFailedError);
+    expect(error.error.name).toBe('ClaimNotAllowed');
   });
 });

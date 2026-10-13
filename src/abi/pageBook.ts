@@ -135,11 +135,6 @@ export const pageBookAbi = [
     name: 'depositTokens',
     inputs: [
       {
-        name: 'id',
-        type: 'uint32',
-        internalType: 'uint32',
-      },
-      {
         name: 'tokenXAmount',
         type: 'uint128',
         internalType: 'uint128',
@@ -938,6 +933,44 @@ export const pageBookAbi = [
   },
   {
     type: 'function',
+    name: 'tryPermitEIP2612',
+    inputs: [
+      {
+        name: 'is_token_x',
+        type: 'bool',
+        internalType: 'bool',
+      },
+      {
+        name: 'value',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'expires',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'v',
+        type: 'uint8',
+        internalType: 'uint8',
+      },
+      {
+        name: 'r',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 's',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'unpause',
     inputs: [],
     outputs: [],
@@ -960,11 +993,6 @@ export const pageBookAbi = [
     type: 'function',
     name: 'withdrawTokens',
     inputs: [
-      {
-        name: 'id',
-        type: 'uint32',
-        internalType: 'uint32',
-      },
       {
         name: 'withdrawAll',
         type: 'bool',
@@ -1422,6 +1450,31 @@ export const pageBookAbi = [
   },
   {
     type: 'event',
+    name: 'OrdersReplaced',
+    inputs: [
+      {
+        name: 'owner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'placed',
+        type: 'bytes',
+        indexed: false,
+        internalType: 'bytes',
+      },
+      {
+        name: 'cancelled',
+        type: 'bytes',
+        indexed: false,
+        internalType: 'bytes',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'PauseStateChanged',
     inputs: [
       {
@@ -1587,6 +1640,11 @@ export const pageBookAbi = [
   {
     type: 'error',
     name: 'ClaimNotAllowed',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'CrossedOrderbook',
     inputs: [],
   },
   {

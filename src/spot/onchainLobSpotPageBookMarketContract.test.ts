@@ -28,8 +28,6 @@ describe('PageBook market contract', () => {
       placeOrder: jest.fn(),
       claimOrder: jest.fn(),
       batchExecute: jest.fn(),
-      depositTokens: jest.fn(),
-      withdrawTokens: jest.fn(),
       setTraderConfig: jest.fn(),
       getTraderConfig: jest.fn(async () => [owner, false, true, true]),
       traderId: jest.fn(async () => 7n),
@@ -100,22 +98,12 @@ describe('PageBook market contract', () => {
     ]);
   });
 
-  test('a deposit addresses the trader by its id', async () => {
-    await marketContract.depositTokens({ market: market.id, baseTokenAmount: 1n, quoteTokenAmount: 2n });
-    expect(book.registerTrader).not.toHaveBeenCalled();
-    expect((book.depositTokens as jest.Mock).mock.calls).toEqual([[7n, 1n, 2n, noTxParams]]);
-  });
-
-  test('a new trader is registered before the deposit, which takes the next nonce', async () => {
+  test('a new trader is registered before setClaimableStatus, which takes the next nonce', async () => {
     (book.traderId as jest.Mock).mockResolvedValueOnce(0n);
-    await marketContract.depositTokens({ market: market.id, baseTokenAmount: 1n, quoteTokenAmount: 2n, nonce: 4n });
+    await marketContract.setClaimableStatus({ market: market.id, status: false, nonce: 4n });
     expect((book.registerTrader as jest.Mock).mock.calls).toEqual([[{ ...noTxParams, nonce: 4n }]]);
-    expect((book.depositTokens as jest.Mock).mock.calls).toEqual([[9n, 1n, 2n, { ...noTxParams, nonce: 5n }]]);
-  });
-
-  test('withdrawing all needs no amounts', async () => {
-    await marketContract.withdrawTokens({ market: market.id, withdrawAll: true });
-    expect((book.withdrawTokens as jest.Mock).mock.calls).toEqual([[7n, true, 0n, 0n, noTxParams]]);
+    expect((book.getTraderConfig as jest.Mock).mock.calls).toEqual([[9n]]);
+    expect((book.setTraderConfig as jest.Mock).mock.calls).toEqual([[9n, false, true, true, { ...noTxParams, nonce: 5n }]]);
   });
 
   test('setClaimableStatus keeps the other flags of the trader config', async () => {

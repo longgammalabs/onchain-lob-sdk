@@ -8,14 +8,12 @@ import type {
   BatchPlaceOrderSpotParams,
   ChangeOrderSpotParams,
   ClaimOrderSpotParams,
-  DepositSpotParams,
   PlaceMarketOrderWithTargetValueWithPermitParams,
   PlaceOrderSpotParams,
   PlaceOrderWithPermitSpotParams,
   SetClaimableStatusParams,
   SetProxyTraderPermissionsSpotParams,
-  TransactionParams,
-  WithdrawSpotParams
+  TransactionParams
 } from './params';
 
 // The latest time a PageBook order can rest until: the contract keeps `expires` as uint32.
@@ -29,40 +27,15 @@ const nextNonce = (nonce: TransactionParams['nonce']): TransactionParams['nonce'
 /**
  * A spot market on a PageBook (MIP-8 order book).
  *
- * `placeOrder`, `placeMarketOrderWithTargetValue` and `approveTokens` are the Hanji calls. The rest differ:
+ * `placeOrder`, `placeMarketOrderWithTargetValue`, `depositTokens`, `withdrawTokens` and `approveTokens` are the
+ * Hanji calls. The rest differ:
  * - `expires` of an order is also its lifetime, so limit orders default to resting until cancelled;
  * - `claimOrder` names the owner of the order;
- * - deposits, withdrawals and the trader config address the trader by its id (`traderId`);
+ * - the trader config addresses the trader by its id (`traderId`);
  * - `batchClaim` is a `batchExecute` of `claimOrder` calls, which reverts as a whole if one claim fails;
  * - there are no permits, no fast quoter proxy and no order changes.
  */
 export class OnchainLobSpotPageBookMarketContract extends OnchainLobSpotMarketContract {
-  override async depositTokens(params: DepositSpotParams): Promise<ContractTransactionResponse> {
-    const baseTokenAmount = this.convertTokensAmountToRawAmountIfNeeded(params.baseTokenAmount, this.market.tokenXScalingFactor);
-    const quoteTokenAmount = this.convertTokensAmountToRawAmountIfNeeded(params.quoteTokenAmount, this.market.tokenYScalingFactor);
-    const { id, txParams } = await this.ensureTraderId(params);
-
-    return this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.depositTokens!(id, baseTokenAmount, quoteTokenAmount, txParams)
-    );
-  }
-
-  override async withdrawTokens(params: WithdrawSpotParams): Promise<ContractTransactionResponse> {
-    const withdrawAll = !!params.withdrawAll;
-    const baseTokenAmount = withdrawAll ? 0n : this.convertTokensAmountToRawAmountIfNeeded(params.baseTokenAmount, this.market.tokenXScalingFactor);
-    const quoteTokenAmount = withdrawAll ? 0n : this.convertTokensAmountToRawAmountIfNeeded(params.quoteTokenAmount, this.market.tokenYScalingFactor);
-    const id = await this.getTraderId();
-    if (id === 0n) {
-      throw new Error('The signer has no trader on this market, so there is nothing to withdraw');
-    }
-
-    return this.processContractMethodCall(
-      this.marketContract,
-      this.marketContract.withdrawTokens!(id, withdrawAll, baseTokenAmount, quoteTokenAmount, this.getTxParams(params))
-    );
-  }
-
   /**
    * Sets whether others may claim the signer's orders; the other two flags of the trader config are kept.
    */

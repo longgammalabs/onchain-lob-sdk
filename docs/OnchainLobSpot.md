@@ -19,7 +19,7 @@ The `ClobDepth` interface provides a more efficient and simpler data structure f
 `Market.engine` tells which contracts a market runs on: `hanji_clob` (a Hanji order book) or `hanji_pagebook` (a PageBook, MIP-8). The SDK picks the contract calls by it, so the methods below work the same way on both, with these differences on a PageBook market:
 
 - `expires` of an order is also its lifetime: limit orders default to resting until cancelled (see `placeOrder`), and `Order.expiry` holds that time;
-- `depositTokens`, `withdrawTokens` and `setClaimableStatus` address the trader by its id. For a deposit or `setClaimableStatus` a signer without one is registered first (`registerTrader`, a separate transaction that takes a given `nonce`); `withdrawTokens` throws, as there is nothing to withdraw;
+- `setClaimableStatus` addresses the trader by its id: a signer without one is registered first (`registerTrader`, a separate transaction that takes a given `nonce`). `depositTokens` registers the signer itself;
 - `claimOrder` and `batchClaim` pay the wrapped native token out as native when the signer's trader config says so (the default on the contract);
 - `batchClaim` is one `batchExecute` of `claimOrder` calls and reverts as a whole if one claim fails;
 - `placeOrderWithPermit`, `placeMarketOrderWithTargetValueWithPermit`, `setProxyTraderPermissions`, `changeOrder`, `batchPlaceOrder` and `batchChangeOrder` throw `UnsupportedMarketMethodError`.

@@ -46,6 +46,7 @@ export const mapClobDepthDtoToClobDepth = (dto: ClobDepthDto): ClobDepth => {
 export const mapMarketDtoToMarket = (dto: MarketDto, priceFactor: number, sizeFactor: number): Market => {
   return {
     ...dto,
+    engine: dto.engine ?? 'hanji_clob',
     rawLastPrice: dto.lastPrice ? BigInt(dto.lastPrice) : null,
     lastPrice: dto.lastPrice ? tokenUtils.convertTokensRawAmountToAmount(dto.lastPrice, priceFactor) : null,
     rawLowPrice24h: dto.lowPrice24h ? BigInt(dto.lowPrice24h) : null,
@@ -116,6 +117,7 @@ export const mapOrderDtoToOrder = (dto: OrderUpdateDto, priceFactor: number, siz
     origSize: tokenUtils.convertTokensRawAmountToAmount(dto.origSize, sizeFactor),
     rawClaimed: BigInt(dto.claimed),
     claimed: tokenUtils.convertTokensRawAmountToAmount(dto.claimed, sizeFactor),
+    expiry: dto.expiry ?? null,
   };
 };
 
@@ -163,7 +165,7 @@ export const mapOrderbookUpdateDtoToOrderbookUpdate = (
 
 export const mapClobDepthUpdateDtoToClobDepthUpdate = (
   _marketId: string,
-  dto: ClobDepthUpdateDto,
+  dto: ClobDepthUpdateDto
 ): ClobDepthUpdate => mapClobDepthDtoToClobDepth(dto);
 
 export const mapTradeUpdateDtoToTradeUpdate = (

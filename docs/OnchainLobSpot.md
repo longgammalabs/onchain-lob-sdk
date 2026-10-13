@@ -14,6 +14,16 @@ Some methods and fields in this SDK are marked as deprecated and will be removed
 
 The `ClobDepth` interface provides a more efficient and simpler data structure for orderbook data, using `[string, string][]` tuples for price and size pairs instead of complex objects.
 
+### PageBook markets
+
+`Market.engine` tells which contracts a market runs on: `hanji_clob` (a Hanji order book) or `hanji_pagebook` (a PageBook, MIP-8). The SDK picks the contract calls by it, so the methods below work the same way on both, with these differences on a PageBook market:
+
+- `expires` of an order is also its lifetime: limit orders default to resting until cancelled (see `placeOrder`), and `Order.expiry` holds that time;
+- `setClaimableStatus` addresses the trader by its id: a signer without one is registered first (`registerTrader`, a separate transaction that takes a given `nonce`). `depositTokens` registers the signer itself;
+- `claimOrder` and `batchClaim` pay the wrapped native token out as native when the signer's trader config says so (the default on the contract);
+- `batchClaim` is one `batchExecute` of `claimOrder` calls and reverts as a whole if one claim fails;
+- `placeOrderWithPermit`, `placeMarketOrderWithTargetValueWithPermit`, `setProxyTraderPermissions`, `changeOrder`, `batchPlaceOrder` and `batchChangeOrder` throw `UnsupportedMarketMethodError`.
+
 ## Common contract transaction parameters
 
 The following parameters are common across contract transaction methods:
@@ -126,6 +136,7 @@ It can place limit or market order and use native token if market supports it.
 - `maxCommission`:  The upper bound of commission to pay.
 - `nativeTokenToSend`: The amount of native token to send.
 - `useNativeToken`: Use native token for the transaction instead of the wrapped token.
+- `expires`: (optional) Unix time in seconds passed to the contract as the deadline of the transaction. On a PageBook market it is also when the resting part of the order expires, so it must fit uint32. Defaults to 5 minutes from now, except for `limit` and `limit_post_only` orders on a PageBook market, which default to the latest uint32 time (the order rests until it is cancelled).
 - `useFastQuoterProxyIfEnabled`: (optional) Whether to use the fast quoter proxy if it's enabled for the market. Defaults to `true`. If `true` and the market has a fast quoter proxy enabled, the order will be placed through the fast quoter proxy contract instead of the market contract.
 
 ### Type parameter value

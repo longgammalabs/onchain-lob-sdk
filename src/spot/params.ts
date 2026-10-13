@@ -7,7 +7,7 @@ import { CandleResolution, OrderTypeParam, TokenType, Direction, type OrderStatu
  *
  * @interface TransactionParams
  */
-interface TransactionParams {
+export interface TransactionParams {
   /**
    * Transaction gas limit.
    * If not provided, the value obtained through an additional `eth_estimateGas` call is used.
@@ -330,6 +330,18 @@ interface PlaceOrderBaseParams extends TransactionParams {
    * @optional
    */
   transferExecutedTokens?: boolean;
+
+  /**
+   * The unix time (seconds) passed to the contract as `expires`: the deadline of the transaction.
+   * On a PageBook market it is also the time the resting part of the order expires, so it must
+   * fit uint32.
+   * Default: 5 minutes from now, except for limit orders on a PageBook market, which default to
+   * the latest uint32 time (the order rests until it is cancelled).
+   *
+   * @type {number}
+   * @optional
+   */
+  expires?: number;
 
   /**
    * Indicates whether to use the fast quoter proxy.

@@ -1,4 +1,4 @@
-import type { Direction, OrderStatus, OrderType, Side } from '../../models';
+import type { Direction, MarketEngine, OrderStatus, OrderType, Side } from '../../models';
 
 export interface OrderbookLevelDto {
   price: string;
@@ -39,6 +39,7 @@ export interface OrderDto {
   status: OrderStatus;
   isPostOnly: boolean;
   logIndex: number;
+  expiry: number | null;
 }
 
 export interface OrderHistoryDto {
@@ -119,6 +120,8 @@ export interface MarketDto {
   quoteToken: TokenDto;
   orderbookAddress: string;
   fastQuoterProxyAddress: string | null;
+  /** Missing in the APIs that predate PageBook markets, whose markets are all Hanji ones. */
+  engine?: MarketEngine;
   aggregations: number[];
   tokenXScalingFactor: number;
   tokenYScalingFactor: number;

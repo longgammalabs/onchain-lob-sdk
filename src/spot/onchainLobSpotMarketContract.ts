@@ -20,7 +20,7 @@ import type {
   WithdrawSpotParams,
   WrapNativeTokenSpotParams
 } from './params';
-import { erc20Abi, lobAbi, lobV2Abi, erc20PermitAbi, erc20WethAbi, fastQuoterProxyAbi } from '../abi';
+import { erc20Abi, lobAbi, lobV2Abi, erc20PermitAbi, erc20WethAbi, fastQuoterProxyAbi, pageBookAbi } from '../abi';
 import type { Market, Token } from '../models';
 import { tokenUtils } from '../utils';
 import { wait } from '../utils/delay';
@@ -38,7 +38,16 @@ export interface OnchainLobSpotMarketContractOptions {
 const DEFAULT_MAX_COMMISSION = 340282366920938463463374607431768211455n; // 2^128 - 1
 const DEFAULT_ASK_MARKET_PRICE = 1n;
 const DEFAULT_BID_MARKET_PRICE = 999999000000000000000n;
-const getExpires = () => BigInt(Math.floor(Date.now() / 1000) + 5 * 60);
+export const getExpires = () => BigInt(Math.floor(Date.now() / 1000) + 5 * 60);
+
+const getMarketAbi = (market: Market) => {
+  switch (market.engine) {
+    case 'hanji_pagebook':
+      return pageBookAbi;
+    default:
+      return market.fastQuoterProxyAddress ? lobV2Abi : lobAbi;
+  }
+};
 
 type ReadonlyMarket = Readonly<Omit<Market, 'baseToken' | 'quoteToken'>>
   & Readonly<{ baseToken: Readonly<Token>; quoteToken: Readonly<Token> }>;
@@ -81,7 +90,7 @@ export class OnchainLobSpotMarketContract {
     this.fastWaitTransactionInterval = options.fastWaitTransactionInterval ?? OnchainLobSpotMarketContract.defaultFastWaitTransactionInterval;
     this.fastWaitTransactionTimeout = options.fastWaitTransactionTimeout;
 
-    this.marketContract = new Contract(this.market.orderbookAddress, this.market.fastQuoterProxyAddress ? lobV2Abi : lobAbi, options.signer);
+    this.marketContract = new Contract(this.market.orderbookAddress, getMarketAbi(options.market), options.signer);
     this.fastQuoterProxyContract = this.market.fastQuoterProxyAddress ? new Contract(this.market.fastQuoterProxyAddress, fastQuoterProxyAbi, options.signer) : null;
     this.baseTokenContract = new Contract(
       this.market.baseToken.contractAddress,
@@ -237,7 +246,7 @@ export class OnchainLobSpotMarketContract {
     else {
       priceAmount = this.convertTokensAmountToRawAmountIfNeeded(params.price, this.market.priceScalingFactor);
     }
-    const expires = getExpires();
+    const expires = params.expires === undefined ? this.getOrderExpires(params.type) : BigInt(Math.floor(params.expires));
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
     const value = params.nativeTokenToSend === undefined
       ? 0n
@@ -301,7 +310,7 @@ export class OnchainLobSpotMarketContract {
         this.market.quoteToken.decimals - this.market.tokenYScalingFactor);
     }
 
-    const expires = getExpires();
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
     const { v, r, s } = await this.signPermit(params.side === 'ask', quantityToPermit, expires);
     const tx = await this.processContractMethodCall(
@@ -348,7 +357,7 @@ export class OnchainLobSpotMarketContract {
       priceAmount = this.convertTokensAmountToRawAmountIfNeeded(params.price, this.market.priceScalingFactor);
     }
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
-    const expires = getExpires();
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const value = params.nativeTokenToSend === undefined
       ? 0n
       : this.convertTokensAmountToRawAmountIfNeeded(params.nativeTokenToSend,
@@ -410,7 +419,7 @@ export class OnchainLobSpotMarketContract {
         this.market.quoteToken.decimals - this.market.tokenYScalingFactor);
     }
     const maxCommission = params.maxCommission === undefined ? DEFAULT_MAX_COMMISSION : this.convertTokensAmountToRawAmountIfNeeded(params.maxCommission, this.market.tokenYScalingFactor);
-    const expires = getExpires();
+    const expires = params.expires === undefined ? getExpires() : BigInt(Math.floor(params.expires));
     const { v, r, s } = await this.signPermit(params.side === 'ask', quantityToPermit, expires);
 
     const tx = await this.processContractMethodCall(
@@ -661,6 +670,13 @@ export class OnchainLobSpotMarketContract {
     return tx;
   }
 
+  /**
+   * The `expires` of a new order when the caller gives none: the deadline of the transaction.
+   */
+  protected getOrderExpires(_type: PlaceOrderSpotParams['type']): bigint {
+    return getExpires();
+  }
+
   protected async processContractMethodCall(contract: Contract, methodCall: Promise<ContractTransactionResponse>): Promise<ContractTransactionResponse> {
     try {
       const tx = await methodCall;
@@ -692,22 +708,24 @@ export class OnchainLobSpotMarketContract {
     }
     catch (error) {
       if ((error as any).data) {
+        let decodedError;
         try {
-          const decodedError = contract.interface.parseError((error as any).data);
-          throw new TransactionFailedError((error as any).data, decodedError, { cause: error });
+          decodedError = contract.interface.parseError((error as any).data);
         }
         catch (parseError) {
           // If error parsing fails, throw the original error
           console.error('Failed to parse contract error:', parseError);
           throw error;
         }
+        // Thrown outside the try: inside it, the catch above swallowed it and rethrew the raw error.
+        throw new TransactionFailedError((error as any).data, decodedError, { cause: error });
       }
 
       throw error;
     }
   }
 
-  private convertTokensAmountToRawAmountIfNeeded(amount: BigNumber | bigint, decimals: number): bigint {
+  protected convertTokensAmountToRawAmountIfNeeded(amount: BigNumber | bigint, decimals: number): bigint {
     return typeof amount === 'bigint'
       ? amount
       : tokenUtils.convertTokensAmountToRawAmount(amount, decimals);

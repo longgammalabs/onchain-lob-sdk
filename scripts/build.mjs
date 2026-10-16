@@ -39,7 +39,8 @@ const applyPlatformModulesPlugin = {
  * @type {import('esbuild').BuildOptions}
  */
 const baseOptions = {
-  entryPoints: ['./src/index.ts'],
+  // `perps` is a separate entry (`onchain-lob-sdk/perps`): the main entry does not contain it.
+  entryPoints: { index: './src/index.ts', perps: './src/perps/index.ts' },
   target: 'es2020',
   bundle: true,
   treeShaking: true,
@@ -96,6 +97,8 @@ try {
     .map(([format, outExtension]) => build({
       ...getNodeJsOptions(),
       format,
+      // ESM outputs share the common code between the entries through chunks (CommonJS cannot).
+      splitting: format === 'esm',
       outExtension: { '.js': outExtension },
     }));
   // Browser
@@ -103,6 +106,7 @@ try {
     .map(([format, outExtension]) => build({
       ...getBrowserJsOptions(),
       format,
+      splitting: format === 'esm',
       outExtension: { '.js': outExtension },
     })));
 

@@ -1,0 +1,1152 @@
+// PerpMarket ABI (Monad testnet WETH-tUSDC-PERP). The constructor is omitted: the SDK never deploys the contract.
+export const perpMarketAbi = [
+  { type: 'fallback', stateMutability: 'nonpayable' },
+  {
+    type: 'function',
+    name: 'baseLot',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'cancel',
+    inputs: [{ name: 'handle', type: 'uint64' }, { name: 'prev', type: 'uint64' }, { name: 'hinted', type: 'bool' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'cancelAll',
+    inputs: [{ name: 'account', type: 'uint176' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'closeFactorBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'collarBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'deployedAt',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'deposit',
+    inputs: [{ name: 'account', type: 'uint176' }, { name: 'amount', type: 'uint128' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'depositInsurance',
+    inputs: [{ name: 'amount', type: 'uint128' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'feeRecipient',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'fmrBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'fundingSource',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'head',
+    inputs: [{ name: 'bid', type: 'bool' }],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'imrBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'liqBonusBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'liqPenaltyBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'liquidate',
+    inputs: [{ name: 'victim', type: 'uint176' }, { name: 'liquidator', type: 'uint176' }, { name: 'maxLots', type: 'uint64' }],
+    outputs: [{ name: 'lots', type: 'uint64' }, { name: 'transferNotional', type: 'uint128' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'makerFeeBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxConfBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxFundingRateE15',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxMarkX9',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxOracleAge',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxPositionLots',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'maxTradePrice',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'mmrBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'multicall',
+    inputs: [{ name: 'calls', type: 'bytes[]' }],
+    outputs: [{ name: 'results', type: 'bytes[]' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'next',
+    inputs: [{ name: 'handle', type: 'uint64' }],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'oiCap',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'openAccount',
+    inputs: [{ name: 'sub', type: 'uint16' }],
+    outputs: [{ name: 'account', type: 'uint176' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'operatorOf',
+    inputs: [{ name: 'owner', type: 'address' }, { name: 'operator', type: 'address' }],
+    outputs: [{ name: 'perms', type: 'uint32' }, { name: 'expiry', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'order',
+    inputs: [{ name: 'handle', type: 'uint64' }],
+    outputs: [{ name: 'w0', type: 'uint256' }, { name: 'w1', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'place',
+    inputs: [{ name: 'account', type: 'uint176' }, { name: 'bid', type: 'bool' }, { name: 'price', type: 'uint64' }, { name: 'lots', type: 'uint64' }, { name: 'expiry', type: 'uint32' }, { name: 'prev', type: 'uint64' }, { name: 'hinted', type: 'bool' }, { name: 'flags', type: 'uint8' }],
+    outputs: [{ name: 'handle', type: 'uint64' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'priceSource',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'prune',
+    inputs: [{ name: 'bid', type: 'bool' }, { name: 'prev', type: 'uint64' }, { name: 'maxSteps', type: 'uint32' }],
+    outputs: [{ name: 'cursor', type: 'uint64' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'quoteTick',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint128' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'quoteToken',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'refreshFunding',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'refreshPrice',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'replaceBatch',
+    inputs: [{ name: 'updates', type: 'bytes32[]' }, { name: 'hinted', type: 'bool' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setOperator',
+    inputs: [{ name: 'operator', type: 'address' }, { name: 'perms', type: 'uint32' }, { name: 'expiry', type: 'uint32' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'smallPositionLots',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'take',
+    inputs: [{ name: 'taker', type: 'uint176' }, { name: 'buy', type: 'bool' }, { name: 'limit', type: 'uint64' }, { name: 'lots', type: 'uint64' }, { name: 'minFill', type: 'uint64' }, { name: 'maxSteps', type: 'uint32' }, { name: 'deadline', type: 'uint64' }, { name: 'flags', type: 'uint8' }],
+    outputs: [{ name: 'filled', type: 'uint64' }, { name: 'quoteAmount', type: 'uint256' }, { name: 'fees', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'takerFeeBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'transfer',
+    inputs: [{ name: 'from', type: 'uint176' }, { name: 'to', type: 'uint176' }, { name: 'amount', type: 'uint128' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'withdraw',
+    inputs: [{ name: 'account', type: 'uint176' }, { name: 'amount', type: 'uint128' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'withdrawFees',
+    inputs: [{ name: 'amount', type: 'uint128' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    name: 'AccountOpened',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'kind',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'DeficitCovered',
+    inputs: [
+      {
+        name: 'victim',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'fromInsurance',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'DeficitPaydown',
+    inputs: [
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'remaining',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'DeficitSocialized',
+    inputs: [
+      {
+        name: 'longSide',
+        type: 'bool',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'indexDelta',
+        type: 'int96',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'DeficitUnresolved',
+    inputs: [
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'total',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Deposited',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'EpochBumped',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'epoch',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'FeesWithdrawn',
+    inputs: [
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'recipient',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ForceCancelled',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'keeper',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'state',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'equity',
+        type: 'int256',
+        indexed: false,
+      },
+      {
+        name: 'cancelRequirement',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newEpoch',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'FundingAccrued',
+    inputs: [
+      {
+        name: 'cLong',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'cShort',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'lastChargeUpdate',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'dustScaled',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'FundingRateUpdated',
+    inputs: [
+      {
+        name: 'rateE15',
+        type: 'int32',
+        indexed: false,
+      },
+      {
+        name: 'timestamp',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'FundingSaturated',
+    inputs: [
+      {
+        name: 'cLong',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'cShort',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'timestamp',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'InsuranceDeposited',
+    inputs: [
+      {
+        name: 'sender',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Liquidated',
+    inputs: [
+      {
+        name: 'victim',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'liquidator',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'lots',
+        type: 'int64',
+        indexed: false,
+      },
+      {
+        name: 'transferNotional',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'penalty',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'outcome',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'MakerSkipped',
+    inputs: [
+      {
+        name: 'handle',
+        type: 'uint64',
+        indexed: true,
+      },
+      {
+        name: 'reason',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OperatorSet',
+    inputs: [
+      {
+        name: 'owner',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'operator',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'perms',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'expiry',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OrderPlaced',
+    inputs: [
+      {
+        name: 'handle',
+        type: 'uint64',
+        indexed: true,
+      },
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'flags',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'price',
+        type: 'uint64',
+        indexed: false,
+      },
+      {
+        name: 'lots',
+        type: 'uint64',
+        indexed: false,
+      },
+      {
+        name: 'expiry',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OrderRemoved',
+    inputs: [
+      {
+        name: 'handle',
+        type: 'uint64',
+        indexed: true,
+      },
+      {
+        name: 'reason',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'PositionChanged',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'size',
+        type: 'int64',
+        indexed: false,
+      },
+      {
+        name: 'costBasis',
+        type: 'int128',
+        indexed: false,
+      },
+      {
+        name: 'collateral',
+        type: 'int128',
+        indexed: false,
+      },
+      {
+        name: 'realizedPnl',
+        type: 'int128',
+        indexed: false,
+      },
+      {
+        name: 'chargesSettled',
+        type: 'int128',
+        indexed: false,
+      },
+      {
+        name: 'chargeSnap',
+        type: 'int96',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'PriceUpdated',
+    inputs: [
+      {
+        name: 'priceX18',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'publishTime',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'QuotesReplaced',
+    inputs: [
+      {
+        name: 'owner',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'updates',
+        type: 'bytes32[]',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Trade',
+    inputs: [
+      {
+        name: 'handle',
+        type: 'uint64',
+        indexed: true,
+      },
+      {
+        name: 'maker',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'taker',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'lots',
+        type: 'uint64',
+        indexed: false,
+      },
+      {
+        name: 'price',
+        type: 'uint64',
+        indexed: false,
+      },
+      {
+        name: 'notional',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'fee',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Transferred',
+    inputs: [
+      {
+        name: 'from',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'to',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Withdrawn',
+    inputs: [
+      {
+        name: 'account',
+        type: 'uint176',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'recipient',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'error',
+    name: 'AccountNotOpen',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'AccountingOverflow',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'AlreadyForceCancelled',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'AlreadyOpen',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'CrossedBook',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DeadOrder',
+    inputs: [{ name: 'handle', type: 'uint64' }],
+  },
+  {
+    type: 'error',
+    name: 'DeadlineExpired',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DeficitLocked',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DivisionOverflow',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'HealthDecreased',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InsufficientBalance',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InsufficientFundingGas',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidAmount',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidFill',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidHint',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidLiquidator',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidMarketConfig',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidOraclePrice',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidOrder',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidPerpConfig',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidPrice',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidRiskParams',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'LiquidationInvariant',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'MinimumFill',
+    inputs: [{ name: 'filled', type: 'uint64' }, { name: 'minFill', type: 'uint64' }],
+  },
+  {
+    type: 'error',
+    name: 'MustExhaustBankrupt',
+    inputs: [{ name: 'victim', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'NeedsPrune',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotAuthorized',
+    inputs: [{ name: 'account', type: 'uint176' }, { name: 'caller', type: 'address' }, { name: 'perm', type: 'uint32' }],
+  },
+  {
+    type: 'error',
+    name: 'NotCancellable',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'NotLiquidatable',
+    inputs: [{ name: 'victim', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'NothingToCancel',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'OiCap',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ReduceOnly',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'Reentrant',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'RiskCheckFailed',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'RiskOverflow',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'StaleExpected',
+    inputs: [{ name: 'handle', type: 'uint64' }, { name: 'current', type: 'uint64' }, { name: 'expected', type: 'uint64' }],
+  },
+  {
+    type: 'error',
+    name: 'StaleOracle',
+    inputs: [{ name: 'publishTime', type: 'uint32' }, { name: 'nowTs', type: 'uint32' }],
+  },
+  {
+    type: 'error',
+    name: 'StepTooSmall',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'TokenTransferFailed',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'TooManyOpenOrders',
+    inputs: [{ name: 'account', type: 'uint176' }],
+  },
+  {
+    type: 'error',
+    name: 'TooManySteps',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'UnresolvedDeficitActive',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'UnsupportedToken',
+    inputs: [],
+  },
+  {
+    type: 'function',
+    name: 'cmrBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'forceCancel',
+    inputs: [{ name: 'account', type: 'uint176' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'market',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        components: [{ name: 'cLong', type: 'int96' }, { name: 'cShort', type: 'int96' }, { name: 'fundingRateE15', type: 'int32' }, { name: 'lastChargeUpdate', type: 'uint32' }, { name: 'openInterest', type: 'uint64' }, { name: 'custody', type: 'uint128' }, { name: 'insurance', type: 'uint128' }, { name: 'fees', type: 'uint128' }, { name: 'dustScaled', type: 'uint256' }, { name: 'unresolvedDeficit', type: 'uint128' }, { name: 'reduceOnly', type: 'bool' }, { name: 'fundingSaturated', type: 'bool' }],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'perpAccount',
+    inputs: [{ name: 'account', type: 'uint176' }],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        components: [{ name: 'epoch', type: 'uint32' }, { name: 'openOrders', type: 'uint16' }, { name: 'collateral', type: 'int128' }, { name: 'size', type: 'int64' }, { name: 'costBasis', type: 'int128' }, { name: 'owedCharges', type: 'int256' }, { name: 'unrealized', type: 'int256' }, { name: 'equity', type: 'int256' }, { name: 'adm', type: 'uint256' }, { name: 'mm', type: 'uint256' }, { name: 'qBid', type: 'uint64' }, { name: 'qAsk', type: 'uint64' }, { name: 'state', type: 'uint8' }, { name: 'oracleFresh', type: 'bool' }, { name: 'admc', type: 'uint256' }],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'recoveryBufferBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'riskParams',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        components: [{ name: 'imrBps', type: 'uint16' }, { name: 'fmrBps', type: 'uint16' }, { name: 'mmrBps', type: 'uint16' }, { name: 'cmrBps', type: 'uint16' }, { name: 'collarBps', type: 'uint16' }, { name: 'makerFeeBps', type: 'uint16' }, { name: 'baseLot', type: 'uint64' }, { name: 'quoteTick', type: 'uint64' }],
+      },
+    ],
+    stateMutability: 'view',
+  },
+] as const;

@@ -8,7 +8,9 @@ export {
 export {
   OnchainLobClient,
 
-  type OnchainLobClientOptions
+  type OnchainLobClientOptions,
+  type OnchainLobClientPerpsOptions,
+  type OnchainLobPerpsConstructor
 } from './onchainLobClient';
 
 export {
@@ -122,7 +124,42 @@ export type {
   VaultDepositorUpdate,
   VaultDepositAction,
   VaultDepositActionUpdate,
-  VaultHistoryPeriod
+  VaultHistoryPeriod,
+
+  PerpPositionSide,
+  PerpPositionStatus,
+  PerpOrderStatus,
+  PerpFillRole,
+  PerpCollateralEventType,
+  PerpQuoteToken,
+  PerpMarketParams,
+  PerpMarket,
+  PerpMarketUpdate,
+  PerpLevel,
+  PerpOrderbook,
+  PerpOrderbookUpdate,
+  PerpTrade,
+  PerpTradeUpdate,
+  PerpCandle,
+  PerpCandleUpdate,
+  PerpCandleDecimal,
+  PerpAccount,
+  PerpAccountUpdate,
+  PerpPosition,
+  PerpOrder,
+  PerpOrderUpdate,
+  PerpFill,
+  PerpFillUpdate,
+  PerpFundingRate,
+  PerpFundingPayment,
+  PerpLiquidation,
+  PerpCollateralEvent,
+  PerpCollateralEventUpdate,
+  PerpAccountState,
+  PerpMarketState,
+  PerpRiskParams,
+  PerpBookOrder,
+  PerpAccountOverview
 } from './models';
 
 export {
@@ -131,3 +168,21 @@ export {
   OnchainLobVaultService,
   OnchainLobVaultWebSocketService
 } from './services';
+export type {
+  PerpMarketDto,
+  PerpOrderbookDto,
+  PerpLevelDto,
+  PerpTradeDto,
+  PerpCandleDto,
+  PerpAccountDto,
+  PerpPositionDto,
+  PerpOrderDto,
+  PerpFillDto,
+  PerpFundingRateDto,
+  PerpFundingPaymentDto,
+  PerpLiquidationDto,
+  PerpCollateralEventDto
+} from './services/onchainLobPerpsService';
+
+// Types only (erased at build time): the perps module itself is in 'onchain-lob-sdk/perps'.
+export type { OnchainLobPerps, OnchainLobPerpsOptions, OnchainLobPerpsEvents } from './perps/onchainLobPerps';
